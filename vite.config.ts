@@ -15,4 +15,18 @@ export default defineConfig({
     port: 3000,
     open: true,
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'ui-vendor': ['lucide-react', 'framer-motion'],
+          'form-vendor': ['react-hook-form', 'zod', '@hookform/resolvers'],
+          'table-vendor': ['@tanstack/react-table'],
+          'state-vendor': ['zustand']
+        }
+      }
+    },
+    chunkSizeWarningLimit: 1000,
+  }
 });

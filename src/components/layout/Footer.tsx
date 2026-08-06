@@ -162,6 +162,9 @@ export const Footer: React.FC = () => {
           <div className="flex items-center space-x-2">
             <span>© {new Date().getFullYear()} NavoYantra Technology Pvt. Ltd. All Rights Reserved.</span>
           </div>
+          <div className="flex items-center space-x-4">
+            <a href="/admin" className="hover:text-blue-500 transition-colors">Admin Login</a>
+          </div>
         </div>
 
       </div>

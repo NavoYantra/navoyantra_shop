@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState } from 'react';
 import { Product, CartItem, WishlistItem, FilterState, PageType } from '../types';
-import { PRODUCTS } from '../data/products';
+import { useQuery } from '@tanstack/react-query';
+import { getProducts } from '../lib/api';
 
 interface ToastInfo {
   id: string;
@@ -217,7 +218,39 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setFilters(initialFilters);
   };
 
-  const filteredProducts = PRODUCTS.filter(product => {
+  const { data: rawProducts = [] } = useQuery({
+    queryKey: ['store-products'],
+    queryFn: getProducts
+  });
+
+  // Map Supabase products to Frontend Product interface
+  const products: Product[] = React.useMemo(() => {
+    return rawProducts.map((p: any) => ({
+      id: p.id,
+      name: p.name,
+      tagline: p.short_description || '',
+      description: p.description || '',
+      price: p.sale_price || p.price,
+      originalPrice: p.price,
+      rating: 5, // mock for now
+      reviewCount: 0,
+      badges: p.featured ? ['Featured'] : [],
+      category: p.categories?.name || 'Uncategorized',
+      ageGroup: '8-10', // mock for now
+      ageText: 'Yrs',
+      skillLevel: 'Beginner',
+      techStack: p.tags?.map((t: any) => t.name) || [],
+      images: p.images || [],
+      specs: {},
+      whatsInside: [],
+      sampleProjects: [],
+      inStock: p.stock > 0,
+      stockCount: p.stock || 0,
+      discountPercent: p.sale_price && p.price ? Math.round(((p.price - p.sale_price) / p.price) * 100) : 0,
+    }));
+  }, [rawProducts]);
+
+  const filteredProducts = products.filter(product => {
     if (filters.searchQuery.trim() !== '') {
       const q = filters.searchQuery.toLowerCase();
       const matchesName = product.name.toLowerCase().includes(q);

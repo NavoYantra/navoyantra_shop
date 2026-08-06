@@ -1,4 +1,4 @@
-export type PageType = 'home' | 'shop' | 'lab-setup' | 'blogs' | 'product-detail';
+export type PageType = 'home' | 'shop' | 'lab-setup' | 'blogs' | 'product-detail' | 'admin';
 
 export type CategoryType = 
   | 'Robotics'
@@ -30,6 +30,20 @@ export interface ProductSpec {
   warranty?: string;
 }
 
+export interface ProductVariant {
+  id: string;
+  name: string;
+  options: string[];
+}
+
+export interface ProductShipping {
+  weight: number;
+  length: number;
+  width: number;
+  height: number;
+  shippingClass: string;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -53,6 +67,19 @@ export interface Product {
   whatsInside: string[];
   sampleProjects: string[];
   isFeatured?: boolean;
+  
+  // Advanced fields
+  shortDescription?: string;
+  tileDescription?: string;
+  tags?: string[];
+  brand?: string;
+  youtubeVideoUrl?: string;
+  features?: string[];
+  shipping?: ProductShipping;
+  variants?: ProductVariant[];
+  hasVariants?: boolean;
+  publishStatus?: 'Draft' | 'Published';
+  scheduledPublishDate?: string;
 }
 
 export interface CartItem {

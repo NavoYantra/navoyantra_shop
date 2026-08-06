@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AppProvider, useApp } from './context/AppContext';
 import { ArrowUp } from 'lucide-react';
 
@@ -6,12 +8,16 @@ import { ArrowUp } from 'lucide-react';
 import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
 
-// Pages
-import { HomePage } from './pages/HomePage';
-import { ShopPage } from './pages/ShopPage';
-import { LabSetupPage } from './pages/LabSetupPage';
-import { BlogsPage } from './pages/BlogsPage';
-import { ProductDetailPage } from './pages/ProductDetailPage';
+import { Suspense, lazy } from 'react';
+import { LoadingSpinner } from './components/common/LoadingSpinner';
+
+// Pages (Lazy Loaded)
+const HomePage = lazy(() => import('./pages/HomePage').then(module => ({ default: module.HomePage })));
+const ShopPage = lazy(() => import('./pages/ShopPage').then(module => ({ default: module.ShopPage })));
+const LabSetupPage = lazy(() => import('./pages/LabSetupPage').then(module => ({ default: module.LabSetupPage })));
+const BlogsPage = lazy(() => import('./pages/BlogsPage').then(module => ({ default: module.BlogsPage })));
+const ProductDetailPage = lazy(() => import('./pages/ProductDetailPage').then(module => ({ default: module.ProductDetailPage })));
+const AdminApp = lazy(() => import('./AdminApp').then(module => ({ default: module.AdminApp })));
 
 // Modals & Drawers
 import { CartDrawer } from './components/modals/CartDrawer';
@@ -44,11 +50,13 @@ export function AppContent() {
       <Header />
       
       <main className="flex-1">
-        {currentPage === 'home' && <HomePage />}
-        {currentPage === 'shop' && <ShopPage />}
-        {currentPage === 'lab-setup' && <LabSetupPage />}
-        {currentPage === 'blogs' && <BlogsPage />}
-        {currentPage === 'product-detail' && <ProductDetailPage />}
+        <Suspense fallback={<LoadingSpinner />}>
+          {currentPage === 'home' && <HomePage />}
+          {currentPage === 'shop' && <ShopPage />}
+          {currentPage === 'lab-setup' && <LabSetupPage />}
+          {currentPage === 'blogs' && <BlogsPage />}
+          {currentPage === 'product-detail' && <ProductDetailPage />}
+        </Suspense>
       </main>
 
       <Footer />
@@ -77,10 +85,21 @@ export function AppContent() {
   );
 }
 
+const queryClient = new QueryClient();
+
 export default function App() {
   return (
-    <AppProvider>
-      <AppContent />
-    </AppProvider>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <AppProvider>
+          <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#F6F7F9]"><LoadingSpinner /></div>}>
+            <Routes>
+              <Route path="/admin/*" element={<AdminApp />} />
+              <Route path="*" element={<AppContent />} />
+            </Routes>
+          </Suspense>
+        </AppProvider>
+      </BrowserRouter>
+    </QueryClientProvider>
   );
 }
