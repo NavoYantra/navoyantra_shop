@@ -18,9 +18,13 @@ export const CheckoutModal: React.FC = () => {
 
   const [shippingData, setShippingData] = useState({
     fullName: 'Aarav Sharma',
+    email: 'aarav@example.com',
     phone: '9876543210',
-    pincode: '560038',
+    companyName: '',
+    gstNumber: '',
     address: 'Flat 402, Green View Apartments, Indiranagar',
+    landmark: 'Opposite Metro Station',
+    pincode: '560038',
     city: 'Bengaluru',
     state: 'Karnataka'
   });
@@ -106,6 +110,15 @@ export const CheckoutModal: React.FC = () => {
                   />
                 </div>
                 <div>
+                  <label className="text-xs font-bold text-slate-600  block mb-1">Email Address</label>
+                  <input
+                    type="email"
+                    value={shippingData.email}
+                    onChange={e => setShippingData({ ...shippingData, email: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50  border border-slate-200  text-xs font-medium"
+                  />
+                </div>
+                <div>
                   <label className="text-xs font-bold text-slate-600  block mb-1">Mobile Phone Number</label>
                   <input
                     type="tel"
@@ -116,14 +129,49 @@ export const CheckoutModal: React.FC = () => {
                 </div>
               </div>
 
-              <div>
-                <label className="text-xs font-bold text-slate-600  block mb-1">Flat, House No., Street Address</label>
-                <input
-                  type="text"
-                  value={shippingData.address}
-                  onChange={e => setShippingData({ ...shippingData, address: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl bg-slate-50  border border-slate-200  text-xs font-medium"
-                />
+              <div className="p-4 bg-slate-50/50 border border-slate-200 rounded-xl space-y-3">
+                <h5 className="text-xs font-bold text-slate-800">Business Details (Optional)</h5>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs font-bold text-slate-600  block mb-1">Company Name</label>
+                    <input
+                      type="text"
+                      value={shippingData.companyName}
+                      onChange={e => setShippingData({ ...shippingData, companyName: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl bg-white  border border-slate-200  text-xs font-medium"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-bold text-slate-600  block mb-1">GST Number</label>
+                    <input
+                      type="text"
+                      value={shippingData.gstNumber}
+                      onChange={e => setShippingData({ ...shippingData, gstNumber: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl bg-white  border border-slate-200  text-xs font-medium"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-bold text-slate-600  block mb-1">Flat, House No., Street Address</label>
+                  <input
+                    type="text"
+                    value={shippingData.address}
+                    onChange={e => setShippingData({ ...shippingData, address: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50  border border-slate-200  text-xs font-medium"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-600  block mb-1">Landmark</label>
+                  <input
+                    type="text"
+                    value={shippingData.landmark}
+                    onChange={e => setShippingData({ ...shippingData, landmark: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50  border border-slate-200  text-xs font-medium"
+                  />
+                </div>
               </div>
 
               <div className="grid grid-cols-3 gap-3">
