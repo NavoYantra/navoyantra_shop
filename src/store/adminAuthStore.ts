@@ -23,7 +23,7 @@ export const useAdminAuthStore = create<AdminAuthState>((set) => ({
       const { data: { session } } = await supabase.auth.getSession();
       set({ session, user: session?.user || null, isLoading: false });
 
-      supabase.auth.onAuthStateChange((_event, session) => {
+      supabase.auth.onAuthStateChange((_event: any, session: any) => {
         set({ session, user: session?.user || null });
       });
     } catch (error) {

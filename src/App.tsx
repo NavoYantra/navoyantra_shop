@@ -5,7 +5,7 @@ import { AppProvider, useApp } from './context/AppContext';
 import { ArrowUp } from 'lucide-react';
 import { ErrorBoundary } from 'react-error-boundary';
 
-function ErrorFallback({error}: {error: Error}) {
+function ErrorFallback({error}: {error: any}) {
   return (
     <div role="alert" className="p-8 text-red-500 bg-red-50 min-h-screen">
       <h2 className="text-2xl font-bold">Something went wrong:</h2>
