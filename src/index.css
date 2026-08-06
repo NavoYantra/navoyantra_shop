@@ -61,25 +61,13 @@
   -webkit-backdrop-filter: blur(12px);
 }
 
-/* Gradient accents */
+/* Gradient backgrounds */
 .bg-gradient-brand {
   background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 50%, #0F172A 100%);
 }
 
 .bg-gradient-orange {
   background: linear-gradient(135deg, #F97316 0%, #EA580C 100%);
-}
-
-.text-gradient-primary {
-  background: linear-gradient(135deg, #2563EB 0%, #3B82F6 50%, #F97316 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.text-gradient-orange {
-  background: linear-gradient(135deg, #F97316 0%, #FB923C 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
 }
 
 /* Shimmer animation */

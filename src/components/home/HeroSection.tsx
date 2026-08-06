@@ -23,34 +23,34 @@ export const HeroSection: React.FC = () => {
           <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
             
             {/* Top Pill Badge */}
-            <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-blue-100 dark:bg-blue-950/80 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-xs font-bold shadow-xs">
-              <span className="flex h-2 w-2 rounded-full bg-blue-600 dark:bg-blue-400 animate-ping" />
-              <Sparkles className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+            <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-blue-100 border border-blue-200 text-blue-700 text-xs font-bold shadow-xs">
+              <span className="flex h-2 w-2 rounded-full bg-blue-600 animate-ping" />
+              <Sparkles className="w-3.5 h-3.5 text-blue-600" />
               <span>India's #1 EdTech & Robotics Innovation Platform</span>
             </div>
 
             {/* Headline */}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold font-heading text-slate-900 dark:text-white tracking-tight leading-[1.1]">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold font-heading text-slate-900 tracking-tight leading-[1.1]">
               Build, Code & Innovate the <br className="hidden sm:inline" />
-              <span className="text-gradient-primary">Future of Robotics & AI</span>
+              <span className="text-blue-600">Future of Robotics & AI</span>
             </h1>
 
             {/* Subtitle */}
-            <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+            <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
               Empowering <strong>Kids (8-14 yrs)</strong>, <strong>School Students</strong>, <strong>College Engineers</strong>, and <strong>Atal Tinkering Labs</strong> with pre-soldered, safe, and curriculum-aligned STEM innovation kits.
             </p>
 
             {/* Quick Pill Highlights */}
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 pt-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
-              <span className="flex items-center space-x-1 px-3 py-1 rounded-xl bg-white dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 shadow-xs">
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 pt-2 text-xs font-semibold text-slate-700">
+              <span className="flex items-center space-x-1 px-3 py-1 rounded-xl bg-white border border-slate-200/80 shadow-xs">
                 <CheckCircle2 className="w-4 h-4 text-emerald-500" />
                 <span>100% CBSE & ATL Aligned</span>
               </span>
-              <span className="flex items-center space-x-1 px-3 py-1 rounded-xl bg-white dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 shadow-xs">
+              <span className="flex items-center space-x-1 px-3 py-1 rounded-xl bg-white border border-slate-200/80 shadow-xs">
                 <CheckCircle2 className="w-4 h-4 text-blue-500" />
                 <span>Block & Python Coding</span>
               </span>
-              <span className="flex items-center space-x-1 px-3 py-1 rounded-xl bg-white dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 shadow-xs">
+              <span className="flex items-center space-x-1 px-3 py-1 rounded-xl bg-white border border-slate-200/80 shadow-xs">
                 <CheckCircle2 className="w-4 h-4 text-orange-500" />
                 <span>1-Year Hardware Warranty</span>
               </span>
@@ -68,34 +68,34 @@ export const HeroSection: React.FC = () => {
 
               <button
                 onClick={() => setIsQuoteModalOpen(true)}
-                className="w-full sm:w-auto px-7 py-4 rounded-2xl bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-bold text-base border-2 border-blue-600/30 hover:border-blue-600 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 transition-all shadow-md flex items-center justify-center space-x-2"
+                className="w-full sm:w-auto px-7 py-4 rounded-2xl bg-white text-slate-900 font-bold text-base border-2 border-blue-600/30 hover:border-blue-600 hover:bg-blue-50 transition-all shadow-md flex items-center justify-center space-x-2"
               >
-                <School className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <School className="w-5 h-5 text-blue-600" />
                 <span>Request School Lab Quote</span>
               </button>
             </div>
 
             {/* Trust Badges Bar */}
-            <div className="pt-6 border-t border-slate-200/60 dark:border-slate-800 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-xs text-slate-500 dark:text-slate-400">
+            <div className="pt-6 border-t border-slate-200/60 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-xs text-slate-500">
               <div className="flex items-center space-x-1.5">
                 <div className="flex text-amber-400">
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} className="w-4 h-4 fill-amber-400" />
                   ))}
                 </div>
-                <span className="font-bold text-slate-800 dark:text-slate-200">4.9/5</span>
+                <span className="font-bold text-slate-800">4.9/5</span>
                 <span>(1,200+ Reviews)</span>
               </div>
-              <div className="h-4 w-px bg-slate-300 dark:bg-slate-700 hidden sm:block" />
+              <div className="h-4 w-px bg-slate-300 hidden sm:block" />
               <div className="flex items-center space-x-1.5">
                 <Users className="w-4 h-4 text-blue-600" />
-                <span className="font-bold text-slate-800 dark:text-slate-200">50,000+</span>
+                <span className="font-bold text-slate-800">50,000+</span>
                 <span>Student Makers</span>
               </div>
-              <div className="h-4 w-px bg-slate-300 dark:bg-slate-700 hidden sm:block" />
+              <div className="h-4 w-px bg-slate-300 hidden sm:block" />
               <div className="flex items-center space-x-1.5">
                 <School className="w-4 h-4 text-orange-500" />
-                <span className="font-bold text-slate-800 dark:text-slate-200">500+</span>
+                <span className="font-bold text-slate-800">500+</span>
                 <span>Partner Schools</span>
               </div>
             </div>
@@ -106,13 +106,13 @@ export const HeroSection: React.FC = () => {
           <div className="lg:col-span-5 relative">
             
             {/* Interactive Showcase Switcher Tabs */}
-            <div className="flex justify-center space-x-2 mb-3 bg-white/80 dark:bg-slate-900/80 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-800 backdrop-blur-md shadow-sm">
+            <div className="flex justify-center space-x-2 mb-3 bg-white/80 p-1.5 rounded-2xl border border-slate-200 backdrop-blur-md shadow-sm">
               <button
                 onClick={() => setActiveTab('robot')}
                 className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${
                   activeTab === 'robot' 
                     ? 'bg-blue-600 text-white shadow-md' 
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                    : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 NavoBot Pro V4
@@ -122,7 +122,7 @@ export const HeroSection: React.FC = () => {
                 className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${
                   activeTab === 'ai' 
                     ? 'bg-blue-600 text-white shadow-md' 
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                    : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 NavoAI Lab
@@ -132,7 +132,7 @@ export const HeroSection: React.FC = () => {
                 className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${
                   activeTab === 'iot' 
                     ? 'bg-blue-600 text-white shadow-md' 
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                    : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 NavoIoT Automation
@@ -202,24 +202,24 @@ export const HeroSection: React.FC = () => {
               </div>
 
               {/* Floating Glass Specs Card 1 (Bottom Left) */}
-              <div className="absolute -bottom-4 -left-4 sm:bottom-6 sm:-left-6 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200 dark:border-slate-800 p-3 rounded-2xl shadow-xl flex items-center space-x-3 hidden sm:flex z-20">
-                <div className="w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-950 text-orange-600 flex items-center justify-center">
+              <div className="absolute -bottom-4 -left-4 sm:bottom-6 sm:-left-6 bg-white/90 backdrop-blur-xl border border-slate-200 p-3 rounded-2xl shadow-xl flex items-center space-x-3 hidden sm:flex z-20">
+                <div className="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center">
                   <Bot className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-slate-900 dark:text-white">15+ Projects Included</p>
-                  <p className="text-[10px] text-slate-500 dark:text-slate-400">Full Video & Code Manual</p>
+                  <p className="text-xs font-bold text-slate-900">15+ Projects Included</p>
+                  <p className="text-[10px] text-slate-500">Full Video & Code Manual</p>
                 </div>
               </div>
 
               {/* Floating Glass Specs Card 2 (Top Right) */}
-              <div className="absolute -top-4 -right-4 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200 dark:border-slate-800 p-3 rounded-2xl shadow-xl flex items-center space-x-3 hidden sm:flex z-20">
-                <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-950 text-blue-600 flex items-center justify-center">
+              <div className="absolute -top-4 -right-4 bg-white/90 backdrop-blur-xl border border-slate-200 p-3 rounded-2xl shadow-xl flex items-center space-x-3 hidden sm:flex z-20">
+                <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center">
                   <Award className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-slate-900 dark:text-white">CBSE & ATL Approved</p>
-                  <p className="text-[10px] text-slate-500 dark:text-slate-400">Class 6-12 STEM Curriculum</p>
+                  <p className="text-xs font-bold text-slate-900">CBSE & ATL Approved</p>
+                  <p className="text-[10px] text-slate-500">Class 6-12 STEM Curriculum</p>
                 </div>
               </div>
 
