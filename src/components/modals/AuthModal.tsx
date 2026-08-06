@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { User, X, Mail, Lock, LogIn, UserPlus, CheckCircle2 } from 'lucide-react';
+import { User, X } from 'lucide-react';
 
 export const AuthModal: React.FC = () => {
   const { isAuthModalOpen, setIsAuthModalOpen, setUser, user, showToast } = useApp();
@@ -35,7 +35,7 @@ export const AuthModal: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden animate-in zoom-in-95 duration-200 my-8">
+      <div className="w-full max-w-md bg-white  rounded-3xl shadow-2xl border border-slate-200  overflow-hidden animate-in zoom-in-95 duration-200 my-8">
         
         {/* Header */}
         <div className="p-6 bg-slate-900 text-white flex items-center justify-between">
@@ -56,14 +56,14 @@ export const AuthModal: React.FC = () => {
         {/* Content */}
         {user ? (
           <div className="p-6 text-center space-y-4">
-            <div className="w-16 h-16 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300 flex items-center justify-center text-2xl font-bold font-heading mx-auto">
+            <div className="w-16 h-16 rounded-full bg-blue-100 text-blue-600   flex items-center justify-center text-2xl font-bold font-heading mx-auto">
               {user.name.charAt(0)}
             </div>
             <div>
-              <h4 className="text-lg font-bold text-slate-900 dark:text-white">{user.name}</h4>
+              <h4 className="text-lg font-bold text-slate-900 ">{user.name}</h4>
               <p className="text-xs text-slate-500">{user.email}</p>
             </div>
-            <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 text-xs text-slate-600 dark:text-slate-300 space-y-1">
+            <div className="p-3 rounded-xl bg-slate-50  text-xs text-slate-600  space-y-1">
               <p>✔ Active Member: NavoMaker Student Club</p>
               <p>✔ Lifetime Video Tutorial Access Unlocked</p>
             </div>
@@ -79,7 +79,7 @@ export const AuthModal: React.FC = () => {
             
             {mode === 'signup' && (
               <div>
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                <label className="text-xs font-bold text-slate-700  block mb-1">
                   Full Name *
                 </label>
                 <input
@@ -88,13 +88,13 @@ export const AuthModal: React.FC = () => {
                   placeholder="e.g. Aarav Sharma"
                   value={name}
                   onChange={e => setName(e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-medium focus:outline-none"
+                  className="w-full px-3 py-2.5 rounded-xl bg-slate-50  border border-slate-200  text-xs font-medium focus:outline-none"
                 />
               </div>
             )}
 
             <div>
-              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+              <label className="text-xs font-bold text-slate-700  block mb-1">
                 Email Address *
               </label>
               <input
@@ -103,12 +103,12 @@ export const AuthModal: React.FC = () => {
                 placeholder="aarav@gmail.com"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-medium focus:outline-none"
+                className="w-full px-3 py-2.5 rounded-xl bg-slate-50  border border-slate-200  text-xs font-medium focus:outline-none"
               />
             </div>
 
             <div>
-              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+              <label className="text-xs font-bold text-slate-700  block mb-1">
                 Password *
               </label>
               <input
@@ -117,7 +117,7 @@ export const AuthModal: React.FC = () => {
                 placeholder="••••••••"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-medium focus:outline-none"
+                className="w-full px-3 py-2.5 rounded-xl bg-slate-50  border border-slate-200  text-xs font-medium focus:outline-none"
               />
             </div>
 
@@ -132,7 +132,7 @@ export const AuthModal: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
-                className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+                className="text-xs font-semibold text-blue-600  hover:underline"
               >
                 {mode === 'login' ? "Don't have an account? Sign up here" : "Already registered? Sign in"}
               </button>

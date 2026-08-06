@@ -80,3 +80,15 @@
   background-size: 200% 100%;
   animation: shimmer 2.5s infinite;
 }
+
+/* Infinite Marquee */
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(calc(-50% - 0.75rem)); } /* -50% to cover the first half of duplicated items + space-x gap compensation */
+}
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+.hover\:pause-animation:hover {
+  animation-play-state: paused;
+}

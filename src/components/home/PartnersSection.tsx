@@ -1,5 +1,5 @@
 import React from 'react';
-import { Award, ShieldCheck, CheckCircle } from 'lucide-react';
+import { Award } from 'lucide-react';
 
 export const PartnersSection: React.FC = () => {
   const partners = [
@@ -21,15 +21,15 @@ export const PartnersSection: React.FC = () => {
           {partners.map((p, idx) => (
             <div
               key={idx}
-              className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 text-center shadow-xs hover:border-blue-500/40 transition-colors"
+              className="p-4 rounded-2xl bg-white  border border-slate-200/80  text-center shadow-xs hover:border-blue-500/40 transition-colors"
             >
-              <div className="w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center mx-auto mb-2">
+              <div className="w-8 h-8 rounded-full bg-blue-50  text-blue-600  flex items-center justify-center mx-auto mb-2">
                 <Award className="w-4 h-4" />
               </div>
-              <h4 className="text-xs font-bold text-slate-900 dark:text-white">
+              <h4 className="text-xs font-bold text-slate-900 ">
                 {p.name}
               </h4>
-              <span className="text-[10px] text-slate-500 dark:text-slate-400 block mt-0.5">
+              <span className="text-[10px] text-slate-500  block mt-0.5">
                 {p.badge}
               </span>
             </div>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { 
-  ShoppingBag, X, Trash2, Plus, Minus, ArrowRight, ShieldCheck, Tag, Sparkles 
+  ShoppingBag, X, Trash2, Plus, Minus, ArrowRight, Tag, Sparkles 
 } from 'lucide-react';
 
 export const CartDrawer: React.FC = () => {
@@ -11,8 +11,7 @@ export const CartDrawer: React.FC = () => {
     cart, 
     removeFromCart, 
     updateQuantity, 
-    clearCart, 
-    cartTotal,
+        cartTotal,
     setIsCheckoutModalOpen,
     showToast
   } = useApp();
@@ -41,40 +40,40 @@ export const CartDrawer: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden bg-slate-950/60 backdrop-blur-xs flex justify-end">
-      <div className="w-full max-w-lg bg-white dark:bg-slate-900 h-full shadow-2xl flex flex-col justify-between animate-in slide-in-from-right duration-300">
+      <div className="w-full max-w-lg bg-white  h-full shadow-2xl flex flex-col justify-between animate-in slide-in-from-right duration-300">
         
         {/* Header */}
-        <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+        <div className="p-6 border-b border-slate-100  flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <ShoppingBag className="w-5 h-5 text-blue-600" />
-            <h3 className="text-lg font-bold font-heading text-slate-900 dark:text-white">
+            <h3 className="text-lg font-bold font-heading text-slate-900 ">
               Your STEM Shopping Bag ({cart.length})
             </h3>
           </div>
           <button
             onClick={() => setIsCartOpen(false)}
-            className="p-2 rounded-xl text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="p-2 rounded-xl text-slate-400 hover:bg-slate-100 :bg-slate-800 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Free Shipping Milestone Progress Bar */}
-        <div className="bg-blue-50 dark:bg-blue-950/40 p-4 border-b border-blue-100 dark:border-blue-900/50">
+        <div className="bg-blue-50  p-4 border-b border-blue-100 ">
           <div className="flex items-center justify-between text-xs font-bold mb-1.5">
             {cartTotal >= freeShippingThreshold ? (
-              <span className="text-emerald-600 dark:text-emerald-400 flex items-center space-x-1">
+              <span className="text-emerald-600  flex items-center space-x-1">
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>🎉 You unlocked FREE Express Shipping!</span>
               </span>
             ) : (
-              <span className="text-slate-700 dark:text-slate-300">
-                Add <strong className="text-blue-600 dark:text-blue-400">₹{(freeShippingThreshold - cartTotal).toLocaleString('en-IN')}</strong> more for Free Delivery
+              <span className="text-slate-700 ">
+                Add <strong className="text-blue-600 ">₹{(freeShippingThreshold - cartTotal).toLocaleString('en-IN')}</strong> more for Free Delivery
               </span>
             )}
             <span className="text-slate-400">{Math.round(progressPercent)}%</span>
           </div>
-          <div className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+          <div className="w-full h-2 bg-slate-200  rounded-full overflow-hidden">
             <div 
               className="h-full bg-gradient-to-r from-blue-600 to-orange-500 transition-all duration-300" 
               style={{ width: `${progressPercent}%` }}
@@ -88,19 +87,19 @@ export const CartDrawer: React.FC = () => {
             cart.map(item => (
               <div
                 key={item.product.id}
-                className="flex items-center space-x-4 p-3 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/60"
+                className="flex items-center space-x-4 p-3 rounded-2xl border border-slate-100  bg-slate-50/60 "
               >
                 <img
                   src={item.product.images[0]}
                   alt={item.product.name}
-                  className="w-16 h-16 rounded-xl object-cover border border-slate-200 dark:border-slate-800"
+                  className="w-16 h-16 rounded-xl object-cover border border-slate-200 "
                 />
 
                 <div className="flex-1 min-w-0 space-y-1">
-                  <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                  <h4 className="text-xs font-bold text-slate-900  truncate">
                     {item.product.name}
                   </h4>
-                  <p className="text-[11px] font-semibold text-blue-600 dark:text-blue-400">
+                  <p className="text-[11px] font-semibold text-blue-600 ">
                     ₹{item.product.price.toLocaleString('en-IN')}
                   </p>
 
@@ -108,14 +107,14 @@ export const CartDrawer: React.FC = () => {
                   <div className="flex items-center space-x-2 pt-1">
                     <button
                       onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
-                      className="p-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100"
+                      className="p-1 rounded-lg bg-white  border border-slate-200  text-slate-600  hover:bg-slate-100"
                     >
                       <Minus className="w-3 h-3" />
                     </button>
                     <span className="text-xs font-bold px-2">{item.quantity}</span>
                     <button
                       onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                      className="p-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100"
+                      className="p-1 rounded-lg bg-white  border border-slate-200  text-slate-600  hover:bg-slate-100"
                     >
                       <Plus className="w-3 h-3" />
                     </button>
@@ -123,7 +122,7 @@ export const CartDrawer: React.FC = () => {
                 </div>
 
                 <div className="text-right space-y-1">
-                  <span className="text-xs font-bold text-slate-900 dark:text-white font-heading">
+                  <span className="text-xs font-bold text-slate-900  font-heading">
                     ₹{(item.product.price * item.quantity).toLocaleString('en-IN')}
                   </span>
                   <button
@@ -137,8 +136,8 @@ export const CartDrawer: React.FC = () => {
             ))
           ) : (
             <div className="text-center py-16 space-y-3">
-              <ShoppingBag className="w-12 h-12 text-slate-300 dark:text-slate-700 mx-auto" />
-              <h4 className="text-lg font-bold text-slate-900 dark:text-white">Your cart is empty</h4>
+              <ShoppingBag className="w-12 h-12 text-slate-300  mx-auto" />
+              <h4 className="text-lg font-bold text-slate-900 ">Your cart is empty</h4>
               <p className="text-xs text-slate-500">Explore our best selling STEM & AI robotics kits to add items!</p>
             </div>
           )}
@@ -146,7 +145,7 @@ export const CartDrawer: React.FC = () => {
 
         {/* Promo Code & Order Summary Footer */}
         {cart.length > 0 && (
-          <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 space-y-4">
+          <div className="p-6 border-t border-slate-100  bg-slate-50  space-y-4">
             
             {/* Promo Form */}
             <form onSubmit={handleApplyPromo} className="flex space-x-2">
@@ -157,25 +156,25 @@ export const CartDrawer: React.FC = () => {
                   placeholder="Coupon code (e.g. STEM10)"
                   value={promoCode}
                   onChange={(e) => setPromoCode(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs uppercase font-mono font-bold focus:outline-none"
+                  className="w-full pl-9 pr-3 py-2 rounded-xl bg-white  border border-slate-200  text-xs uppercase font-mono font-bold focus:outline-none"
                 />
               </div>
               <button
                 type="submit"
-                className="px-4 py-2 rounded-xl bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 font-bold text-xs hover:bg-blue-600 transition-colors"
+                className="px-4 py-2 rounded-xl bg-slate-900 text-white   font-bold text-xs hover:bg-blue-600 transition-colors"
               >
                 Apply
               </button>
             </form>
 
             {/* Price Calculations */}
-            <div className="space-y-1.5 text-xs text-slate-600 dark:text-slate-400">
+            <div className="space-y-1.5 text-xs text-slate-600 ">
               <div className="flex justify-between">
                 <span>Subtotal</span>
-                <span className="font-semibold text-slate-900 dark:text-white">₹{cartTotal.toLocaleString('en-IN')}</span>
+                <span className="font-semibold text-slate-900 ">₹{cartTotal.toLocaleString('en-IN')}</span>
               </div>
               {appliedDiscount > 0 && (
-                <div className="flex justify-between text-emerald-600 dark:text-emerald-400 font-bold">
+                <div className="flex justify-between text-emerald-600  font-bold">
                   <span>Discount (STEM10)</span>
                   <span>-₹{appliedDiscount.toLocaleString('en-IN')}</span>
                 </div>
@@ -184,9 +183,9 @@ export const CartDrawer: React.FC = () => {
                 <span>Shipping</span>
                 <span>{shippingCost === 0 ? <strong className="text-emerald-500">FREE</strong> : `₹${shippingCost}`}</span>
               </div>
-              <div className="flex justify-between text-sm font-extrabold text-slate-900 dark:text-white pt-2 border-t border-slate-200 dark:border-slate-800 font-heading">
+              <div className="flex justify-between text-sm font-extrabold text-slate-900  pt-2 border-t border-slate-200  font-heading">
                 <span>Grand Total</span>
-                <span className="text-blue-600 dark:text-blue-400">₹{finalTotal.toLocaleString('en-IN')}</span>
+                <span className="text-blue-600 ">₹{finalTotal.toLocaleString('en-IN')}</span>
               </div>
             </div>
 

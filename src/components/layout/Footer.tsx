@@ -1,16 +1,12 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
 import { 
-  Bot, Phone, Mail, MapPin, ShieldCheck, Heart, 
-  Sun, Moon, ArrowUp, ExternalLink 
+  Phone, Mail, MapPin,    
 } from 'lucide-react';
+import { SocialLinks } from '../common/SocialLinks';
 
 export const Footer: React.FC = () => {
-  const { theme, toggleTheme, setIsQuoteModalOpen, setFilters } = useApp();
-
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  const { setIsQuoteModalOpen, setFilters } = useApp();
 
   const handleCategoryFilter = (cat: any) => {
     setFilters(prev => ({ ...prev, selectedCategories: [cat] }));
@@ -28,19 +24,11 @@ export const Footer: React.FC = () => {
           {/* Col 1 & 2: Brand Info & Mission */}
           <div className="lg:col-span-2 space-y-4">
             <a href="#" className="flex items-center space-x-3 group">
-              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-600 via-blue-700 to-slate-900 p-0.5 shadow-lg shadow-blue-500/20">
-                <div className="w-full h-full bg-slate-900 rounded-[14px] flex items-center justify-center text-white">
-                  <Bot className="w-6 h-6 text-blue-400" />
-                </div>
-              </div>
-              <div className="flex flex-col">
-                <span className="font-extrabold text-xl tracking-tight text-white font-heading">
-                  Navo<span className="text-blue-400">Yantra</span>
-                </span>
-                <span className="text-[10px] font-semibold text-orange-500 uppercase tracking-widest leading-none">
-                  Technology & Robotics
-                </span>
-              </div>
+              <img 
+                src="/logo.png" 
+                alt="NavoYantra Technology" 
+                className="h-16 sm:h-20 object-contain group-hover:scale-105 transition-transform brightness-0 invert" 
+              />
             </a>
 
             <p className="text-xs text-slate-400 leading-relaxed max-w-sm">
@@ -48,18 +36,22 @@ export const Footer: React.FC = () => {
             </p>
 
             <div className="space-y-2 text-xs text-slate-400 pt-2">
-              <div className="flex items-center space-x-2">
-                <MapPin className="w-4 h-4 text-blue-400 shrink-0" />
-                <span>NavoYantra Innovation Hub, Indiranagar, Bengaluru, KA 560038, India</span>
+              <div className="flex items-start space-x-2">
+                <MapPin className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
+                <span>1/10726-A KH No. 1622/62, Gali No. 2, Subhash Park, Naveen Shahdara, Delhi - 110032</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Phone className="w-4 h-4 text-blue-400 shrink-0" />
-                <span>Helpdesk: +91 (080) 4567-8900 | WhatsApp: +91 98765-43210</span>
+                <span>Helpline: +91 9582528010 | Mob/WA: +91 8796599974</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Mail className="w-4 h-4 text-blue-400 shrink-0" />
-                <span>support@navoyantra.com | B2B: labsetup@navoyantra.com</span>
+                <span>support@navoyantra.com</span>
               </div>
+            </div>
+
+            <div className="pt-4">
+              <SocialLinks className="text-slate-400" iconClassName="w-4 h-4 hover:scale-110 transition-transform" />
             </div>
           </div>
 
@@ -131,7 +123,7 @@ export const Footer: React.FC = () => {
               Support & Policies
             </h4>
             <ul className="space-y-2 text-xs text-slate-400">
-              <li><a href="#why-choose" className="hover:text-white transition-colors">1-Year Hardware Warranty</a></li>
+              <li><a href="#why-choose" className="hover:text-white transition-colors">1-Week Warranty on Premium Products</a></li>
               <li><a href="#resources" className="hover:text-white transition-colors">Free Video & Code Downloads</a></li>
               <li><a href="#" onClick={(e) => { e.preventDefault(); alert("Track Order: Enter Order ID sent on SMS"); }} className="hover:text-white transition-colors">Track Your Shipment</a></li>
               <li><a href="#" onClick={(e) => { e.preventDefault(); alert("Return & Replacement Policy: 7 Days Easy Returns"); }} className="hover:text-white transition-colors">7-Day Replacement Policy</a></li>
@@ -142,32 +134,33 @@ export const Footer: React.FC = () => {
               <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5">
                 Accepted Payment Methods:
               </span>
-              <div className="flex flex-wrap gap-1.5">
-                <span className="px-2 py-1 rounded bg-slate-900 border border-slate-800 text-[10px] font-extrabold text-blue-400">UPI / GPay</span>
-                <span className="px-2 py-1 rounded bg-slate-900 border border-slate-800 text-[10px] font-extrabold text-orange-400">RuPay</span>
-                <span className="px-2 py-1 rounded bg-slate-900 border border-slate-800 text-[10px] font-extrabold text-white">Visa</span>
-                <span className="px-2 py-1 rounded bg-slate-900 border border-slate-800 text-[10px] font-extrabold text-white">Mastercard</span>
-                <span className="px-2 py-1 rounded bg-slate-900 border border-slate-800 text-[10px] font-extrabold text-emerald-400">COD Available</span>
+              <div className="flex flex-wrap gap-2.5">
+                <span className="px-4 py-2 bg-slate-900 border border-slate-700/80 rounded-md flex items-center justify-center shadow-sm h-[40px]" title="UPI">
+                  <img src="https://imgs.search.brave.com/5i8nTOk_bQPbXmOHzJ-sCHfWm30Hs9-CK0d0zkkEPFc/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9wbmdo/ZHByby5jb20vd3At/Y29udGVudC90aGVt/ZXMvcG5naGRwcm8v/ZG93bmxvYWQvc29j/aWFsLW1lZGlhLWFu/ZC1icmFuZHMvdXBp/LWxvZ28ucG5n" alt="UPI" className="h-5 object-contain" />
+                </span>
+                <span className="px-4 py-2 bg-slate-900 border border-slate-700/80 rounded-md flex items-center justify-center shadow-sm h-[40px]">
+                  <img src="https://imgs.search.brave.com/0Mq4VX3CYlyyFyCy3xYH5S4SgewebxtPBKU56nQULMg/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9sb2dv/dHlwLnVzL2ZpbGUv/cnVwYXkuc3Zn" alt="RuPay" className="h-5 object-contain" />
+                </span>
+                <span className="px-4 py-2 bg-slate-900 border border-slate-700/80 rounded-md flex items-center justify-center shadow-sm h-[40px]">
+                  <img src="https://imgs.search.brave.com/Ju0QWmfCr1UgVDSk_Xd1ukNlQATaziauVDLJgFKjHlQ/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9zdGF0/aWMudmVjdGVlenku/Y29tL3N5c3RlbS9y/ZXNvdXJjZXMvdGh1/bWJuYWlscy8wMjAv/OTc1LzU2Ny9zbWFs/bC92aXNhLWxvZ28t/dmlzYS1pY29uLXRy/YW5zcGFyZW50LWZy/ZWUtcG5nLnBuZw" alt="VISA" className="h-5 object-contain brightness-0 invert" />
+                </span>
+                <span className="px-4 py-2 bg-slate-900 border border-slate-700/80 rounded-md flex items-center justify-center space-x-2 shadow-sm h-[40px]">
+                  <div className="flex -space-x-1.5">
+                    <div className="w-3.5 h-3.5 rounded-full bg-red-500 mix-blend-screen opacity-90"></div>
+                    <div className="w-3.5 h-3.5 rounded-full bg-yellow-500 mix-blend-screen opacity-90"></div>
+                  </div>
+                  <span className="text-[12px] font-bold text-white tracking-wide">mastercard</span>
+                </span>
               </div>
             </div>
           </div>
 
         </div>
 
-        {/* Bottom Copyright & Back to Top Bar */}
+        {/* Bottom Copyright */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <div className="flex items-center space-x-2">
             <span>© {new Date().getFullYear()} NavoYantra Technology Pvt. Ltd. All Rights Reserved.</span>
-          </div>
-
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={scrollToTop}
-              className="p-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-md"
-              title="Back to Top"
-            >
-              <ArrowUp className="w-4 h-4" />
-            </button>
           </div>
         </div>
 

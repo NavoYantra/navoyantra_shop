@@ -1,7 +1,6 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
 import { CategoryType, AgeGroupType, TechStackType } from '../../types';
-import { CATEGORIES } from '../../data/categories';
 import { Filter, X, RefreshCw, Check } from 'lucide-react';
 
 interface FilterDrawerProps {
@@ -68,19 +67,19 @@ export const ProductFilterDrawer: React.FC<FilterDrawerProps> = ({ isOpen, onClo
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden bg-slate-950/60 backdrop-blur-xs flex justify-end">
-      <div className="w-full max-w-md bg-white dark:bg-slate-900 h-full shadow-2xl flex flex-col justify-between animate-in slide-in-from-right duration-300">
+      <div className="w-full max-w-md bg-white  h-full shadow-2xl flex flex-col justify-between animate-in slide-in-from-right duration-300">
         
         {/* Header */}
-        <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+        <div className="p-6 border-b border-slate-100  flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Filter className="w-5 h-5 text-blue-600" />
-            <h3 className="text-lg font-bold font-heading text-slate-900 dark:text-white">
+            <h3 className="text-lg font-bold font-heading text-slate-900 ">
               Filter STEM Products
             </h3>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-xl text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="p-2 rounded-xl text-slate-400 hover:bg-slate-100 :bg-slate-800 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -101,10 +100,10 @@ export const ProductFilterDrawer: React.FC<FilterDrawerProps> = ({ isOpen, onClo
                   <label
                     key={cat}
                     onClick={() => handleCategoryToggle(cat)}
-                    className="flex items-center space-x-3 p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/60 cursor-pointer text-sm font-medium text-slate-700 dark:text-slate-200 transition-colors"
+                    className="flex items-center space-x-3 p-2.5 rounded-xl hover:bg-slate-50 :bg-slate-800/60 cursor-pointer text-sm font-medium text-slate-700  transition-colors"
                   >
                     <div className={`w-5 h-5 rounded-md border flex items-center justify-center transition-colors ${
-                      isSelected ? 'bg-blue-600 border-blue-600 text-white' : 'border-slate-300 dark:border-slate-700'
+                      isSelected ? 'bg-blue-600 border-blue-600 text-white' : 'border-slate-300 '
                     }`}>
                       {isSelected && <Check className="w-3.5 h-3.5" />}
                     </div>
@@ -130,7 +129,7 @@ export const ProductFilterDrawer: React.FC<FilterDrawerProps> = ({ isOpen, onClo
                     className={`py-2 px-3 rounded-xl text-xs font-bold transition-all border ${
                       isSelected
                         ? 'bg-orange-500 text-white border-orange-500 shadow-md'
-                        : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300'
+                        : 'bg-slate-50  border-slate-200  text-slate-700 '
                     }`}
                   >
                     Age {age} Yrs
@@ -155,7 +154,7 @@ export const ProductFilterDrawer: React.FC<FilterDrawerProps> = ({ isOpen, onClo
                     className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
                       isSelected
                         ? 'bg-blue-600 text-white border-blue-600 shadow-md'
-                        : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300'
+                        : 'bg-slate-50  border-slate-200  text-slate-700 '
                     }`}
                   >
                     {tech}
@@ -167,9 +166,9 @@ export const ProductFilterDrawer: React.FC<FilterDrawerProps> = ({ isOpen, onClo
 
           {/* Price Range Slider */}
           <div>
-            <div className="flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
+            <div className="flex items-center justify-between text-xs font-bold text-slate-700  mb-2">
               <span>Max Price Limit:</span>
-              <span className="text-blue-600 dark:text-blue-400 font-extrabold font-heading">
+              <span className="text-blue-600  font-extrabold font-heading">
                 ₹{filters.maxPrice.toLocaleString('en-IN')}
               </span>
             </div>
@@ -180,7 +179,7 @@ export const ProductFilterDrawer: React.FC<FilterDrawerProps> = ({ isOpen, onClo
               step="1000"
               value={filters.maxPrice}
               onChange={(e) => setFilters(prev => ({ ...prev, maxPrice: Number(e.target.value) }))}
-              className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-600"
+              className="w-full h-2 bg-slate-200  rounded-lg appearance-none cursor-pointer accent-blue-600"
             />
             <div className="flex justify-between text-[10px] text-slate-400 mt-1">
               <span>₹1,000</span>
@@ -192,10 +191,10 @@ export const ProductFilterDrawer: React.FC<FilterDrawerProps> = ({ isOpen, onClo
           <div className="pt-2">
             <label
               onClick={() => setFilters(prev => ({ ...prev, inStockOnly: !prev.inStockOnly }))}
-              className="flex items-center space-x-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 cursor-pointer text-sm font-semibold text-slate-700 dark:text-slate-200"
+              className="flex items-center space-x-3 p-3 rounded-xl bg-slate-50  cursor-pointer text-sm font-semibold text-slate-700 "
             >
               <div className={`w-5 h-5 rounded-md border flex items-center justify-center transition-colors ${
-                filters.inStockOnly ? 'bg-emerald-600 border-emerald-600 text-white' : 'border-slate-300 dark:border-slate-700'
+                filters.inStockOnly ? 'bg-emerald-600 border-emerald-600 text-white' : 'border-slate-300 '
               }`}>
                 {filters.inStockOnly && <Check className="w-3.5 h-3.5" />}
               </div>
@@ -206,10 +205,10 @@ export const ProductFilterDrawer: React.FC<FilterDrawerProps> = ({ isOpen, onClo
         </div>
 
         {/* Footer Actions */}
-        <div className="p-6 border-t border-slate-100 dark:border-slate-800 flex items-center space-x-3">
+        <div className="p-6 border-t border-slate-100  flex items-center space-x-3">
           <button
             onClick={resetFilters}
-            className="flex-1 py-3 px-4 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center justify-center space-x-2"
+            className="flex-1 py-3 px-4 rounded-xl border border-slate-200  text-slate-700  font-bold text-xs hover:bg-slate-100 :bg-slate-800 transition-colors flex items-center justify-center space-x-2"
           >
             <RefreshCw className="w-4 h-4" />
             <span>Reset All</span>

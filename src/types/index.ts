@@ -1,4 +1,4 @@
-export type PageType = 'home' | 'shop' | 'lab-setup' | 'blogs';
+export type PageType = 'home' | 'shop' | 'lab-setup' | 'blogs' | 'product-detail';
 
 export type CategoryType = 
   | 'Robotics'
@@ -89,12 +89,14 @@ export interface BlogPost {
     name: string;
     role: string;
     avatar: string;
+    isOfficial?: boolean;
   };
   publishedDate: string;
   readTime: string;
   coverImage: string;
   tags: string[];
   isFeatured?: boolean;
+  status?: 'published' | 'pending' | 'rejected';
 }
 
 export interface LearningResource {

@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Product, CartItem, WishlistItem, FilterState, CategoryType, AgeGroupType, TechStackType, PageType } from '../types';
+import React, { createContext, useContext, useState } from 'react';
+import { Product, CartItem, WishlistItem, FilterState, PageType } from '../types';
 import { PRODUCTS } from '../data/products';
 
 interface ToastInfo {
@@ -12,6 +12,8 @@ interface AppContextType {
   // Page Navigation State
   currentPage: PageType;
   setCurrentPage: (page: PageType) => void;
+  activeProductId: string | null;
+  setActiveProductId: (id: string | null) => void;
 
   // Theme (Light theme enforced)
   theme: 'light';
@@ -88,6 +90,7 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Page navigation state
   const [currentPage, setCurrentPageState] = useState<PageType>('home');
+  const [activeProductId, setActiveProductId] = useState<string | null>(null);
 
   const setCurrentPage = (page: PageType) => {
     setCurrentPageState(page);
@@ -266,6 +269,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       value={{
         currentPage,
         setCurrentPage,
+        activeProductId,
+        setActiveProductId,
         theme,
         toggleTheme,
         cart,

@@ -24,13 +24,15 @@ export const BLOG_POSTS: BlogPost[] = [
     author: {
       name: 'Dr. Ananya Roy',
       role: 'Head of STEM Research, NavoYantra',
-      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80'
+      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80',
+      isOfficial: true
     },
     publishedDate: 'Aug 4, 2026',
     readTime: '6 min read',
     coverImage: 'https://images.unsplash.com/photo-1531746790731-6c087fecd65a?auto=format&fit=crop&w=1000&q=80',
     tags: ['Artificial Intelligence', 'ESP32', 'CBSE Robotics', 'EdTech'],
-    isFeatured: true
+    isFeatured: true,
+    status: 'published'
   },
   {
     id: 'atl-lab-checklist-schools',
@@ -52,12 +54,15 @@ export const BLOG_POSTS: BlogPost[] = [
     author: {
       name: 'Prof. Vikramaditya Naik',
       role: 'Senior Atal Lab Consultant',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80'
+      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',
+      isOfficial: true
     },
     publishedDate: 'Jul 28, 2026',
     readTime: '8 min read',
     coverImage: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1000&q=80',
-    tags: ['Atal Tinkering Lab', 'School STEM', 'NITI Aayog', 'Curriculum']
+    tags: ['Atal Tinkering Lab', 'School STEM', 'NITI Aayog', 'Curriculum'],
+    isFeatured: true,
+    status: 'published'
   },
   {
     id: 'top-5-kids-robotics-projects',
@@ -78,12 +83,14 @@ export const BLOG_POSTS: BlogPost[] = [
     author: {
       name: 'Priya Sundaram',
       role: 'STEM Curriculum Developer',
-      avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=80'
+      avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=80',
+      isOfficial: true
     },
     publishedDate: 'Jul 20, 2026',
     readTime: '4 min read',
     coverImage: 'https://images.unsplash.com/photo-1596464716127-f2a82984de30?auto=format&fit=crop&w=1000&q=80',
-    tags: ['Kids Coding', 'Scratch Blocks', 'DIY Projects', 'STEM Starter']
+    tags: ['Kids Coding', 'Scratch Blocks', 'DIY Projects', 'STEM Starter'],
+    status: 'published'
   },
   {
     id: 'esp32-vs-arduino-uno',
@@ -102,11 +109,50 @@ export const BLOG_POSTS: BlogPost[] = [
     author: {
       name: 'Aarav Sharma',
       role: 'Robotics Lead Maker',
-      avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=200&q=80'
+      avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=200&q=80',
+      isOfficial: true
     },
     publishedDate: 'Jul 15, 2026',
     readTime: '5 min read',
     coverImage: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1000&q=80',
-    tags: ['Arduino', 'ESP32', 'Microcontrollers', 'IoT']
+    tags: ['Arduino', 'ESP32', 'Microcontrollers', 'IoT'],
+    isFeatured: true,
+    status: 'published'
+  },
+  {
+    id: 'community-drone-build',
+    title: 'How I Built My First Quadcopter Under ₹5000',
+    excerpt: 'A student maker from Bangalore shares their journey of selecting motors, balancing props, and configuring the flight controller on a budget.',
+    content: '<p>Building a drone is easier than you think...</p>',
+    category: 'Community Projects',
+    author: {
+      name: 'Karthik N.',
+      role: 'Community Maker',
+      avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=200&q=80',
+      isOfficial: false
+    },
+    publishedDate: 'Aug 5, 2026',
+    readTime: '10 min read',
+    coverImage: 'https://images.unsplash.com/photo-1508614589041-895b88991e3e?auto=format&fit=crop&w=1000&q=80',
+    tags: ['Drones', 'DIY', 'Budget'],
+    status: 'published'
+  },
+  {
+    id: 'community-weather-station',
+    title: 'My Smart IoT Weather Station Project',
+    excerpt: 'Using the NavoYantra ESP32 kit to monitor soil moisture and temperature in my school garden.',
+    content: '<p>This is my project submission...</p>',
+    category: 'Community Projects',
+    author: {
+      name: 'Sneha P.',
+      role: 'Student at DPS',
+      avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=200&q=80',
+      isOfficial: false
+    },
+    publishedDate: 'Pending',
+    readTime: '3 min read',
+    coverImage: 'https://images.unsplash.com/photo-1530982011887-3cc11cc85693?auto=format&fit=crop&w=1000&q=80',
+    tags: ['IoT', 'School Project'],
+    status: 'pending'
   }
 ];

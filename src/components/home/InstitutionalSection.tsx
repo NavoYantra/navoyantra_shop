@@ -1,11 +1,54 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { 
-  School, CheckCircle2, FileText, Sparkles, ChevronRight, Users, Award, ShieldCheck 
+  School, CheckCircle2, FileText, ChevronRight 
 } from 'lucide-react';
+
+const INSTITUTIONAL_PACKAGES = [
+  {
+    id: 'atl-complete',
+    badge: 'Featured School Lab Package',
+    title: 'NavoLab Complete School Bundle',
+    description: 'Includes 15x Student Kits, Teacher Training, & 2-Year Warranty.',
+    image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80',
+    capacity: 'Up to 30 Students per Batch',
+    warranty: '2 Years Institutional Support',
+    setupTime: 'Within 5 Business Days'
+  },
+  {
+    id: 'robotics-starter',
+    badge: 'Beginner Robotics Package',
+    title: 'STEM Robotics Starter Kit',
+    description: 'Perfect for primary schools. Includes 10x Snap Blocks & Arduino Kits.',
+    image: 'https://images.unsplash.com/photo-1561557944-6e7860d1a7eb?auto=format&fit=crop&w=800&q=80',
+    capacity: 'Up to 20 Students per Batch',
+    warranty: '1-Week Warranty on Premium Products',
+    setupTime: 'Within 3 Business Days'
+  },
+  {
+    id: 'ai-vision',
+    badge: 'Advanced AI Labs',
+    title: 'AI & Computer Vision Pro Setup',
+    description: 'Advanced Python, OpenCV, and Raspberry Pi clusters for high schools.',
+    image: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=800&q=80',
+    capacity: 'Up to 15 Students per Batch',
+    warranty: '3 Years Premium Support',
+    setupTime: 'Within 7 Business Days'
+  }
+];
 
 export const InstitutionalSection: React.FC = () => {
   const { setIsQuoteModalOpen } = useApp();
+  const [currentIdx, setCurrentIdx] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentIdx((prev) => (prev + 1) % INSTITUTIONAL_PACKAGES.length);
+    }, 4500);
+    return () => clearInterval(timer);
+  }, []);
+
+  const currentPackage = INSTITUTIONAL_PACKAGES[currentIdx];
 
   return (
     <section id="institutional" className="py-20 bg-slate-900 text-white relative overflow-hidden">
@@ -90,40 +133,53 @@ export const InstitutionalSection: React.FC = () => {
           </div>
 
           {/* Right Visual Card (5 Cols) */}
-          <div className="lg:col-span-5 relative">
-            <div className="rounded-3xl bg-slate-800/90 border border-slate-700 p-6 space-y-6 shadow-2xl backdrop-blur-md">
-              <div className="relative aspect-4/3 rounded-2xl overflow-hidden shadow-md">
+          <div className="lg:col-span-5 relative group">
+            <div className="rounded-3xl bg-slate-800/90 border border-slate-700 p-6 space-y-6 shadow-2xl backdrop-blur-md relative overflow-hidden">
+              
+              {/* Carousel Indicators */}
+              <div className="absolute top-4 right-4 flex space-x-1.5 z-20">
+                {INSTITUTIONAL_PACKAGES.map((_, idx) => (
+                  <button 
+                    key={idx}
+                    onClick={() => setCurrentIdx(idx)}
+                    className={`w-2 h-2 rounded-full transition-all ${idx === currentIdx ? 'bg-orange-500 w-4' : 'bg-white/40 hover:bg-white/80'}`}
+                  />
+                ))}
+              </div>
+
+              <div className="relative aspect-4/3 rounded-2xl overflow-hidden shadow-md bg-slate-900 group-hover:shadow-blue-500/10 transition-shadow">
                 <img
-                  src="https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=80"
-                  alt="School STEM Lab"
-                  className="w-full h-full object-cover"
+                  key={currentPackage.image}
+                  src={currentPackage.image}
+                  alt={currentPackage.title}
+                  className="w-full h-full object-cover transition-transform duration-700 animate-fade-in group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-80" />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-90" />
                 <div className="absolute bottom-4 left-4 right-4">
-                  <span className="px-2.5 py-1 rounded-full bg-blue-600 text-white text-[10px] font-extrabold uppercase">
-                    Featured School Lab Package
+                  <span className="px-2.5 py-1 rounded-full bg-blue-600 text-white text-[10px] font-extrabold uppercase inline-block mb-2 shadow-sm">
+                    {currentPackage.badge}
                   </span>
-                  <h4 className="text-lg font-bold font-heading text-white mt-1">
-                    NavoLab Complete School Bundle
+                  <h4 key={`title-${currentPackage.id}`} className="text-lg font-bold font-heading text-white animate-slide-up">
+                    {currentPackage.title}
                   </h4>
-                  <p className="text-xs text-slate-300">
-                    Includes 15x Student Kits, Teacher Training, & 2-Year Warranty.
+                  <p key={`desc-${currentPackage.id}`} className="text-xs text-slate-300 animate-slide-up" style={{ animationDelay: '50ms' }}>
+                    {currentPackage.description}
                   </p>
                 </div>
               </div>
 
               <div className="space-y-3">
-                <div className="flex items-center justify-between text-xs border-b border-slate-700/80 pb-2">
+                <div className="flex items-center justify-between text-xs border-b border-slate-700/80 pb-2 overflow-hidden">
                   <span className="text-slate-400">Target Capacity:</span>
-                  <span className="font-bold text-white">Up to 30 Students per Batch</span>
+                  <span key={`cap-${currentPackage.id}`} className="font-bold text-white animate-fade-in">{currentPackage.capacity}</span>
                 </div>
-                <div className="flex items-center justify-between text-xs border-b border-slate-700/80 pb-2">
+                <div className="flex items-center justify-between text-xs border-b border-slate-700/80 pb-2 overflow-hidden">
                   <span className="text-slate-400">Warranty:</span>
-                  <span className="font-bold text-emerald-400">2 Years Institutional Support</span>
+                  <span key={`war-${currentPackage.id}`} className="font-bold text-emerald-400 animate-fade-in">{currentPackage.warranty}</span>
                 </div>
-                <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center justify-between text-xs overflow-hidden">
                   <span className="text-slate-400">Estimated Setup Time:</span>
-                  <span className="font-bold text-orange-400">Within 5 Business Days</span>
+                  <span key={`time-${currentPackage.id}`} className="font-bold text-orange-400 animate-fade-in">{currentPackage.setupTime}</span>
                 </div>
               </div>
             </div>

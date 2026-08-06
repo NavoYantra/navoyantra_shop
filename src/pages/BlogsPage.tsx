@@ -1,21 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BLOG_POSTS } from '../data/blogs';
 import { BlogPost } from '../types';
 import { 
-  BookOpen, Sparkles, Clock, ArrowRight, User, Tag, X, Calendar 
+  Sparkles, Clock, ArrowRight, X, Calendar, ShieldCheck 
 } from 'lucide-react';
 
 export const BlogsPage: React.FC = () => {
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
+  const [isAdminModalOpen] = useState(false);
+  
+  const [postComments, setPostComments] = useState<Record<string, {name: string, text: string, date: string}[]>>({});
+  const [newCommentName, setNewCommentName] = useState('');
+  const [newCommentText, setNewCommentText] = useState('');
 
-  const featuredPost = BLOG_POSTS.find(p => p.isFeatured) || BLOG_POSTS[0];
+  useEffect(() => {
+    if (selectedPost || isSubmitModalOpen || isAdminModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [selectedPost, isSubmitModalOpen, isAdminModalOpen]);
+
+  const handleAddComment = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedPost || !newCommentName || !newCommentText) return;
+    const newComment = { name: newCommentName, text: newCommentText, date: new Date().toLocaleDateString() };
+    setPostComments(prev => ({
+      ...prev,
+      [selectedPost.id]: [...(prev[selectedPost.id] || []), newComment]
+    }));
+    setNewCommentName('');
+    setNewCommentText('');
+  };
+
+  const featuredPosts = BLOG_POSTS.filter(p => p.isFeatured && p.status === 'published');
+  const publishedPosts = BLOG_POSTS.filter(p => p.status === 'published');
 
   const filteredPosts = selectedTag
-    ? BLOG_POSTS.filter(p => p.tags.includes(selectedTag))
-    : BLOG_POSTS;
+    ? publishedPosts.filter(p => p.tags.includes(selectedTag))
+    : publishedPosts;
 
-  const allTags = Array.from(new Set(BLOG_POSTS.flatMap(p => p.tags)));
+  const allTags = Array.from(new Set(publishedPosts.flatMap(p => p.tags)));
 
   return (
     <div className="py-12 bg-[#F6F7F9] min-h-screen">
@@ -35,65 +65,84 @@ export const BlogsPage: React.FC = () => {
           <p className="text-base text-slate-600">
             Insights, step-by-step tutorial guides, AI vision breakdowns, and school Atal Tinkering Lab setup articles written by STEM educators.
           </p>
+
+          <div className="pt-4 flex justify-center space-x-4">
+            <button
+              onClick={() => setIsSubmitModalOpen(true)}
+              className="px-6 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-lg transition-transform hover:scale-105"
+            >
+              Submit Your Tutorial
+            </button>
+          </div>
         </div>
 
-        {/* Featured Hero Blog Article Card */}
-        {featuredPost && (
-          <div 
-            onClick={() => setSelectedPost(featuredPost)}
-            className="rounded-3xl bg-white border border-slate-200/80 shadow-xl overflow-hidden cursor-pointer group hover:shadow-2xl hover:border-blue-500/50 transition-all duration-300 grid grid-cols-1 lg:grid-cols-12"
-          >
-            <div className="lg:col-span-7 relative aspect-16/10 lg:aspect-auto overflow-hidden bg-slate-900">
-              <img
-                src={featuredPost.coverImage}
-                alt={featuredPost.title}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-              <div className="absolute top-4 left-4">
-                <span className="px-3 py-1 rounded-full bg-blue-600 text-white font-extrabold text-xs shadow-md">
-                  FEATURED ARTICLE
-                </span>
-              </div>
-            </div>
+        {/* Featured Hero Blog Article Slider */}
+        {featuredPosts.length > 0 && (
+          <div className="relative w-full overflow-hidden flex space-x-6 py-4">
+            <div className="flex space-x-6 animate-marquee hover:pause-animation min-w-full group">
+              {[...featuredPosts, ...featuredPosts].map((post, idx) => (
+                <div 
+                  key={`${post.id}-${idx}`}
+                  onClick={() => setSelectedPost(post)}
+                  className="rounded-3xl bg-white border border-slate-200/80 shadow-xl overflow-hidden cursor-pointer hover:shadow-2xl hover:border-blue-500/50 transition-all duration-300 flex-none w-[85vw] sm:w-[600px] lg:w-[800px] grid grid-cols-1 sm:grid-cols-2 group/card"
+                >
+                  <div className="relative aspect-16/10 sm:aspect-auto overflow-hidden bg-slate-900">
+                    <img
+                      src={post.coverImage}
+                      alt={post.title}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover/card:scale-105"
+                    />
+                    <div className="absolute top-4 left-4">
+                      <span className="px-3 py-1 rounded-full bg-blue-600 text-white font-extrabold text-xs shadow-md">
+                        FEATURED ARTICLE
+                      </span>
+                    </div>
+                  </div>
 
-            <div className="lg:col-span-5 p-8 flex flex-col justify-between space-y-6">
-              <div className="space-y-4">
-                <div className="flex items-center space-x-3 text-xs text-slate-400 font-semibold">
-                  <span className="text-purple-600 font-bold">{featuredPost.category}</span>
-                  <span>•</span>
-                  <span className="flex items-center space-x-1">
-                    <Clock className="w-3.5 h-3.5" />
-                    <span>{featuredPost.readTime}</span>
-                  </span>
-                </div>
+                  <div className="p-6 sm:p-8 flex flex-col justify-between space-y-6">
+                    <div className="space-y-4">
+                      <div className="flex items-center space-x-3 text-xs text-slate-400 font-semibold">
+                        <span className="text-purple-600 font-bold">{post.category}</span>
+                        <span>•</span>
+                        <span className="flex items-center space-x-1">
+                          <Clock className="w-3.5 h-3.5" />
+                          <span>{post.readTime}</span>
+                        </span>
+                      </div>
 
-                <h2 className="text-2xl sm:text-3xl font-extrabold font-heading text-slate-900 group-hover:text-blue-600 transition-colors leading-tight">
-                  {featuredPost.title}
-                </h2>
+                      <h2 className="text-xl sm:text-2xl font-extrabold font-heading text-slate-900 group-hover/card:text-blue-600 transition-colors leading-tight line-clamp-3">
+                        {post.title}
+                      </h2>
 
-                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed line-clamp-3">
-                  {featuredPost.excerpt}
-                </p>
-              </div>
+                      <p className="text-xs sm:text-sm text-slate-600 leading-relaxed line-clamp-2 sm:line-clamp-3">
+                        {post.excerpt}
+                      </p>
+                    </div>
 
-              <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <img
-                    src={featuredPost.author.avatar}
-                    alt={featuredPost.author.name}
-                    className="w-10 h-10 rounded-full object-cover border border-blue-500"
-                  />
-                  <div>
-                    <h4 className="text-xs font-bold text-slate-900">{featuredPost.author.name}</h4>
-                    <p className="text-[10px] text-slate-400">{featuredPost.author.role}</p>
+                    <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <img
+                          src={post.author.avatar}
+                          alt={post.author.name}
+                          className={`w-10 h-10 rounded-full object-cover border ${post.author.isOfficial ? 'border-blue-500' : 'border-slate-200'}`}
+                        />
+                        <div>
+                          <h4 className="text-xs font-bold text-slate-900 flex items-center space-x-1">
+                            <span>{post.author.name}</span>
+                            {post.author.isOfficial && <ShieldCheck className="w-3.5 h-3.5 text-blue-500" />}
+                          </h4>
+                          <p className="text-[10px] text-slate-400">{post.author.role}</p>
+                        </div>
+                      </div>
+
+                      <span className="text-xs font-bold text-blue-600 flex items-center space-x-1 transition-transform group-hover/card:translate-x-1">
+                        <span>Read</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </span>
+                    </div>
                   </div>
                 </div>
-
-                <span className="text-xs font-bold text-blue-600 flex items-center space-x-1 group-hover:translate-x-1 transition-transform">
-                  <span>Read Post</span>
-                  <ArrowRight className="w-4 h-4" />
-                </span>
-              </div>
+              ))}
             </div>
           </div>
         )}
@@ -170,8 +219,11 @@ export const BlogsPage: React.FC = () => {
 
               <div className="p-6 pt-0 flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <img src={post.author.avatar} alt={post.author.name} className="w-7 h-7 rounded-full object-cover" />
-                  <span className="text-xs font-bold text-slate-700">{post.author.name}</span>
+                  <img src={post.author.avatar} alt={post.author.name} className={`w-7 h-7 rounded-full object-cover border ${post.author.isOfficial ? 'border-blue-500' : 'border-slate-200'}`} />
+                  <span className="text-xs font-bold text-slate-700 flex items-center space-x-1">
+                    <span>{post.author.name}</span>
+                    {post.author.isOfficial && <ShieldCheck className="w-3.5 h-3.5 text-blue-500" />}
+                  </span>
                 </div>
                 <span className="text-xs font-bold text-blue-600 flex items-center space-x-1 group-hover:translate-x-1 transition-transform">
                   <span>Read</span>
@@ -222,6 +274,53 @@ export const BlogsPage: React.FC = () => {
                 dangerouslySetInnerHTML={{ __html: selectedPost.content }}
               />
 
+              <div className="pt-8 mt-8 border-t border-slate-100">
+                <h3 className="text-xl font-bold text-slate-900 mb-6">Comments & Reviews</h3>
+                
+                <div className="space-y-6 mb-8">
+                  {(postComments[selectedPost.id] || []).length > 0 ? (
+                    (postComments[selectedPost.id] || []).map((comment, idx) => (
+                      <div key={idx} className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                        <div className="flex justify-between items-start mb-2">
+                          <span className="font-bold text-slate-900 text-sm">{comment.name}</span>
+                          <span className="text-[10px] text-slate-400">{comment.date}</span>
+                        </div>
+                        <p className="text-sm text-slate-600">{comment.text}</p>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-sm text-slate-400 italic">No comments yet. Be the first to review!</p>
+                  )}
+                </div>
+
+                <form onSubmit={handleAddComment} className="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-4">
+                  <h4 className="text-sm font-bold text-slate-900">Leave a Comment</h4>
+                  <div>
+                    <input 
+                      type="text" 
+                      placeholder="Your Name" 
+                      required
+                      value={newCommentName}
+                      onChange={e => setNewCommentName(e.target.value)}
+                      className="w-full px-4 py-2 rounded-xl bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <textarea 
+                      placeholder="Write your review or comment..." 
+                      rows={3}
+                      required
+                      value={newCommentText}
+                      onChange={e => setNewCommentText(e.target.value)}
+                      className="w-full px-4 py-2 rounded-xl bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                    />
+                  </div>
+                  <button type="submit" className="px-6 py-2 bg-blue-600 text-white font-bold rounded-xl text-xs hover:bg-blue-700 transition-colors">
+                    Post Comment
+                  </button>
+                </form>
+              </div>
+
               <div className="pt-6 border-t border-slate-100 flex items-center justify-between">
                 <div className="flex flex-wrap gap-1.5">
                   {selectedPost.tags.map((t, i) => (
@@ -230,11 +329,48 @@ export const BlogsPage: React.FC = () => {
                     </span>
                   ))}
                 </div>
-                <button onClick={() => setSelectedPost(null)} className="px-5 py-2 rounded-xl bg-blue-600 text-white font-bold text-xs">
+                <button onClick={() => setSelectedPost(null)} className="px-5 py-2 rounded-xl bg-slate-900 text-white font-bold text-xs hover:bg-slate-800">
                   Close Article
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Submit Blog Modal */}
+      {isSubmitModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 p-8 w-full max-w-2xl animate-in zoom-in-95 duration-200">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold font-heading text-slate-900">Submit a Tutorial</h2>
+              <button onClick={() => setIsSubmitModalOpen(false)} className="text-slate-400 hover:text-slate-900"><X className="w-5 h-5"/></button>
+            </div>
+            <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); alert('Blog submitted for admin approval!'); setIsSubmitModalOpen(false); }}>
+              <div>
+                <label className="text-xs font-bold text-slate-700 block mb-1">Title</label>
+                <input type="text" required className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="My Awesome Project" />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-bold text-slate-700 block mb-1">Category</label>
+                  <select className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option>Community Projects</option>
+                    <option>Robotics</option>
+                    <option>IoT</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-700 block mb-1">Author Name</label>
+                  <input type="text" required className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="John Doe" />
+                </div>
+              </div>
+              <div>
+                <label className="text-xs font-bold text-slate-700 block mb-1">Content</label>
+                <textarea required rows={5} className="w-full px-4 py-2 rounded-xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Write your tutorial here..."></textarea>
+              </div>
+              <button type="submit" className="w-full py-3 rounded-xl bg-blue-600 text-white font-bold text-sm hover:bg-blue-700 transition-colors">Submit for Review</button>
+            </form>
           </div>
         </div>
       )}
