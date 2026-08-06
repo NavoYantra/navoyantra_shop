@@ -28,6 +28,7 @@ const ShopPage = lazy(() => import('./pages/ShopPage').then(module => ({ default
 const LabSetupPage = lazy(() => import('./pages/LabSetupPage').then(module => ({ default: module.LabSetupPage })));
 const BlogsPage = lazy(() => import('./pages/BlogsPage').then(module => ({ default: module.BlogsPage })));
 const ProductDetailPage = lazy(() => import('./pages/ProductDetailPage').then(module => ({ default: module.ProductDetailPage })));
+const CustomerDashboard = lazy(() => import('./pages/CustomerDashboard').then(module => ({ default: module.CustomerDashboard })));
 const AdminApp = lazy(() => import('./AdminApp').then(module => ({ default: module.AdminApp })));
 
 // Modals & Drawers
@@ -67,6 +68,7 @@ export function AppContent() {
           {currentPage === 'lab-setup' && <LabSetupPage />}
           {currentPage === 'blogs' && <BlogsPage />}
           {currentPage === 'product-detail' && <ProductDetailPage />}
+          {currentPage === 'account' && <CustomerDashboard />}
         </Suspense>
       </main>
 

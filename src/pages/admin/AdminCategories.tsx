@@ -30,6 +30,11 @@ export const AdminCategories: React.FC = () => {
       setName('');
       setSlug('');
       setDescription('');
+      alert('Category added successfully!');
+    },
+    onError: (error: any) => {
+      console.error(error);
+      alert('Error adding category: ' + error.message);
     }
   });
 

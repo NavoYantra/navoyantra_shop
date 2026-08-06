@@ -291,7 +291,13 @@ export const Header: React.FC = () => {
 
               {/* User Account / Auth */}
               <button
-                onClick={() => setIsAuthModalOpen(true)}
+                onClick={() => {
+                  if (user) {
+                    setCurrentPage('account');
+                  } else {
+                    setIsAuthModalOpen(true);
+                  }
+                }}
                 className="hidden sm:flex items-center space-x-2 p-1.5 pr-3 rounded-2xl border border-slate-200 hover:bg-slate-50 transition-colors whitespace-nowrap"
               >
                 <div className="w-7 h-7 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center">
@@ -343,7 +349,11 @@ export const Header: React.FC = () => {
             <button
               onClick={() => {
                 setIsMobileMenuOpen(false);
-                setIsAuthModalOpen(true);
+                if (user) {
+                  setCurrentPage('account');
+                } else {
+                  setIsAuthModalOpen(true);
+                }
               }}
               className="flex items-center space-x-2 text-sm font-semibold text-slate-700"
             >
