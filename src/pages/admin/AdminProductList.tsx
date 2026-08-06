@@ -72,7 +72,7 @@ export const AdminProductList: React.FC = () => {
           </div>
           <div>
             <div className="font-medium text-slate-900">{row.original.name}</div>
-            <div className="text-xs text-slate-500">SKU: {row.original.id.substring(0, 8)}</div>
+            <div className="text-xs text-slate-500">SKU: {row.original.sku || row.original.id.substring(0, 8)}</div>
           </div>
         </div>
       ),

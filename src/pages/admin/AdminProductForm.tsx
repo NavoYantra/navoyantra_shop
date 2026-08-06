@@ -194,6 +194,18 @@ export const AdminProductForm: React.FC = () => {
         category_id: categories.find((c: any) => c.name === formattedData.category[0])?.id || null,
       };
       
+      // Auto-generate Custom SKU (NY-{PREFIX}-{4-DIGIT})
+      const selectedCategory = categories.find((c: any) => c.id === supabasePayload.category_id);
+      let customPrefix = selectedCategory?.name?.substring(0, 3).toUpperCase() || 'GEN';
+      if (selectedCategory?.description) {
+        const match = selectedCategory.description.match(/\[SKU:([A-Z0-9]+)\]/i);
+        if (match) customPrefix = match[1];
+      }
+      const randomNum = Math.floor(1000 + Math.random() * 9000);
+      const generatedSku = `NY-${customPrefix}-${randomNum}`;
+
+      (supabasePayload as any).sku = generatedSku;
+      
       productMutation.mutate(supabasePayload);
     }
   };

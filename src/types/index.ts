@@ -80,6 +80,7 @@ export interface Product {
   hasVariants?: boolean;
   publishStatus?: 'Draft' | 'Published';
   scheduledPublishDate?: string;
+  sku?: string;
 }
 
 export interface CartItem {

@@ -15,6 +15,7 @@ export const AdminCategories: React.FC = () => {
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
   const [description, setDescription] = useState('');
+  const [skuPrefix, setSkuPrefix] = useState('');
 
   // Fetch Categories
   const { data: categories = [], isLoading } = useQuery({
@@ -30,6 +31,7 @@ export const AdminCategories: React.FC = () => {
       setName('');
       setSlug('');
       setDescription('');
+      setSkuPrefix('');
       alert('Category added successfully!');
     },
     onError: (error: any) => {
@@ -58,7 +60,7 @@ export const AdminCategories: React.FC = () => {
     createMutation.mutate({
       name,
       slug,
-      description
+      description: skuPrefix ? `${description} [SKU:${skuPrefix.toUpperCase()}]` : description
     });
   };
 
@@ -108,6 +110,17 @@ export const AdminCategories: React.FC = () => {
                     placeholder="robotics" 
                   />
                   <p className="text-xs text-slate-500">The "slug" is the URL-friendly version of the name.</p>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">SKU Prefix</label>
+                  <Input 
+                    value={skuPrefix} 
+                    onChange={e => setSkuPrefix(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').substring(0, 4))} 
+                    placeholder="e.g. RBK" 
+                    maxLength={4}
+                  />
+                  <p className="text-xs text-slate-500">Custom prefix for products in this category (e.g. RBK for Robotic Kit).</p>
                 </div>
 
                 <div className="space-y-2">
@@ -182,7 +195,12 @@ export const AdminCategories: React.FC = () => {
                           <div className="text-sm text-slate-500">{category.slug}</div>
                         </TableCell>
                         <TableCell className="text-slate-500 max-w-xs truncate">
-                          {category.description || '—'}
+                          {category.description?.replace(/\[SKU:.*?\]/, '') || '—'}
+                          {category.description?.match(/\[SKU:(.*?)\]/) && (
+                            <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
+                              SKU: {category.description.match(/\[SKU:(.*?)\]/)[1]}
+                            </span>
+                          )}
                         </TableCell>
                         <TableCell className="text-right font-medium">
                           {category.count}
