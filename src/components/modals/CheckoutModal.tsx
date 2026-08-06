@@ -42,6 +42,11 @@ export const CheckoutModal: React.FC = () => {
     setStep('shipping');
   };
 
+  const freeShippingThreshold = 999;
+  const shippingCost = cartTotal >= freeShippingThreshold || cartTotal === 0 ? 0 : 99;
+  const gstAmount = Math.round(cartTotal * 0.18);
+  const finalTotal = cartTotal + shippingCost + gstAmount;
+
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4">
       <div className="w-full max-w-2xl bg-white  rounded-3xl shadow-2xl border border-slate-200  overflow-hidden animate-in zoom-in-95 duration-200 my-8">
@@ -228,9 +233,9 @@ export const CheckoutModal: React.FC = () => {
 
               {/* Order total summary */}
               <div className="p-4 rounded-2xl bg-slate-50  text-xs flex justify-between font-bold">
-                <span>Total Amount Payable:</span>
+                <span>Total Amount Payable (incl. GST):</span>
                 <span className="text-blue-600  font-heading text-sm">
-                  ₹{cartTotal.toLocaleString('en-IN')}
+                  ₹{finalTotal.toLocaleString('en-IN')}
                 </span>
               </div>
 

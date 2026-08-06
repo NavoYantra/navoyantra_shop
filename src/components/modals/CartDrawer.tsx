@@ -36,7 +36,9 @@ export const CartDrawer: React.FC = () => {
     }
   };
 
-  const finalTotal = Math.max(0, cartTotal - appliedDiscount + shippingCost);
+  const subtotalAfterDiscount = Math.max(0, cartTotal - appliedDiscount);
+  const gstAmount = Math.round(subtotalAfterDiscount * 0.18);
+  const finalTotal = subtotalAfterDiscount + shippingCost + gstAmount;
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden bg-slate-950/60 backdrop-blur-xs flex justify-end">
@@ -182,6 +184,10 @@ export const CartDrawer: React.FC = () => {
               <div className="flex justify-between">
                 <span>Shipping</span>
                 <span>{shippingCost === 0 ? <strong className="text-emerald-500">FREE</strong> : `₹${shippingCost}`}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Estimated GST (18%)</span>
+                <span>₹{gstAmount.toLocaleString('en-IN')}</span>
               </div>
               <div className="flex justify-between text-sm font-extrabold text-slate-900  pt-2 border-t border-slate-200  font-heading">
                 <span>Grand Total</span>
