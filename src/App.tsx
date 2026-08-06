@@ -3,6 +3,17 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AppProvider, useApp } from './context/AppContext';
 import { ArrowUp } from 'lucide-react';
+import { ErrorBoundary } from 'react-error-boundary';
+
+function ErrorFallback({error}: {error: Error}) {
+  return (
+    <div role="alert" className="p-8 text-red-500 bg-red-50 min-h-screen">
+      <h2 className="text-2xl font-bold">Something went wrong:</h2>
+      <pre className="mt-4 whitespace-pre-wrap">{error.message}</pre>
+      <pre className="mt-4 text-xs opacity-70 whitespace-pre-wrap">{error.stack}</pre>
+    </div>
+  )
+}
 
 // Layout Components
 import { Header } from './components/layout/Header';
@@ -90,16 +101,18 @@ const queryClient = new QueryClient();
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <AppProvider>
-          <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#F6F7F9]"><LoadingSpinner /></div>}>
-            <Routes>
-              <Route path="/admin/*" element={<AdminApp />} />
-              <Route path="*" element={<AppContent />} />
-            </Routes>
-          </Suspense>
-        </AppProvider>
-      </BrowserRouter>
+      <ErrorBoundary FallbackComponent={ErrorFallback}>
+        <BrowserRouter>
+          <AppProvider>
+            <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#F6F7F9]"><LoadingSpinner /></div>}>
+              <Routes>
+                <Route path="/admin/*" element={<AdminApp />} />
+                <Route path="*" element={<AppContent />} />
+              </Routes>
+            </Suspense>
+          </AppProvider>
+        </BrowserRouter>
+      </ErrorBoundary>
     </QueryClientProvider>
   );
 }

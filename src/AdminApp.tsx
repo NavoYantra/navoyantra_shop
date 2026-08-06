@@ -4,7 +4,10 @@ import { AdminLayout } from './components/layout/admin/AdminLayout';
 import { Suspense, lazy } from 'react';
 import { LoadingSpinner } from './components/common/LoadingSpinner';
 
+import { AdminProtectedRoute } from './components/layout/admin/AdminProtectedRoute';
+
 const AdminDashboardHome = lazy(() => import('./pages/admin/AdminDashboard').then(m => ({ default: m.AdminDashboardHome })));
+const AdminLogin = lazy(() => import('./pages/admin/AdminLogin').then(m => ({ default: m.AdminLogin })));
 const AdminProductList = lazy(() => import('./pages/admin/AdminProductList').then(m => ({ default: m.AdminProductList })));
 const AdminProductForm = lazy(() => import('./pages/admin/AdminProductForm').then(m => ({ default: m.AdminProductForm })));
 const AdminInventory = lazy(() => import('./pages/admin/AdminInventory').then(m => ({ default: m.AdminInventory })));
@@ -20,19 +23,22 @@ export const AdminApp: React.FC = () => {
   return (
     <Suspense fallback={<div className="h-full w-full flex items-center justify-center"><LoadingSpinner /></div>}>
       <Routes>
-        <Route path="/" element={<AdminLayout />}>
-          <Route index element={<AdminDashboardHome />} />
-          <Route path="products" element={<AdminProductList />} />
-          <Route path="products/new" element={<AdminProductForm />} />
-          <Route path="products/:id/edit" element={<AdminProductForm />} />
-          <Route path="inventory" element={<AdminInventory />} />
-          <Route path="categories" element={<AdminCategories />} />
-          <Route path="brands" element={<AdminBrands />} />
-          <Route path="tags" element={<AdminTags />} />
-          <Route path="media" element={<AdminMediaLibrary />} />
-          <Route path="reviews" element={<AdminReviews />} />
-          <Route path="settings" element={<AdminSettings />} />
-          <Route path="coupons" element={<AdminCoupons />} />
+        <Route path="login" element={<AdminLogin />} />
+        <Route element={<AdminProtectedRoute />}>
+          <Route path="/" element={<AdminLayout />}>
+            <Route index element={<AdminDashboardHome />} />
+            <Route path="products" element={<AdminProductList />} />
+            <Route path="products/new" element={<AdminProductForm />} />
+            <Route path="products/:id/edit" element={<AdminProductForm />} />
+            <Route path="inventory" element={<AdminInventory />} />
+            <Route path="categories" element={<AdminCategories />} />
+            <Route path="brands" element={<AdminBrands />} />
+            <Route path="tags" element={<AdminTags />} />
+            <Route path="media" element={<AdminMediaLibrary />} />
+            <Route path="reviews" element={<AdminReviews />} />
+            <Route path="settings" element={<AdminSettings />} />
+            <Route path="coupons" element={<AdminCoupons />} />
+          </Route>
         </Route>
         <Route path="*" element={<Navigate to="/admin" replace />} />
       </Routes>

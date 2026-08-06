@@ -1,15 +1,17 @@
 import React from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useAdminStore } from '../../../store/adminStore';
+import { useAdminAuthStore } from '../../../store/adminAuthStore';
 import { 
   LayoutDashboard, Package, Boxes, 
   Settings, Image as ImageIcon, Bell, Search,
-  ChevronDown, ChevronRight
+  ChevronDown, ChevronRight, LogOut
 } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 
 export const AdminLayout: React.FC = () => {
   const { isSidebarOpen } = useAdminStore();
+  const { user, signOut } = useAdminAuthStore();
   const location = useLocation();
 
   const [expandedMenus, setExpandedMenus] = React.useState<Record<string, boolean>>({
@@ -159,8 +161,23 @@ export const AdminLayout: React.FC = () => {
               <Bell size={20} />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-orange-500 rounded-full border-2 border-white"></span>
             </button>
-            <div className="w-9 h-9 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center cursor-pointer border border-blue-200">
-              AD
+            <div className="relative group">
+              <div className="w-9 h-9 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center cursor-pointer border border-blue-200">
+                {user?.email?.[0].toUpperCase() || 'AD'}
+              </div>
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-slate-200 py-1 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-all z-50">
+                <div className="px-4 py-2 border-b border-slate-100">
+                  <p className="text-sm font-medium text-slate-900 truncate">{user?.email}</p>
+                  <p className="text-xs text-slate-500">Administrator</p>
+                </div>
+                <button
+                  onClick={() => signOut()}
+                  className="w-full text-left px-4 py-2 text-sm text-rose-600 hover:bg-rose-50 flex items-center space-x-2"
+                >
+                  <LogOut size={16} />
+                  <span>Sign Out</span>
+                </button>
+              </div>
             </div>
           </div>
         </header>
