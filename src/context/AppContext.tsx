@@ -1,7 +1,8 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Product, CartItem, WishlistItem, FilterState, PageType } from '../types';
 import { useQuery } from '@tanstack/react-query';
 import { getProducts } from '../lib/api';
+import { supabase } from '../lib/supabase';
 
 interface ToastInfo {
   id: string;
@@ -121,8 +122,35 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
-  // User auth state mock
+  // User auth state
   const [user, setUser] = useState<{ name: string; email: string; isLoggedIn: boolean } | null>(null);
+
+  // Initialize auth state
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        setUser({
+          name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'User',
+          email: session.user.email || '',
+          isLoggedIn: true
+        });
+      }
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        setUser({
+          name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'User',
+          email: session.user.email || '',
+          isLoggedIn: true
+        });
+      } else {
+        setUser(null);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   // Toasts
   const [toasts, setToasts] = useState<ToastInfo[]>([]);
