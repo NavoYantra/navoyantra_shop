@@ -65,6 +65,7 @@ interface AppContextType {
   setFilters: React.Dispatch<React.SetStateAction<FilterState>>;
   resetFilters: () => void;
   filteredProducts: Product[];
+  storeProducts: Product[];
 
   // Toasts
   toasts: ToastInfo[];
@@ -367,6 +368,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setFilters,
         resetFilters,
         filteredProducts,
+        storeProducts: products,
         toasts,
         showToast,
         removeToast,

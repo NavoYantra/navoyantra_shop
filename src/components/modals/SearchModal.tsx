@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { Search, X, Bot, ArrowRight } from 'lucide-react';
-import { PRODUCTS } from '../../data/products';
 
 export const SearchModal: React.FC = () => {
-  const { isSearchOpen, setIsSearchOpen, setQuickViewProduct } = useApp();
+  const { isSearchOpen, setIsSearchOpen, setQuickViewProduct, storeProducts } = useApp();
   const [query, setQuery] = useState('');
 
   if (!isSearchOpen) return null;
 
-  const results = query.trim() === '' ? [] : PRODUCTS.filter(p => {
+  const results = query.trim() === '' ? [] : storeProducts.filter(p => {
     const q = query.toLowerCase();
     return (
       p.name.toLowerCase().includes(q) ||
