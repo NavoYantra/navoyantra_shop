@@ -255,7 +255,7 @@ export const AdminOrders: React.FC = () => {
                   <h4 className="text-sm font-semibold text-slate-900 mb-4">Tracking Labels</h4>
                   <div className="flex flex-col items-center space-y-4">
                     <div className="bg-white p-2 rounded-lg border border-slate-200 shadow-sm">
-                       <QRCodeSVG value={\`https://navoyantra.shop/track/\${selectedOrder.tracking_id}\`} size={120} />
+                       <QRCodeSVG value={`https://navoyantra.shop/track/${selectedOrder.tracking_id}`} size={120} />
                     </div>
                     <div className="text-center w-full overflow-hidden flex justify-center">
                        <Barcode value={selectedOrder.tracking_id} width={1.5} height={50} fontSize={14} />
