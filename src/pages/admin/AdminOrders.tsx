@@ -221,6 +221,7 @@ export const AdminOrders: React.FC = () => {
                           const productDb = dbProducts.find((p: any) => p.id === item.product_id);
                           const productName = productDb ? productDb.name : (productStatic ? productStatic.name : (item.products?.name || 'Unknown Product'));
                           const productImages = productDb ? productDb.images : (productStatic ? productStatic.images : []);
+                          const productSku = productDb ? (productDb.sku || productDb.id) : (productStatic ? (productStatic.sku || productStatic.id) : (item.products?.sku || item.product_id));
                           
                           return (
                             <div key={idx} className="flex items-center p-3 gap-3">
@@ -233,6 +234,7 @@ export const AdminOrders: React.FC = () => {
                               )}
                               <div className="flex-1 min-w-0">
                                 <p className="text-sm font-semibold text-slate-900 truncate">{productName}</p>
+                                <p className="text-[10px] text-slate-400 font-mono mb-1">SKU: {productSku}</p>
                                 <p className="text-xs text-slate-500">Qty: {item.quantity} × ₹{item.price_at_time}</p>
                               </div>
                               <div className="text-sm font-bold text-slate-900">
@@ -375,6 +377,7 @@ export const AdminOrders: React.FC = () => {
                         <tr>
                           <th style={{ width: '50px', textAlign: 'center' }}>S.No</th>
                           <th>Product Name</th>
+                          <th style={{ width: '150px' }}>SKU</th>
                           <th style={{ width: '100px', textAlign: 'center' }}>Quantity</th>
                         </tr>
                       </thead>
@@ -383,11 +386,13 @@ export const AdminOrders: React.FC = () => {
                           const productStatic = PRODUCTS.find(p => p.id === item.product_id);
                           const productDb = dbProducts.find((p: any) => p.id === item.product_id);
                           const productName = productDb ? productDb.name : (productStatic ? productStatic.name : (item.products?.name || 'Unknown Product'));
+                          const productSku = productDb ? (productDb.sku || productDb.id) : (productStatic ? (productStatic.sku || productStatic.id) : (item.products?.sku || item.product_id));
                           
                           return (
                             <tr key={item.id || index}>
                               <td className="text-center">{index + 1}</td>
                               <td>{productName}</td>
+                              <td>{productSku}</td>
                               <td className="text-center"><strong>{item.quantity}</strong></td>
                             </tr>
                           );

@@ -85,6 +85,9 @@ export const QuickViewContent: React.FC<{ product: any; isPreview?: boolean }> =
           <p className="text-xs text-blue-600 font-semibold mt-0.5">
             {product.tagline || 'Tagline'}
           </p>
+          <p className="text-[10px] text-slate-500 font-mono mt-1">
+            SKU: {product.sku || product.id}
+          </p>
           
           <button 
             type="button"

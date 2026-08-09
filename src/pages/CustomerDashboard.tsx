@@ -40,8 +40,10 @@ export const CustomerDashboard: React.FC = () => {
             const productStatic = PRODUCTS.find(p => p.id === item.product_id);
             const productDb = storeProducts.find(p => p.id === item.product_id);
             const productName = productDb ? productDb.name : (productStatic ? productStatic.name : (item.products?.name || 'Unknown Product'));
+            const productSku = productDb ? (productDb.sku || productDb.id) : (productStatic ? (productStatic.sku || productStatic.id) : (item.products?.sku || item.product_id));
             return {
               name: productName,
+              sku: productSku,
               qty: item.quantity,
               price: item.price_at_time
             };
@@ -206,10 +208,13 @@ export const CustomerDashboard: React.FC = () => {
                           
                           <div className="space-y-2">
                             {order.items.map((item: any, idx: number) => (
-                              <div key={idx} className="flex items-center justify-between text-sm">
-                                <div className="flex items-center space-x-2">
-                                  <span className="w-6 text-slate-400">{item.qty}x</span>
-                                  <span className="font-medium text-slate-700">{item.name}</span>
+                              <div key={idx} className="flex items-center justify-between text-sm py-1 border-b border-slate-50 last:border-0">
+                                <div className="flex items-start space-x-2">
+                                  <span className="w-6 text-slate-400 mt-0.5">{item.qty}x</span>
+                                  <div>
+                                    <span className="font-medium text-slate-700 block">{item.name}</span>
+                                    <span className="text-[10px] text-slate-400 font-mono block">SKU: {item.sku}</span>
+                                  </div>
                                 </div>
                                 <span className="text-slate-600 font-medium">₹{(item.price * item.qty).toLocaleString()}</span>
                               </div>

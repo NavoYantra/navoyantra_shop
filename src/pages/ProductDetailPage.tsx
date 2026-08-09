@@ -85,6 +85,9 @@ export const ProductDetailHero: React.FC<{ product: any; isPreview?: boolean }> 
               <span>{product.ageText || 'Age Group'}</span>
             </span>
           </div>
+          <div className="text-xs font-mono text-slate-500 mt-2">
+            SKU: {product.sku || product.id}
+          </div>
         </div>
 
         <p className="text-base text-slate-600 leading-relaxed">
