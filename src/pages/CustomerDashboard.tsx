@@ -40,7 +40,15 @@ export const CustomerDashboard: React.FC = () => {
             const productStatic = PRODUCTS.find(p => p.id === item.product_id);
             const productDb = storeProducts.find(p => p.id === item.product_id);
             const productName = productDb ? productDb.name : (productStatic ? productStatic.name : (item.products?.name || 'Unknown Product'));
-            const productSku = productDb ? (productDb.sku || productDb.id) : (productStatic ? (productStatic.sku || productStatic.id) : (item.products?.sku || item.product_id));
+            
+            let productSku = item.products?.sku || item.product_id;
+            if (productDb) productSku = productDb.sku || productDb.id;
+            else if (productStatic) productSku = productStatic.sku || productStatic.id;
+            
+            // Format UUIDs to look like proper SKUs (NY-XXXXXXXX)
+            if (productSku && productSku.length > 20) {
+              productSku = `NY-${productSku.slice(0, 8).toUpperCase()}`;
+            }
             return {
               name: productName,
               sku: productSku,

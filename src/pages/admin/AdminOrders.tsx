@@ -221,7 +221,14 @@ export const AdminOrders: React.FC = () => {
                           const productDb = dbProducts.find((p: any) => p.id === item.product_id);
                           const productName = productDb ? productDb.name : (productStatic ? productStatic.name : (item.products?.name || 'Unknown Product'));
                           const productImages = productDb ? productDb.images : (productStatic ? productStatic.images : []);
-                          const productSku = productDb ? (productDb.sku || productDb.id) : (productStatic ? (productStatic.sku || productStatic.id) : (item.products?.sku || item.product_id));
+                          
+                          let productSku = item.products?.sku || item.product_id;
+                          if (productDb) productSku = productDb.sku || productDb.id;
+                          else if (productStatic) productSku = productStatic.sku || productStatic.id;
+                          
+                          if (productSku && productSku.length > 20) {
+                            productSku = `NY-${productSku.slice(0, 8).toUpperCase()}`;
+                          }
                           
                           return (
                             <div key={idx} className="flex items-center p-3 gap-3">
@@ -386,7 +393,14 @@ export const AdminOrders: React.FC = () => {
                           const productStatic = PRODUCTS.find(p => p.id === item.product_id);
                           const productDb = dbProducts.find((p: any) => p.id === item.product_id);
                           const productName = productDb ? productDb.name : (productStatic ? productStatic.name : (item.products?.name || 'Unknown Product'));
-                          const productSku = productDb ? (productDb.sku || productDb.id) : (productStatic ? (productStatic.sku || productStatic.id) : (item.products?.sku || item.product_id));
+                          
+                          let productSku = item.products?.sku || item.product_id;
+                          if (productDb) productSku = productDb.sku || productDb.id;
+                          else if (productStatic) productSku = productStatic.sku || productStatic.id;
+                          
+                          if (productSku && productSku.length > 20) {
+                            productSku = `NY-${productSku.slice(0, 8).toUpperCase()}`;
+                          }
                           
                           return (
                             <tr key={item.id || index}>

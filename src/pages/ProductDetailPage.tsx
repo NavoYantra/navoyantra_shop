@@ -86,7 +86,7 @@ export const ProductDetailHero: React.FC<{ product: any; isPreview?: boolean }> 
             </span>
           </div>
           <div className="text-xs font-mono text-slate-500 mt-2">
-            SKU: {product.sku || product.id}
+            SKU: {product.sku || ((product.id && product.id.length > 20) ? `NY-${product.id.slice(0, 8).toUpperCase()}` : product.id)}
           </div>
         </div>
 
