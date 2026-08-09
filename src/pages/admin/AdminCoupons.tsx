@@ -61,8 +61,6 @@ export const AdminCoupons: React.FC = () => {
       code: code.toUpperCase(),
       type,
       value,
-      is_active: true,
-      usage_count: 0,
     };
     
     if (expiryDate) payload.expiry_date = expiryDate;
