@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { 
   User, Package, Heart, MapPin, Settings, LogOut, 
-  ChevronRight, Search, Filter, ShieldCheck, Truck, Star, Loader2
+  ChevronRight, Search, Filter, ShieldCheck, Truck, Star, Loader2,
+  ChevronDown, ChevronUp, CheckCircle2, Circle, XCircle
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { getOrdersByEmail } from '../lib/api';
@@ -14,6 +15,7 @@ export const CustomerDashboard: React.FC = () => {
   const [orders, setOrders] = useState<any[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(true);
   const [savedAddress, setSavedAddress] = useState<any>(null);
+  const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
 
   useEffect(() => {
     const saved = localStorage.getItem('ny_shipping');
@@ -28,7 +30,8 @@ export const CustomerDashboard: React.FC = () => {
           id: o.tracking_id,
           date: new Date(o.created_at).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
           total: o.total_amount,
-          status: o.status === 'pending' ? 'Processing' : (o.status.charAt(0).toUpperCase() + o.status.slice(1)),
+          status: o.status,
+          displayStatus: o.status.charAt(0).toUpperCase() + o.status.slice(1),
           trackingId: o.shipping_tracking_id,
           invoiceUrl: o.invoice_url,
           items: o.order_items.map((item: any) => {
@@ -131,9 +134,9 @@ export const CustomerDashboard: React.FC = () => {
                     </div>
                     <div className="flex items-center space-x-3">
                       <span className={`px-3 py-1 rounded-full text-xs font-bold flex items-center ${
-                        orders[0].status === 'Delivered' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'
+                        orders[0].status === 'delivered' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'
                       }`}>
-                        <Truck className="w-3 h-3 mr-1.5" /> {orders[0].status}
+                        <Truck className="w-3 h-3 mr-1.5" /> {orders[0].displayStatus}
                       </span>
                       {orders[0].trackingId && (
                         <p className="text-xs font-medium text-slate-500">
@@ -177,54 +180,120 @@ export const CustomerDashboard: React.FC = () => {
                   <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
                 </div>
               ) : orders.length > 0 ? (
-                orders.map(order => (
-                  <div key={order.id} className="p-6 hover:bg-slate-50 transition-colors">
-                    <div className="flex flex-col md:flex-row justify-between gap-4">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-3 mb-2">
-                          <h4 className="font-bold text-slate-900">Order {order.id}</h4>
-                          <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                            order.status === 'Delivered' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'
-                          }`}>
-                            {order.status}
-                          </span>
-                        </div>
-                        <p className="text-xs text-slate-500 mb-4">Placed on {order.date}</p>
-                        
-                        <div className="space-y-2">
-                          {order.items.map((item: any, idx: number) => (
-                            <div key={idx} className="flex items-center justify-between text-sm">
-                              <div className="flex items-center space-x-2">
-                                <span className="w-6 text-slate-400">{item.qty}x</span>
-                                <span className="font-medium text-slate-700">{item.name}</span>
+                orders.map(order => {
+                  const statuses = ['pending', 'processing', 'shipped', 'delivered'];
+                  const currentStatusIndex = statuses.indexOf(order.status);
+                  
+                  return (
+                    <div key={order.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors">
+                      <div 
+                        className="p-6 cursor-pointer flex flex-col md:flex-row justify-between gap-4"
+                        onClick={() => setExpandedOrder(expandedOrder === order.id ? null : order.id)}
+                      >
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-3 mb-2">
+                            <h4 className="font-bold text-slate-900">Order {order.id}</h4>
+                            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                              order.status === 'delivered' ? 'bg-green-100 text-green-700' : 
+                              order.status === 'cancelled' ? 'bg-rose-100 text-rose-700' : 'bg-blue-100 text-blue-700'
+                            }`}>
+                              {order.displayStatus}
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-500 mb-4">Placed on {order.date}</p>
+                          
+                          <div className="space-y-2">
+                            {order.items.map((item: any, idx: number) => (
+                              <div key={idx} className="flex items-center justify-between text-sm">
+                                <div className="flex items-center space-x-2">
+                                  <span className="w-6 text-slate-400">{item.qty}x</span>
+                                  <span className="font-medium text-slate-700">{item.name}</span>
+                                </div>
+                                <span className="text-slate-600 font-medium">₹{(item.price * item.qty).toLocaleString()}</span>
                               </div>
-                              <span className="text-slate-600 font-medium">₹{(item.price * item.qty).toLocaleString()}</span>
-                            </div>
-                          ))}
+                            ))}
+                          </div>
+                        </div>
+                        
+                        <div className="flex flex-col items-end justify-between border-t md:border-t-0 md:border-l border-slate-100 pt-4 md:pt-0 md:pl-6 min-w-[150px]">
+                          <div className="text-right w-full mb-4 md:mb-0">
+                            <p className="text-xs text-slate-500 mb-1">Total Amount</p>
+                            <p className="text-xl font-bold text-slate-900">₹{order.total.toLocaleString()}</p>
+                          </div>
+                          <div className="mt-auto flex items-center text-sm text-blue-600 font-semibold">
+                            {expandedOrder === order.id ? 'View Less' : 'View Details'}
+                            {expandedOrder === order.id ? <ChevronUp className="w-4 h-4 ml-1"/> : <ChevronDown className="w-4 h-4 ml-1"/>}
+                          </div>
                         </div>
                       </div>
                       
-                      <div className="flex flex-col items-end justify-between border-t md:border-t-0 md:border-l border-slate-100 pt-4 md:pt-0 md:pl-6 min-w-[150px]">
-                        <div className="text-right w-full mb-4 md:mb-0">
-                          <p className="text-xs text-slate-500 mb-1">Total Amount</p>
-                          <p className="text-xl font-bold text-slate-900">₹{order.total.toLocaleString()}</p>
-                        </div>
-                        <div className="flex flex-col space-y-2 w-full">
-                          {order.trackingId && (
-                            <p className="text-[11px] text-slate-500 font-medium mb-1 text-right w-full block">
-                              Tracking ID:<br/><span className="text-slate-900 font-bold">{order.trackingId}</span>
-                            </p>
+                      {expandedOrder === order.id && (
+                        <div className="px-6 pb-6 pt-2 bg-slate-50/50">
+                          {/* Timeline */}
+                          <div className="mb-6 p-4 bg-white rounded-xl border border-slate-200">
+                            <h5 className="text-sm font-bold text-slate-900 mb-6">Order Status</h5>
+                            {order.status === 'cancelled' ? (
+                              <div className="flex items-center text-rose-600 font-bold bg-rose-50 p-4 rounded-xl border border-rose-100">
+                                <XCircle className="w-5 h-5 mr-2" />
+                                Order was Cancelled
+                              </div>
+                            ) : (
+                              <div className="flex items-center w-full relative">
+                                {statuses.map((step, index) => {
+                                  const isCompleted = index <= currentStatusIndex;
+                                  const isLast = index === statuses.length - 1;
+                                  return (
+                                    <React.Fragment key={step}>
+                                      <div className="flex flex-col items-center relative w-10">
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center z-10 ${isCompleted ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-300'}`}>
+                                          {isCompleted ? <CheckCircle2 className="w-5 h-5" /> : <Circle className="w-3 h-3" />}
+                                        </div>
+                                        <span className={`absolute top-10 text-[10px] font-bold uppercase tracking-wider whitespace-nowrap ${isCompleted ? 'text-blue-700' : 'text-slate-400'}`}>
+                                          {step}
+                                        </span>
+                                      </div>
+                                      {!isLast && (
+                                        <div className={`flex-1 h-1 mx-2 rounded ${index < currentStatusIndex ? 'bg-blue-600' : 'bg-slate-100'}`}></div>
+                                      )}
+                                    </React.Fragment>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
+                          
+                          {/* Details like Tracking and Invoice */}
+                          {(order.trackingId || order.invoiceUrl) && (
+                            <div className="flex flex-wrap gap-4 mb-4">
+                                {order.trackingId && (
+                                  <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex-1 min-w-[200px]">
+                                    <p className="text-[11px] text-slate-500 font-bold mb-1 uppercase tracking-wider">Tracking ID</p>
+                                    <p className="text-base text-slate-900 font-bold">{order.trackingId}</p>
+                                  </div>
+                                )}
+                                {order.invoiceUrl && (
+                                  <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex-1 min-w-[200px] flex items-center justify-center">
+                                    <a href={order.invoiceUrl} target="_blank" rel="noreferrer" className="px-6 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 transition-colors w-full text-center">
+                                      Download Invoice
+                                    </a>
+                                  </div>
+                                )}
+                            </div>
                           )}
-                          {order.invoiceUrl && (
-                            <a href={order.invoiceUrl} target="_blank" rel="noreferrer" className="w-full px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition-colors text-center">
-                              Download Invoice
-                            </a>
+
+                          {/* Cancel Button */}
+                          {(order.status === 'pending' || order.status === 'processing') && (
+                            <div className="flex justify-end mt-4">
+                                <button className="px-4 py-2 bg-white border border-rose-200 text-rose-600 text-sm font-bold rounded-lg hover:bg-rose-50 transition-colors">
+                                  Cancel Order
+                                </button>
+                            </div>
                           )}
                         </div>
-                      </div>
+                      )}
                     </div>
-                  </div>
-                ))
+                  );
+                })
               ) : (
                 <div className="p-12 text-center text-slate-500">
                   <Package className="w-12 h-12 mx-auto text-slate-300 mb-4" />

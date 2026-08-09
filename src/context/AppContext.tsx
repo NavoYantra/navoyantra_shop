@@ -92,12 +92,27 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Page navigation state
-  const [currentPage, setCurrentPageState] = useState<PageType>('home');
-  const [activeProductId, setActiveProductId] = useState<string | null>(null);
+  const [currentPage, setCurrentPageState] = useState<PageType>(() => {
+    const saved = sessionStorage.getItem('ny_current_page');
+    return (saved as PageType) || 'home';
+  });
+  const [activeProductId, setActiveProductIdState] = useState<string | null>(() => {
+    return sessionStorage.getItem('ny_active_product_id');
+  });
 
   const setCurrentPage = (page: PageType) => {
     setCurrentPageState(page);
+    sessionStorage.setItem('ny_current_page', page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const setActiveProductId = (id: string | null) => {
+    setActiveProductIdState(id);
+    if (id) {
+      sessionStorage.setItem('ny_active_product_id', id);
+    } else {
+      sessionStorage.removeItem('ny_active_product_id');
+    }
   };
 
   // Enforce light theme

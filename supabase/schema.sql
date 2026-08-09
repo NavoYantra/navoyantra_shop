@@ -154,4 +154,18 @@ ALTER TABLE orders ADD COLUMN IF NOT EXISTS invoice_url TEXT;
 -- Create storage bucket for invoices
 insert into storage.buckets (id, name, public) values ('invoices', 'invoices', true) ON CONFLICT (id) DO NOTHING;
 
+-- ==========================================
+-- STORAGE POLICIES
+-- ==========================================
 
+-- Allow public read access to product-images
+CREATE POLICY "Public Read product-images" ON storage.objects FOR SELECT USING (bucket_id = 'product-images');
+
+-- Allow authenticated users to upload to product-images
+CREATE POLICY "Auth Insert product-images" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'product-images');
+
+-- Allow public read access to invoices
+CREATE POLICY "Public Read invoices" ON storage.objects FOR SELECT USING (bucket_id = 'invoices');
+
+-- Allow authenticated users to upload invoices
+CREATE POLICY "Auth Insert invoices" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'invoices');

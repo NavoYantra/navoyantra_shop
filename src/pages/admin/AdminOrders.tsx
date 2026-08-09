@@ -255,6 +255,7 @@ export const AdminOrders: React.FC = () => {
                           size="sm"
                           className="capitalize"
                           onClick={() => {
+                            if (selectedOrder.status === status) return;
                             if (status === 'shipped') {
                               const tid = window.prompt("Enter transport tracking ID for shipping (Optional):");
                               if (window.confirm(`Are you sure you want to update the status to '${status}'?`)) {
