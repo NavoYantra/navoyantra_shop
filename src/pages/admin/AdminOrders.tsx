@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getOrders, updateOrderStatus, getOrderById } from '../../lib/api';
+import { getOrders, updateOrderStatus, getOrderById, updateOrderTracking } from '../../lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../components/ui/Table';
 import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
-import { Eye, Printer, Truck, CheckCircle2, Clock, XCircle, Search } from 'lucide-react';
+import { Eye, Printer, Truck, CheckCircle2, Clock, XCircle, Search, Edit2, Save, X } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import Barcode from 'react-barcode';
 
@@ -14,6 +14,8 @@ export const AdminOrders: React.FC = () => {
   const { data: orders = [], isLoading } = useQuery({ queryKey: ['orders'], queryFn: getOrders });
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
+  const [isEditingTracking, setIsEditingTracking] = useState(false);
+  const [editTrackingId, setEditTrackingId] = useState('');
 
   const mockOrder = {
     id: 'mock-1',
@@ -51,6 +53,15 @@ export const AdminOrders: React.FC = () => {
       if (selectedOrder) {
         queryClient.invalidateQueries({ queryKey: ['order', selectedOrder.id] });
       }
+    }
+  });
+
+  const updateTrackingMutation = useMutation({
+    mutationFn: ({ id, tracking_id }: { id: string, tracking_id: string }) => updateOrderTracking(id, tracking_id),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      setSelectedOrder(data);
+      setIsEditingTracking(false);
     }
   });
 
@@ -185,7 +196,39 @@ export const AdminOrders: React.FC = () => {
                 <div className="flex justify-between items-start">
                   <div>
                     <CardTitle className="text-lg">Order Details</CardTitle>
-                    <p className="text-sm text-slate-500 font-mono mt-1">{selectedOrder.tracking_id}</p>
+                    {isEditingTracking ? (
+                      <div className="flex items-center gap-2 mt-2">
+                        <input
+                          type="text"
+                          value={editTrackingId}
+                          onChange={(e) => setEditTrackingId(e.target.value)}
+                          className="border border-slate-300 rounded px-2 py-1 text-sm font-mono focus:outline-none focus:border-blue-500"
+                        />
+                        <Button size="sm" variant="ghost" onClick={() => {
+                          if (selectedOrder.id !== 'mock-1') {
+                            updateTrackingMutation.mutate({ id: selectedOrder.id, tracking_id: editTrackingId });
+                          } else {
+                            setSelectedOrder({ ...selectedOrder, tracking_id: editTrackingId });
+                            setIsEditingTracking(false);
+                          }
+                        }} disabled={updateTrackingMutation.isPending}>
+                          <Save className="w-4 h-4 text-green-600" />
+                        </Button>
+                        <Button size="sm" variant="ghost" onClick={() => setIsEditingTracking(false)}>
+                          <X className="w-4 h-4 text-red-600" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 mt-1">
+                        <p className="text-sm text-slate-500 font-mono">{selectedOrder.tracking_id}</p>
+                        <button onClick={() => {
+                          setEditTrackingId(selectedOrder.tracking_id);
+                          setIsEditingTracking(true);
+                        }} className="text-blue-600 hover:text-blue-800 p-1 rounded-md hover:bg-blue-50 transition-colors">
+                          <Edit2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    )}
                   </div>
                   <Button variant="outline" size="sm" onClick={handlePrintSummary}>
                     <Printer className="w-4 h-4 mr-2" /> Print Summary
@@ -205,9 +248,11 @@ export const AdminOrders: React.FC = () => {
                         size="sm"
                         className="capitalize"
                         onClick={() => {
-                          setSelectedOrder({...selectedOrder, status});
-                          if (selectedOrder.id !== 'mock-1') {
-                            updateStatusMutation.mutate({ id: selectedOrder.id, status });
+                          if (window.confirm(\`Are you sure you want to update the status to '\${status}'?\`)) {
+                            setSelectedOrder({...selectedOrder, status});
+                            if (selectedOrder.id !== 'mock-1') {
+                              updateStatusMutation.mutate({ id: selectedOrder.id, status });
+                            }
                           }
                         }}
                         disabled={updateStatusMutation.isPending && selectedOrder.id !== 'mock-1'}

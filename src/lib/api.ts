@@ -212,6 +212,12 @@ export const updateOrderStatus = async (id: string, status: string) => {
   return data;
 };
 
+export const updateOrderTracking = async (id: string, tracking_id: string) => {
+  const { data, error } = await supabase.from('orders').update({ tracking_id }).eq('id', id).select().single();
+  if (error) throw error;
+  return data;
+};
+
 // --- Notifications ---
 export const getNotifications = async () => {
   const { data, error } = await supabase.from('notifications').select('*').order('created_at', { ascending: false }).limit(20);
