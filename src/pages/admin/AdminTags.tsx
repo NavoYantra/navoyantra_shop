@@ -5,13 +5,14 @@ import { Input } from '../../components/ui/Input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../components/ui/Table';
 import { Plus, Tag as TagIcon, Trash2, Edit2, Search } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getTags, createTag, deleteTag } from '../../lib/api';
+import { getTags, createTag, deleteTag, updateTag } from '../../lib/api';
 
 export const AdminTags: React.FC = () => {
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
   
   // Form State
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
   const [description, setDescription] = useState('');
@@ -27,9 +28,25 @@ export const AdminTags: React.FC = () => {
     mutationFn: createTag,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tags'] });
-      setName('');
-      setSlug('');
-      setDescription('');
+      resetForm();
+      alert('Tag added successfully!');
+    },
+    onError: (error: any) => {
+      console.error(error);
+      alert('Error adding tag: ' + error.message);
+    }
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: (data: { id: string, tag: any }) => updateTag(data.id, data.tag),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tags'] });
+      resetForm();
+      alert('Tag updated successfully!');
+    },
+    onError: (error: any) => {
+      console.error(error);
+      alert('Error updating tag: ' + error.message);
     }
   });
 
@@ -40,6 +57,13 @@ export const AdminTags: React.FC = () => {
     }
   });
 
+  const resetForm = () => {
+    setEditingId(null);
+    setName('');
+    setSlug('');
+    setDescription('');
+  };
+
   // Auto-generate slug from name
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newName = e.target.value;
@@ -47,15 +71,28 @@ export const AdminTags: React.FC = () => {
     setSlug(newName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''));
   };
 
-  const handleAddTag = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !slug) return;
     
-    createMutation.mutate({
+    const tagData = {
       name,
       slug,
       description
-    });
+    };
+
+    if (editingId) {
+      updateMutation.mutate({ id: editingId, tag: tagData });
+    } else {
+      createMutation.mutate(tagData);
+    }
+  };
+
+  const handleEditTag = (tag: any) => {
+    setEditingId(tag.id);
+    setName(tag.name);
+    setSlug(tag.slug);
+    setDescription(tag.description || '');
   };
 
   const handleDeleteTag = (id: string) => {
@@ -80,10 +117,10 @@ export const AdminTags: React.FC = () => {
         <div className="lg:col-span-1">
           <Card>
             <CardHeader>
-              <CardTitle>Add New Tag</CardTitle>
+              <CardTitle>{editingId ? 'Edit Tag' : 'Add New Tag'}</CardTitle>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleAddTag} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Name</label>
                   <Input 
@@ -117,10 +154,21 @@ export const AdminTags: React.FC = () => {
                   <p className="text-xs text-slate-500">The description is not prominent by default; however, some themes may show it.</p>
                 </div>
 
-                <Button type="submit" className="w-full" disabled={createMutation.isPending}>
-                  <Plus className="h-4 w-4 mr-2" /> 
-                  {createMutation.isPending ? 'Adding...' : 'Add New Tag'}
-                </Button>
+                <div className="flex space-x-2">
+                  <Button type="submit" className="flex-1" disabled={createMutation.isPending || updateMutation.isPending}>
+                    {editingId ? 'Update Tag' : (
+                      <>
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add New Tag
+                      </>
+                    )}
+                  </Button>
+                  {editingId && (
+                    <Button type="button" variant="outline" onClick={resetForm}>
+                      Cancel
+                    </Button>
+                  )}
+                </div>
               </form>
             </CardContent>
           </Card>
@@ -184,7 +232,7 @@ export const AdminTags: React.FC = () => {
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end space-x-2">
-                            <Button variant="ghost" size="icon" className="text-slate-400 hover:text-blue-600">
+                            <Button variant="ghost" size="icon" className="text-slate-400 hover:text-blue-600" onClick={() => handleEditTag(tag)}>
                               <Edit2 className="h-4 w-4" />
                             </Button>
                             <Button variant="ghost" size="icon" className="text-slate-400 hover:text-red-600" onClick={() => handleDeleteTag(tag.id)}>

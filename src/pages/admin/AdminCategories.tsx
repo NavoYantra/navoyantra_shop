@@ -5,13 +5,14 @@ import { Input } from '../../components/ui/Input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../components/ui/Table';
 import { Plus, Pencil, Trash2, Search, FolderTree } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getCategories, createCategory, deleteCategory } from '../../lib/api';
+import { getCategories, createCategory, deleteCategory, updateCategory } from '../../lib/api';
 
 export const AdminCategories: React.FC = () => {
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
   
   // Form State
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
   const [description, setDescription] = useState('');
@@ -28,10 +29,7 @@ export const AdminCategories: React.FC = () => {
     mutationFn: createCategory,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
-      setName('');
-      setSlug('');
-      setDescription('');
-      setSkuPrefix('');
+      resetForm();
       alert('Category added successfully!');
     },
     onError: (error: any) => {
@@ -40,12 +38,33 @@ export const AdminCategories: React.FC = () => {
     }
   });
 
+  const updateMutation = useMutation({
+    mutationFn: (data: { id: string, category: any }) => updateCategory(data.id, data.category),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categories'] });
+      resetForm();
+      alert('Category updated successfully!');
+    },
+    onError: (error: any) => {
+      console.error(error);
+      alert('Error updating category: ' + error.message);
+    }
+  });
+
   const deleteMutation = useMutation({
     mutationFn: deleteCategory,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
     }
-  });  
+  });
+  
+  const resetForm = () => {
+    setEditingId(null);
+    setName('');
+    setSlug('');
+    setDescription('');
+    setSkuPrefix('');
+  };
   // Auto-generate slug from name
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newName = e.target.value;
@@ -53,15 +72,37 @@ export const AdminCategories: React.FC = () => {
     setSlug(newName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''));
   };
 
-  const handleAddCategory = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !slug) return;
     
-    createMutation.mutate({
+    const categoryData = {
       name,
       slug,
-      description: skuPrefix ? `${description} [SKU:${skuPrefix.toUpperCase()}]` : description
-    });
+      description: skuPrefix ? `${description.replace(/\s*\[SKU:.*?\]/g, '')} [SKU:${skuPrefix.toUpperCase()}]` : description.replace(/\s*\[SKU:.*?\]/g, '')
+    };
+
+    if (editingId) {
+      updateMutation.mutate({ id: editingId, category: categoryData });
+    } else {
+      createMutation.mutate(categoryData);
+    }
+  };
+
+  const handleEditCategory = (category: any) => {
+    setEditingId(category.id);
+    setName(category.name);
+    setSlug(category.slug);
+    
+    const desc = category.description || '';
+    const skuMatch = desc.match(/\[SKU:(.*?)\]/);
+    if (skuMatch) {
+      setSkuPrefix(skuMatch[1]);
+      setDescription(desc.replace(/\s*\[SKU:.*?\]/g, ''));
+    } else {
+      setSkuPrefix('');
+      setDescription(desc);
+    }
   };
 
   const handleDeleteCategory = (id: string) => {
@@ -86,10 +127,10 @@ export const AdminCategories: React.FC = () => {
         <div className="lg:col-span-1">
           <Card>
             <CardHeader>
-              <CardTitle>Add New Category</CardTitle>
+              <CardTitle>{editingId ? 'Edit Category' : 'Add New Category'}</CardTitle>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleAddCategory} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Name</label>
                   <Input 
@@ -133,10 +174,21 @@ export const AdminCategories: React.FC = () => {
                   />
                 </div>
 
-                <Button type="submit" className="w-full" disabled={createMutation.isPending}>
-                  <Plus className="h-4 w-4 mr-2" /> 
-                  {createMutation.isPending ? 'Adding...' : 'Add New Category'}
-                </Button>
+                <div className="flex space-x-2">
+                  <Button type="submit" className="flex-1" disabled={createMutation.isPending || updateMutation.isPending}>
+                    {editingId ? 'Update Category' : (
+                      <>
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add New Category
+                      </>
+                    )}
+                  </Button>
+                  {editingId && (
+                    <Button type="button" variant="outline" onClick={resetForm}>
+                      Cancel
+                    </Button>
+                  )}
+                </div>
               </form>
             </CardContent>
           </Card>
@@ -207,7 +259,7 @@ export const AdminCategories: React.FC = () => {
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end space-x-2">
-                            <Button variant="ghost" size="icon" className="text-slate-400 hover:text-blue-600">
+                            <Button variant="ghost" size="icon" className="text-slate-400 hover:text-blue-600" onClick={() => handleEditCategory(category)}>
                               <Pencil className="h-4 w-4" />
                             </Button>
                             <Button variant="ghost" size="icon" className="text-slate-400 hover:text-red-600" onClick={() => handleDeleteCategory(category.id)}>

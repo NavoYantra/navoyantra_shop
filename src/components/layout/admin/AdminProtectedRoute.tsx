@@ -4,7 +4,7 @@ import { useAdminAuthStore } from '../../../store/adminAuthStore';
 import { LoadingSpinner } from '../../common/LoadingSpinner';
 
 export const AdminProtectedRoute: React.FC = () => {
-  const { user, isLoading, initialize } = useAdminAuthStore();
+  const { user, adminUser, isLoading, initialize, signOut } = useAdminAuthStore();
 
   useEffect(() => {
     initialize();
@@ -20,6 +20,13 @@ export const AdminProtectedRoute: React.FC = () => {
 
   if (!user) {
     return <Navigate to="/admin/login" replace />;
+  }
+
+  // If user is logged in via Supabase but doesn't exist in admin_users table
+  if (user && !adminUser && !isLoading) {
+    // Log them out immediately and send to login
+    signOut();
+    return <Navigate to="/admin/login?error=unauthorized" replace />;
   }
 
   return <Outlet />;

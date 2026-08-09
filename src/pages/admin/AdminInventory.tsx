@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
-import { Package, AlertTriangle, XCircle, TrendingUp } from 'lucide-react';
+import { Package, AlertTriangle, XCircle, TrendingUp, Printer } from 'lucide-react';
+import { Button } from '../../components/ui/Button';
 import { useQuery } from '@tanstack/react-query';
 import { getProducts } from '../../lib/api';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../components/ui/Table';
@@ -11,6 +12,7 @@ export const AdminInventory: React.FC = () => {
   
   const products = React.useMemo(() => rawProducts.map((p: any) => ({
     id: p.id,
+    sku: p.sku || p.id.substring(0, 8),
     name: p.name,
     price: p.sale_price || p.price,
     stockCount: p.stock || 0
@@ -19,6 +21,45 @@ export const AdminInventory: React.FC = () => {
   const lowStock = products.filter(p => p.stockCount > 0 && p.stockCount <= 10).length;
   const outOfStock = products.filter(p => p.stockCount === 0).length;
   const inventoryValue = products.reduce((acc, curr) => acc + (curr.price * curr.stockCount), 0);
+
+  const handlePrintBarcode = (sku: string) => {
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+    
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Print Barcode - ${sku}</title>
+          <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+          <style>
+            body { display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; padding: 0; font-family: sans-serif; }
+            .barcode-container { text-align: center; }
+            svg { max-width: 100%; height: auto; }
+          </style>
+        </head>
+        <body>
+          <div class="barcode-container">
+            <svg id="barcode"></svg>
+          </div>
+          <script>
+            JsBarcode("#barcode", "${sku}", {
+              format: "CODE128",
+              lineColor: "#000",
+              width: 2,
+              height: 100,
+              displayValue: true,
+              fontSize: 20
+            });
+            window.onload = function() {
+              window.print();
+              setTimeout(() => window.close(), 500);
+            };
+          </script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+  };
 
   return (
     <div className="space-y-6">
@@ -79,13 +120,14 @@ export const AdminInventory: React.FC = () => {
                 <TableHead>Available</TableHead>
                 <TableHead>Reserved</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {products.map(product => (
                 <TableRow key={product.id}>
                   <TableCell className="font-medium">{product.name}</TableCell>
-                  <TableCell className="text-slate-500">{product.id.substring(0, 8)}</TableCell>
+                  <TableCell className="text-slate-500 font-mono font-medium">{product.sku}</TableCell>
                   <TableCell>Delhi-WH-01</TableCell>
                   <TableCell>{product.stockCount}</TableCell>
                   <TableCell>{Math.floor(product.stockCount * 0.1)}</TableCell>
@@ -93,6 +135,12 @@ export const AdminInventory: React.FC = () => {
                     <Badge variant={product.stockCount > 10 ? 'success' : product.stockCount > 0 ? 'secondary' : 'destructive'}>
                       {product.stockCount > 10 ? 'In Stock' : product.stockCount > 0 ? 'Low Stock' : 'Out of Stock'}
                     </Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button variant="outline" size="sm" onClick={() => handlePrintBarcode(product.sku)}>
+                      <Printer className="w-4 h-4 mr-2" />
+                      Print Barcode
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}

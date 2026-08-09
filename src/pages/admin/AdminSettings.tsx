@@ -4,25 +4,41 @@ import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../../components/ui/Tabs';
 import { UserPlus, Shield, Mail, Trash2 } from 'lucide-react';
-
-const DUMMY_USERS = [
-  { id: 1, name: 'Rohit Rathore', email: 'rohit@navoyantra.com', role: 'Super Admin' },
-  { id: 2, name: 'Amit Kumar', email: 'amit@navoyantra.com', role: 'Product Manager' },
-  { id: 3, name: 'Neha Sharma', email: 'neha@navoyantra.com', role: 'Blog Manager' },
-];
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { getAdminUsers, addAdminUser, deleteAdminUser } from '../../lib/api';
+import { useAdminAuthStore } from '../../store/adminAuthStore';
 
 export const AdminSettings: React.FC = () => {
   const [activeTab, setActiveTab] = React.useState('general');
-  const [users, setUsers] = React.useState(DUMMY_USERS);
   const [newUserName, setNewUserName] = React.useState('');
   const [newUserEmail, setNewUserEmail] = React.useState('');
   const [newUserRole, setNewUserRole] = React.useState('Product Manager');
+  const { adminUser } = useAdminAuthStore();
+  const queryClient = useQueryClient();
+
+  const { data: users = [], isLoading } = useQuery({
+    queryKey: ['admin_users'],
+    queryFn: getAdminUsers,
+    enabled: adminUser?.role === 'Super Admin'
+  });
+
+  const addUserMutation = useMutation({
+    mutationFn: addAdminUser,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin_users'] });
+      setNewUserName('');
+      setNewUserEmail('');
+    }
+  });
+
+  const deleteUserMutation = useMutation({
+    mutationFn: deleteAdminUser,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['admin_users'] })
+  });
 
   const handleAddUser = () => {
     if (newUserName && newUserEmail) {
-      setUsers([...users, { id: Date.now(), name: newUserName, email: newUserEmail, role: newUserRole }]);
-      setNewUserName('');
-      setNewUserEmail('');
+      addUserMutation.mutate({ name: newUserName, email: newUserEmail, role: newUserRole });
     }
   };
 
@@ -38,7 +54,9 @@ export const AdminSettings: React.FC = () => {
           <TabsTrigger value="general" activeValue={activeTab} onSelectTab={setActiveTab}>General</TabsTrigger>
           <TabsTrigger value="store" activeValue={activeTab} onSelectTab={setActiveTab}>Store</TabsTrigger>
           <TabsTrigger value="payments" activeValue={activeTab} onSelectTab={setActiveTab}>Payments</TabsTrigger>
-          <TabsTrigger value="users" activeValue={activeTab} onSelectTab={setActiveTab}>Team / Users</TabsTrigger>
+          {adminUser?.role === 'Super Admin' && (
+            <TabsTrigger value="users" activeValue={activeTab} onSelectTab={setActiveTab}>Team / Users</TabsTrigger>
+          )}
         </TabsList>
 
         <TabsContent value="general" activeValue={activeTab}>
@@ -108,8 +126,9 @@ export const AdminSettings: React.FC = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="users" activeValue={activeTab}>
-          <div className="space-y-6">
+        {adminUser?.role === 'Super Admin' && (
+          <TabsContent value="users" activeValue={activeTab}>
+            <div className="space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle>Add New User</CardTitle>
@@ -174,7 +193,7 @@ export const AdminSettings: React.FC = () => {
                           </div>
                         </div>
                       </div>
-                      <Button variant="ghost" size="icon" className="text-slate-400 hover:text-red-500" onClick={() => setUsers(users.filter(u => u.id !== user.id))}>
+                      <Button variant="ghost" size="icon" className="text-slate-400 hover:text-red-500" onClick={() => deleteUserMutation.mutate(user.id)}>
                         <Trash2 className="w-4 h-4" />
                       </Button>
                     </div>
@@ -182,8 +201,9 @@ export const AdminSettings: React.FC = () => {
                 </div>
               </CardContent>
             </Card>
-          </div>
-        </TabsContent>
+            </div>
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   );

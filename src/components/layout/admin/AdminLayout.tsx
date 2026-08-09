@@ -11,7 +11,7 @@ import { cn } from '../../../lib/utils';
 
 export const AdminLayout: React.FC = () => {
   const { isSidebarOpen } = useAdminStore();
-  const { user, signOut } = useAdminAuthStore();
+  const { user, adminUser, signOut } = useAdminAuthStore();
   const location = useLocation();
 
   const [expandedMenus, setExpandedMenus] = React.useState<Record<string, boolean>>({
@@ -39,8 +39,11 @@ export const AdminLayout: React.FC = () => {
     },
     { name: 'Inventory', path: '/admin/inventory', icon: Boxes },
     { name: 'Media Library', path: '/admin/media', icon: ImageIcon },
-    { name: 'Settings', path: '/admin/settings', icon: Settings },
   ];
+
+  if (adminUser?.role === 'Super Admin') {
+    navItems.push({ name: 'Settings', path: '/admin/settings', icon: Settings });
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 flex">

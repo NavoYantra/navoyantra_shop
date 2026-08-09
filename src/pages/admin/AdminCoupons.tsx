@@ -59,7 +59,7 @@ export const AdminCoupons: React.FC = () => {
       type,
       value,
       description,
-      expiry_date: expiryDate,
+      expiry_date: expiryDate || null,
       is_active: true,
       usage_count: 0,
       usage_limit_per_user: usageLimitPerUser === '' ? null : usageLimitPerUser
@@ -133,12 +133,11 @@ export const AdminCoupons: React.FC = () => {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Expiry Date</label>
+                  <label className="text-sm font-medium">Expiry Date (Optional)</label>
                   <div className="relative">
                     <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                     <Input 
                       type="date" 
-                      required
                       value={expiryDate} 
                       onChange={e => setExpiryDate(e.target.value)} 
                       className="pl-9"
@@ -231,7 +230,11 @@ export const AdminCoupons: React.FC = () => {
                         <div className="text-xs text-slate-500 mt-1">Limit: {coupon.usage_limit_per_user}/user</div>
                       )}
                     </TableCell>
-                    <TableCell>{new Date(coupon.expiry_date).toLocaleDateString()}</TableCell>
+                    <TableCell>
+                      {coupon.expiry_date ? new Date(coupon.expiry_date).toLocaleDateString() : (
+                        <span className="text-slate-400 italic">No Expiry</span>
+                      )}
+                    </TableCell>
                     <TableCell>
                       <span className={cn(
                         "inline-flex items-center px-2 py-1 rounded-full text-xs font-medium",

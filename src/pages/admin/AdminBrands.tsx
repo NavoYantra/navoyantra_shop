@@ -5,13 +5,14 @@ import { Input } from '../../components/ui/Input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../components/ui/Table';
 import { Plus, Pencil, Trash2, Search, Link as LinkIcon } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getBrands, createBrand, deleteBrand } from '../../lib/api';
+import { getBrands, createBrand, deleteBrand, updateBrand } from '../../lib/api';
 
 export const AdminBrands: React.FC = () => {
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
   
   // Form State
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
   const [website, setWebsite] = useState('');
@@ -28,10 +29,25 @@ export const AdminBrands: React.FC = () => {
     mutationFn: createBrand,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['brands'] });
-      setName('');
-      setSlug('');
-      setWebsite('');
-      setDescription('');
+      resetForm();
+      alert('Brand added successfully!');
+    },
+    onError: (error: any) => {
+      console.error(error);
+      alert('Error adding brand: ' + error.message);
+    }
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: (data: { id: string, brand: any }) => updateBrand(data.id, data.brand),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['brands'] });
+      resetForm();
+      alert('Brand updated successfully!');
+    },
+    onError: (error: any) => {
+      console.error(error);
+      alert('Error updating brand: ' + error.message);
     }
   });
 
@@ -42,6 +58,14 @@ export const AdminBrands: React.FC = () => {
     }
   });
 
+  const resetForm = () => {
+    setEditingId(null);
+    setName('');
+    setSlug('');
+    setWebsite('');
+    setDescription('');
+  };
+
   // Auto-generate slug from name
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newName = e.target.value;
@@ -49,16 +73,30 @@ export const AdminBrands: React.FC = () => {
     setSlug(newName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''));
   };
 
-  const handleAddBrand = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !slug) return;
     
-    createMutation.mutate({
+    const brandData = {
       name,
       slug,
       website,
       description
-    });
+    };
+
+    if (editingId) {
+      updateMutation.mutate({ id: editingId, brand: brandData });
+    } else {
+      createMutation.mutate(brandData);
+    }
+  };
+
+  const handleEditBrand = (brand: any) => {
+    setEditingId(brand.id);
+    setName(brand.name);
+    setSlug(brand.slug);
+    setWebsite(brand.website || '');
+    setDescription(brand.description || '');
   };
 
   const handleDeleteBrand = (id: string) => {
@@ -83,10 +121,10 @@ export const AdminBrands: React.FC = () => {
         <div className="lg:col-span-1">
           <Card>
             <CardHeader>
-              <CardTitle>Add New Brand</CardTitle>
+              <CardTitle>{editingId ? 'Edit Brand' : 'Add New Brand'}</CardTitle>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleAddBrand} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Name</label>
                   <Input 
@@ -129,10 +167,21 @@ export const AdminBrands: React.FC = () => {
                   />
                 </div>
 
-                <Button type="submit" className="w-full" disabled={createMutation.isPending}>
-                  <Plus className="h-4 w-4 mr-2" /> 
-                  {createMutation.isPending ? 'Adding...' : 'Add New Brand'}
-                </Button>
+                <div className="flex space-x-2">
+                  <Button type="submit" className="flex-1" disabled={createMutation.isPending || updateMutation.isPending}>
+                    {editingId ? 'Update Brand' : (
+                      <>
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add New Brand
+                      </>
+                    )}
+                  </Button>
+                  {editingId && (
+                    <Button type="button" variant="outline" onClick={resetForm}>
+                      Cancel
+                    </Button>
+                  )}
+                </div>
               </form>
             </CardContent>
           </Card>
@@ -203,7 +252,7 @@ export const AdminBrands: React.FC = () => {
                         <TableCell className="font-medium">{brand.count}</TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end space-x-2">
-                            <Button variant="ghost" size="icon" className="text-slate-400 hover:text-blue-600">
+                            <Button variant="ghost" size="icon" className="text-slate-400 hover:text-blue-600" onClick={() => handleEditBrand(brand)}>
                               <Pencil className="h-4 w-4" />
                             </Button>
                             <Button variant="ghost" size="icon" className="text-slate-400 hover:text-red-600" onClick={() => handleDeleteBrand(brand.id)}>

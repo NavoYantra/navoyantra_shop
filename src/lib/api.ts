@@ -42,6 +42,12 @@ export const createCategory = async (category: any) => {
   return data;
 };
 
+export const updateCategory = async (id: string, category: any) => {
+  const { data, error } = await supabase.from('categories').update(category).eq('id', id).select().single();
+  if (error) throw error;
+  return data;
+};
+
 export const deleteCategory = async (id: string) => {
   const { error } = await supabase.from('categories').delete().eq('id', id);
   if (error) throw error;
@@ -60,6 +66,12 @@ export const createBrand = async (brand: any) => {
   return data;
 };
 
+export const updateBrand = async (id: string, brand: any) => {
+  const { data, error } = await supabase.from('brands').update(brand).eq('id', id).select().single();
+  if (error) throw error;
+  return data;
+};
+
 export const deleteBrand = async (id: string) => {
   const { error } = await supabase.from('brands').delete().eq('id', id);
   if (error) throw error;
@@ -74,6 +86,12 @@ export const getTags = async () => {
 
 export const createTag = async (tag: any) => {
   const { data, error } = await supabase.from('tags').insert(tag).select().single();
+  if (error) throw error;
+  return data;
+};
+
+export const updateTag = async (id: string, tag: any) => {
+  const { data, error } = await supabase.from('tags').update(tag).eq('id', id).select().single();
   if (error) throw error;
   return data;
 };
@@ -130,4 +148,22 @@ export const getReviews = async () => {
   const { data, error } = await supabase.from('reviews').select('*, products(name)').order('created_at', { ascending: false });
   if (error) throw error;
   return data;
+};
+
+// --- Admin Users ---
+export const getAdminUsers = async () => {
+  const { data, error } = await supabase.from('admin_users').select('*').order('created_at', { ascending: true });
+  if (error) throw error;
+  return data;
+};
+
+export const addAdminUser = async (adminUser: any) => {
+  const { data, error } = await supabase.from('admin_users').insert(adminUser).select().single();
+  if (error) throw error;
+  return data;
+};
+
+export const deleteAdminUser = async (id: string) => {
+  const { error } = await supabase.from('admin_users').delete().eq('id', id);
+  if (error) throw error;
 };
