@@ -206,10 +206,7 @@ export const getOrdersByEmail = async (email: string) => {
 export const getOrderById = async (id: string) => {
   const { data, error } = await supabase.from('orders').select(`
     *,
-    order_items (
-      *,
-      products (name, images)
-    )
+    order_items (*)
   `).eq('id', id).single();
   
   if (error) throw error;

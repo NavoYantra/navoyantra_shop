@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Ca
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../components/ui/Table';
 import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
-import { Eye, Printer, Truck, CheckCircle2, Clock, XCircle, Search, Download } from 'lucide-react';
+import { Eye, Printer, Truck, CheckCircle2, Clock, XCircle, Search, Download, Package } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import Barcode from 'react-barcode';
 import { PRODUCTS } from '../../data/products';
@@ -204,6 +204,40 @@ export const AdminOrders: React.FC = () => {
               </CardHeader>
               <CardContent className="p-4 space-y-6">
                 
+                {/* Order Items */}
+                <div>
+                  <h4 className="text-sm font-semibold text-slate-900 mb-3">Order Items</h4>
+                  <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                    {orderDetails?.order_items && orderDetails.order_items.length > 0 ? (
+                      <div className="divide-y divide-slate-100">
+                        {orderDetails.order_items.map((item: any, idx: number) => {
+                          const product = PRODUCTS.find(p => p.id === item.product_id);
+                          return (
+                            <div key={idx} className="flex items-center p-3 gap-3">
+                              {product && product.images[0] ? (
+                                <img src={product.images[0]} alt={product.name} className="w-12 h-12 rounded bg-slate-50 object-contain p-1" />
+                              ) : (
+                                <div className="w-12 h-12 rounded bg-slate-100 flex items-center justify-center text-slate-400">
+                                  <Package className="w-6 h-6" />
+                                </div>
+                              )}
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-semibold text-slate-900 truncate">{product ? product.name : (item.products?.name || 'Unknown Product')}</p>
+                                <p className="text-xs text-slate-500">Qty: {item.quantity} × ₹{item.price_at_time}</p>
+                              </div>
+                              <div className="text-sm font-bold text-slate-900">
+                                ₹{item.quantity * item.price_at_time}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="p-4 text-center text-sm text-slate-500">No items found for this order.</div>
+                    )}
+                  </div>
+                </div>
+
                 {/* Status Update */}
                 <div className="space-y-4">
                   <div>
