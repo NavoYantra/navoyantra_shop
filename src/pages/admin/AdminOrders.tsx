@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Ca
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../components/ui/Table';
 import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
-import { Eye, Printer, Truck, CheckCircle2, Clock, XCircle, Search, Edit2, Save, X } from 'lucide-react';
+import { Eye, Printer, Truck, CheckCircle2, Clock, XCircle, Search, Edit2, Save, X, Download } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import Barcode from 'react-barcode';
 
@@ -19,6 +19,28 @@ export const AdminOrders: React.FC = () => {
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [isEditingTracking, setIsEditingTracking] = useState(false);
   const [editTrackingId, setEditTrackingId] = useState('');
+
+  const downloadSVG = (containerId: string, filename: string) => {
+    const container = document.getElementById(containerId);
+    const svg = container?.tagName === 'svg' ? container : container?.querySelector('svg');
+    if (!svg) return;
+    const serializer = new XMLSerializer();
+    let source = serializer.serializeToString(svg);
+    if(!source.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)){
+        source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+    }
+    if(!source.match(/^<svg[^>]+"http\:\/\/www\.w3\.org\/1999\/xlink"/)){
+        source = source.replace(/^<svg/, '<svg xmlns:xlink="http://www.w3.org/1999/xlink"');
+    }
+    source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
+    const url = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(source);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   const mockOrder = {
     id: 'mock-1',
@@ -254,10 +276,25 @@ export const AdminOrders: React.FC = () => {
                         size="sm"
                         className="capitalize"
                         onClick={() => {
-                          if (window.confirm(`Are you sure you want to update the status to '${status}'?`)) {
-                            setSelectedOrder({...selectedOrder, status});
-                            if (selectedOrder.id !== 'mock-1') {
-                              updateStatusMutation.mutate({ id: selectedOrder.id, status });
+                          if (status === 'shipped') {
+                            const trackingId = window.prompt("Please enter the transport tracking ID for shipping:");
+                            if (!trackingId) {
+                              alert("Tracking ID is required to mark as shipped.");
+                              return;
+                            }
+                            if (window.confirm(`Are you sure you want to update the status to '${status}'?`)) {
+                              setSelectedOrder({...selectedOrder, status, tracking_id: trackingId});
+                              if (selectedOrder.id !== 'mock-1') {
+                                updateTrackingMutation.mutate({ id: selectedOrder.id, tracking_id: trackingId });
+                                updateStatusMutation.mutate({ id: selectedOrder.id, status });
+                              }
+                            }
+                          } else {
+                            if (window.confirm(`Are you sure you want to update the status to '${status}'?`)) {
+                              setSelectedOrder({...selectedOrder, status});
+                              if (selectedOrder.id !== 'mock-1') {
+                                updateStatusMutation.mutate({ id: selectedOrder.id, status });
+                              }
                             }
                           }
                         }}
@@ -317,12 +354,22 @@ export const AdminOrders: React.FC = () => {
                 {/* Visible tracking info in sidebar */}
                 <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
                   <h4 className="text-sm font-semibold text-slate-900 mb-4">Tracking Labels</h4>
-                  <div className="flex flex-col items-center space-y-4">
-                    <div className="bg-white p-2 rounded-lg border border-slate-200 shadow-sm">
-                       <QRCodeSVG value={`https://navoyantra.shop/track/${selectedOrder.tracking_id}`} size={120} />
+                  <div className="flex flex-col items-center space-y-6">
+                    <div className="flex flex-col items-center space-y-2 w-full">
+                      <div className="bg-white p-2 rounded-lg border border-slate-200 shadow-sm">
+                         <QRCodeSVG id="qr-svg" value={`https://navoyantra.shop/track/${selectedOrder.tracking_id}`} size={120} />
+                      </div>
+                      <Button variant="outline" size="sm" onClick={() => downloadSVG('qr-svg', `QR_${selectedOrder.tracking_id}.svg`)}>
+                        <Download className="w-4 h-4 mr-2" /> Download QR
+                      </Button>
                     </div>
-                    <div className="text-center w-full overflow-hidden flex justify-center">
-                       <Barcode value={selectedOrder.tracking_id} width={1.5} height={50} fontSize={14} />
+                    <div className="flex flex-col items-center space-y-2 w-full">
+                      <div id="barcode-container" className="text-center w-full overflow-hidden flex justify-center bg-white p-2 rounded-lg border border-slate-200 shadow-sm">
+                         <Barcode value={selectedOrder.tracking_id} width={1.5} height={50} fontSize={14} />
+                      </div>
+                      <Button variant="outline" size="sm" onClick={() => downloadSVG('barcode-container', `Barcode_${selectedOrder.tracking_id}.svg`)}>
+                        <Download className="w-4 h-4 mr-2" /> Download Barcode
+                      </Button>
                     </div>
                   </div>
                 </div>

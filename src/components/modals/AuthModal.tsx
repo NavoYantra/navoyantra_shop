@@ -4,7 +4,7 @@ import { User, X, Loader2 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 
 export const AuthModal: React.FC = () => {
-  const { isAuthModalOpen, setIsAuthModalOpen, setUser, user, showToast } = useApp();
+  const { isAuthModalOpen, setIsAuthModalOpen, user, showToast } = useApp();
   const [mode, setMode] = useState<'login' | 'signup'>('login');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');

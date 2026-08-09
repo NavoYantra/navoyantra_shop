@@ -50,7 +50,7 @@ export const AdminMediaLibrary: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            {allImages.map((img, i) => (
+            {allImages.map((img: string, i: number) => (
               <Card key={i} className="overflow-hidden group cursor-pointer hover:border-blue-500 transition-colors">
                 <div className="aspect-square relative bg-slate-100 flex items-center justify-center">
                   <img src={img} alt={`Media ${i}`} className="w-full h-full object-cover" />

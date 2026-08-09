@@ -179,19 +179,12 @@ export const ProductDetailPage: React.FC = () => {
   const { 
     activeProductId, 
     setCurrentPage, 
-    addToCart, 
-    toggleWishlist, 
-    isInWishlist,
-    setIsQuoteModalOpen,
     storeProducts
   } = useApp();
-
-  const [activeImgIdx, setActiveImgIdx] = useState(0);
 
   // Scroll to top when product changes
   useEffect(() => {
     window.scrollTo(0, 0);
-    setActiveImgIdx(0);
   }, [activeProductId]);
 
   const product = storeProducts.find(p => p.id === activeProductId);
@@ -210,7 +203,6 @@ export const ProductDetailPage: React.FC = () => {
     );
   }
 
-  const isWishlisted = isInWishlist(product.id);
   const relatedProducts = storeProducts.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4);
   const productReviews = TESTIMONIALS.filter(t => t.productName?.includes(product.name) || Math.random() > 0.6).slice(0, 3);
 

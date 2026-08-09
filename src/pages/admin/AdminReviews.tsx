@@ -33,7 +33,7 @@ export const AdminReviews: React.FC = () => {
     ? reviews 
     : reviews.filter((r: any) => r.product === selectedProduct);
 
-  const productNames = Array.from(new Set(reviews.map((r: any) => r.product)));
+  const productNames = Array.from(new Set(reviews.map((r: any) => String(r.product)))) as string[];
 
   return (
     <div className="space-y-6">
@@ -47,7 +47,7 @@ export const AdminReviews: React.FC = () => {
             onChange={(e) => setSelectedProduct(e.target.value)}
           >
             <option value="All">All Products</option>
-            {productNames.map(name => (
+            {productNames.map((name: string) => (
               <option key={name} value={name}>{name}</option>
             ))}
           </select>
@@ -81,7 +81,7 @@ export const AdminReviews: React.FC = () => {
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredReviews.map(review => (
+                filteredReviews.map((review: any) => (
                   <TableRow key={review.id}>
                   <TableCell className="font-medium text-slate-900">{review.author}</TableCell>
                   <TableCell className="text-blue-600 hover:underline cursor-pointer">{review.product}</TableCell>

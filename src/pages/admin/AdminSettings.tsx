@@ -16,7 +16,7 @@ export const AdminSettings: React.FC = () => {
   const { adminUser } = useAdminAuthStore();
   const queryClient = useQueryClient();
 
-  const { data: users = [], isLoading } = useQuery({
+  const { data: users = [] } = useQuery({
     queryKey: ['admin_users'],
     queryFn: getAdminUsers,
     enabled: adminUser?.role === 'Super Admin'
