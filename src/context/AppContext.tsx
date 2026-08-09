@@ -105,16 +105,38 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const toggleTheme = () => {};
 
   // Cart state
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const [cart, setCart] = useState<CartItem[]>(() => {
+    const saved = localStorage.getItem('ny_cart');
+    return saved ? JSON.parse(saved) : [];
+  });
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   // Wishlist state
-  const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
+  const [wishlist, setWishlist] = useState<WishlistItem[]>(() => {
+    const saved = localStorage.getItem('ny_wishlist');
+    return saved ? JSON.parse(saved) : [];
+  });
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
 
   // Compare state
-  const [compareList, setCompareList] = useState<Product[]>([]);
+  const [compareList, setCompareList] = useState<Product[]>(() => {
+    const saved = localStorage.getItem('ny_compare');
+    return saved ? JSON.parse(saved) : [];
+  });
   const [isCompareOpen, setIsCompareOpen] = useState(false);
+
+  // Persist state
+  useEffect(() => {
+    localStorage.setItem('ny_cart', JSON.stringify(cart));
+  }, [cart]);
+
+  useEffect(() => {
+    localStorage.setItem('ny_wishlist', JSON.stringify(wishlist));
+  }, [wishlist]);
+
+  useEffect(() => {
+    localStorage.setItem('ny_compare', JSON.stringify(compareList));
+  }, [compareList]);
 
   // Quick view & Modals
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);

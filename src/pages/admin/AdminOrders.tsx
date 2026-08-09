@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
-import { getOrders, updateOrderStatus, getOrderById, updateOrderTracking } from '../../lib/api';
+import { getOrders, updateOrderStatus, getOrderById } from '../../lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../components/ui/Table';
 import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
-import { Eye, Printer, Truck, CheckCircle2, Clock, XCircle, Search, Edit2, Save, X, Download } from 'lucide-react';
+import { Eye, Printer, Truck, CheckCircle2, Clock, XCircle, Search, Download } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import Barcode from 'react-barcode';
+import { PRODUCTS } from '../../data/products';
+import { supabase } from '../../lib/supabase';
 
 export const AdminOrders: React.FC = () => {
   const queryClient = useQueryClient();
@@ -17,8 +19,6 @@ export const AdminOrders: React.FC = () => {
   const { data: orders = [], isLoading } = useQuery({ queryKey: ['orders'], queryFn: getOrders });
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
-  const [isEditingTracking, setIsEditingTracking] = useState(false);
-  const [editTrackingId, setEditTrackingId] = useState('');
 
   const downloadSVG = (containerId: string, filename: string) => {
     const container = document.getElementById(containerId);
@@ -52,21 +52,12 @@ export const AdminOrders: React.FC = () => {
   const orderDetails = fetchedOrderDetails;
 
   const updateStatusMutation = useMutation({
-    mutationFn: ({ id, status }: { id: string, status: string }) => updateOrderStatus(id, status),
+    mutationFn: ({ id, status, tracking_id, invoice_url }: { id: string, status: string, tracking_id?: string, invoice_url?: string }) => updateOrderStatus(id, status, tracking_id, invoice_url),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['orders'] });
       if (selectedOrder) {
         queryClient.invalidateQueries({ queryKey: ['order', selectedOrder.id] });
       }
-    }
-  });
-
-  const updateTrackingMutation = useMutation({
-    mutationFn: ({ id, tracking_id }: { id: string, tracking_id: string }) => updateOrderTracking(id, tracking_id),
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['orders'] });
-      setSelectedOrder(data);
-      setIsEditingTracking(false);
     }
   });
 
@@ -202,34 +193,9 @@ export const AdminOrders: React.FC = () => {
                 <div className="flex justify-between items-start">
                   <div>
                     <CardTitle className="text-lg">Order Details</CardTitle>
-                    {isEditingTracking ? (
-                      <div className="flex items-center gap-2 mt-2">
-                        <input
-                          type="text"
-                          value={editTrackingId}
-                          onChange={(e) => setEditTrackingId(e.target.value)}
-                          className="border border-slate-300 rounded px-2 py-1 text-sm font-mono focus:outline-none focus:border-blue-500"
-                        />
-                        <Button size="sm" variant="ghost" onClick={() => {
-                          updateTrackingMutation.mutate({ id: selectedOrder.id, tracking_id: editTrackingId });
-                        }} disabled={updateTrackingMutation.isPending}>
-                          <Save className="w-4 h-4 text-green-600" />
-                        </Button>
-                        <Button size="sm" variant="ghost" onClick={() => setIsEditingTracking(false)}>
-                          <X className="w-4 h-4 text-red-600" />
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2 mt-1">
-                        <p className="text-sm text-slate-500 font-mono">{selectedOrder.tracking_id}</p>
-                        <button onClick={() => {
-                          setEditTrackingId(selectedOrder.tracking_id);
-                          setIsEditingTracking(true);
-                        }} className="text-blue-600 hover:text-blue-800 p-1 rounded-md hover:bg-blue-50 transition-colors">
-                          <Edit2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    )}
+                    <div className="flex items-center gap-2 mt-1">
+                      <p className="text-sm text-slate-500 font-mono">{selectedOrder.tracking_id}</p>
+                    </div>
                   </div>
                   <Button variant="outline" size="sm" onClick={handlePrintSummary}>
                     <Printer className="w-4 h-4 mr-2" /> Print Summary
@@ -239,40 +205,81 @@ export const AdminOrders: React.FC = () => {
               <CardContent className="p-4 space-y-6">
                 
                 {/* Status Update */}
-                <div>
-                  <h4 className="text-sm font-semibold text-slate-900 mb-2">Update Status</h4>
-                  <div className="flex gap-2 flex-wrap">
-                    {['pending', 'processing', 'shipped', 'delivered', 'cancelled'].map((status) => (
-                      <Button
-                        key={status}
-                        variant={selectedOrder.status === status ? 'default' : 'outline'}
-                        size="sm"
-                        className="capitalize"
-                        onClick={() => {
-                          if (status === 'shipped') {
-                            const trackingId = window.prompt("Please enter the transport tracking ID for shipping:");
-                            if (!trackingId) {
-                              alert("Tracking ID is required to mark as shipped.");
-                              return;
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="text-sm font-semibold text-slate-900 mb-2">Update Status</h4>
+                    <div className="flex gap-2 flex-wrap">
+                      {['pending', 'processing', 'shipped', 'delivered', 'cancelled'].map((status) => (
+                        <Button
+                          key={status}
+                          variant={selectedOrder.status === status ? 'default' : 'outline'}
+                          size="sm"
+                          className="capitalize"
+                          onClick={() => {
+                            if (status === 'shipped') {
+                              const tid = window.prompt("Enter transport tracking ID for shipping (Optional):");
+                              if (window.confirm(`Are you sure you want to update the status to '${status}'?`)) {
+                                setSelectedOrder({...selectedOrder, status, shipping_tracking_id: tid || selectedOrder.shipping_tracking_id});
+                                updateStatusMutation.mutate({ id: selectedOrder.id, status, tracking_id: tid || undefined });
+                              }
+                            } else {
+                              if (window.confirm(`Are you sure you want to update the status to '${status}'?`)) {
+                                setSelectedOrder({...selectedOrder, status});
+                                updateStatusMutation.mutate({ id: selectedOrder.id, status });
+                              }
                             }
-                            if (window.confirm(`Are you sure you want to update the status to '${status}'?`)) {
-                              setSelectedOrder({...selectedOrder, status, tracking_id: trackingId});
-                              updateTrackingMutation.mutate({ id: selectedOrder.id, tracking_id: trackingId });
-                              updateStatusMutation.mutate({ id: selectedOrder.id, status });
-                            }
-                          } else {
-                            if (window.confirm(`Are you sure you want to update the status to '${status}'?`)) {
-                              setSelectedOrder({...selectedOrder, status});
-                              updateStatusMutation.mutate({ id: selectedOrder.id, status });
-                            }
-                          }
-                        }}
-                        disabled={updateStatusMutation.isPending && selectedOrder.id !== 'mock-1'}
-                      >
-                        {status}
-                      </Button>
-                    ))}
+                          }}
+                          disabled={updateStatusMutation.isPending && selectedOrder.id !== 'mock-1'}
+                        >
+                          {status}
+                        </Button>
+                      ))}
+                    </div>
                   </div>
+
+                  {selectedOrder.status === 'shipped' && (
+                    <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 mt-4">
+                      <h4 className="text-sm font-semibold text-blue-900 mb-2">Shipping Information</h4>
+                      <p className="text-sm text-blue-800 mb-3">Tracking ID: <strong>{selectedOrder.shipping_tracking_id || 'Not provided'}</strong></p>
+                      
+                      <div className="space-y-2">
+                        <label className="text-xs font-semibold text-blue-900 uppercase">Upload Invoice (PDF/Image)</label>
+                        <div className="flex items-center space-x-2">
+                          <input 
+                            type="file" 
+                            id="invoice-upload" 
+                            className="text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200"
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (!file) return;
+                              const filename = `${selectedOrder.id}-${file.name}`;
+                              const { error } = await supabase.storage.from('invoices').upload(filename, file, { upsert: true });
+                              if (error) {
+                                alert("Error uploading invoice: " + error.message);
+                                return;
+                              }
+                              const { data: urlData } = supabase.storage.from('invoices').getPublicUrl(filename);
+                              updateStatusMutation.mutate({ 
+                                id: selectedOrder.id, 
+                                status: selectedOrder.status, 
+                                invoice_url: urlData.publicUrl 
+                              }, {
+                                onSuccess: () => {
+                                  setSelectedOrder({...selectedOrder, invoice_url: urlData.publicUrl});
+                                  alert("Invoice Uploaded Successfully!");
+                                }
+                              });
+                            }}
+                          />
+                        </div>
+                        {selectedOrder.invoice_url && (
+                          <p className="text-xs text-green-600 font-medium flex items-center mt-2">
+                            <CheckCircle2 className="w-3 h-3 mr-1" /> Invoice has been uploaded.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Hidden Invoice Content for Printing */}
@@ -304,13 +311,16 @@ export const AdminOrders: React.FC = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {orderDetails?.order_items ? orderDetails.order_items.map((item: any, index: number) => (
-                          <tr key={item.id || index}>
-                            <td className="text-center">{index + 1}</td>
-                            <td>{item.products?.name || 'Unknown Product'}</td>
-                            <td className="text-center"><strong>{item.quantity}</strong></td>
-                          </tr>
-                        )) : null}
+                        {orderDetails?.order_items ? orderDetails.order_items.map((item: any, index: number) => {
+                          const product = PRODUCTS.find(p => p.id === item.product_id);
+                          return (
+                            <tr key={item.id || index}>
+                              <td className="text-center">{index + 1}</td>
+                              <td>{product ? product.name : (item.products?.name || 'Unknown Product')}</td>
+                              <td className="text-center"><strong>{item.quantity}</strong></td>
+                            </tr>
+                          );
+                        }) : null}
                       </tbody>
                     </table>
                     

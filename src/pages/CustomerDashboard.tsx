@@ -22,6 +22,8 @@ export const CustomerDashboard: React.FC = () => {
           date: new Date(o.created_at).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
           total: o.total_amount,
           status: o.status === 'pending' ? 'Processing' : (o.status.charAt(0).toUpperCase() + o.status.slice(1)),
+          trackingId: o.shipping_tracking_id,
+          invoiceUrl: o.invoice_url,
           items: o.order_items.map((item: any) => {
             const product = PRODUCTS.find(p => p.id === item.product_id);
             return {
@@ -137,9 +139,16 @@ export const CustomerDashboard: React.FC = () => {
                       }`}>
                         <Truck className="w-3 h-3 mr-1.5" /> {orders[0].status}
                       </span>
-                      <button className="px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-semibold hover:bg-slate-50 transition-colors shadow-sm">
-                        Track Order
-                      </button>
+                      {orders[0].trackingId && (
+                        <p className="text-xs font-medium text-slate-500">
+                          Tracking: <span className="text-slate-900 font-bold">{orders[0].trackingId}</span>
+                        </p>
+                      )}
+                      {orders[0].invoiceUrl && (
+                        <a href={orders[0].invoiceUrl} target="_blank" rel="noreferrer" className="px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-semibold hover:bg-slate-50 transition-colors shadow-sm">
+                          Invoice
+                        </a>
+                      )}
                     </div>
                   </div>
                 ) : (
@@ -205,12 +214,16 @@ export const CustomerDashboard: React.FC = () => {
                           <p className="text-xl font-bold text-slate-900">₹{order.total.toLocaleString()}</p>
                         </div>
                         <div className="flex flex-col space-y-2 w-full">
-                          <button className="w-full px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition-colors text-center">
-                            Track Order
-                          </button>
-                          <button className="w-full px-3 py-1.5 bg-white border border-slate-200 text-slate-700 rounded-lg text-xs font-bold hover:bg-slate-50 transition-colors text-center">
-                            View Invoice
-                          </button>
+                          {order.trackingId && (
+                            <p className="text-[11px] text-slate-500 font-medium mb-1 text-right w-full block">
+                              Tracking ID:<br/><span className="text-slate-900 font-bold">{order.trackingId}</span>
+                            </p>
+                          )}
+                          {order.invoiceUrl && (
+                            <a href={order.invoiceUrl} target="_blank" rel="noreferrer" className="w-full px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition-colors text-center">
+                              Download Invoice
+                            </a>
+                          )}
                         </div>
                       </div>
                     </div>

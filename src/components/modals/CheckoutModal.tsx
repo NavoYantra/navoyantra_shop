@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { createOrder } from '../../lib/api';
 import { 
@@ -18,7 +18,10 @@ export const CheckoutModal: React.FC = () => {
   const [step, setStep] = useState<'shipping' | 'payment' | 'confirmation'>('shipping');
   const [paymentMethod, setPaymentMethod] = useState<'upi' | 'card' | 'cod'>('upi');
 
-  const [shippingData, setShippingData] = useState({
+  const [shippingData, setShippingData] = useState(() => {
+    const saved = localStorage.getItem('ny_shipping');
+    if (saved) return JSON.parse(saved);
+    return {
     fullName: '',
     email: '',
     phone: '',
@@ -29,7 +32,12 @@ export const CheckoutModal: React.FC = () => {
     pincode: '',
     city: '',
     state: ''
+    };
   });
+
+  useEffect(() => {
+    localStorage.setItem('ny_shipping', JSON.stringify(shippingData));
+  }, [shippingData]);
 
   const [orderId, setOrderId] = useState('');
 

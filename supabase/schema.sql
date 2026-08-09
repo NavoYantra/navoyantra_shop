@@ -144,3 +144,14 @@ CREATE POLICY "Allow authenticated select on orders" ON orders FOR SELECT TO aut
 CREATE POLICY "Allow authenticated update on orders" ON orders FOR UPDATE TO authenticated USING (true);
 CREATE POLICY "Allow authenticated select on order_items" ON order_items FOR SELECT TO authenticated USING (true);
 
+-- ==========================================
+-- ADD NEW COLUMNS & INVOICE STORAGE
+-- ==========================================
+
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS shipping_tracking_id TEXT;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS invoice_url TEXT;
+
+-- Create storage bucket for invoices
+insert into storage.buckets (id, name, public) values ('invoices', 'invoices', true) ON CONFLICT (id) DO NOTHING;
+
+

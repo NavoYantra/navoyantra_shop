@@ -216,8 +216,12 @@ export const getOrderById = async (id: string) => {
   return data;
 };
 
-export const updateOrderStatus = async (id: string, status: string) => {
-  const { data, error } = await supabase.from('orders').update({ status }).eq('id', id).select().single();
+export const updateOrderStatus = async (id: string, status: string, tracking_id?: string, invoice_url?: string) => {
+  const updateData: any = { status };
+  if (tracking_id !== undefined) updateData.shipping_tracking_id = tracking_id;
+  if (invoice_url !== undefined) updateData.invoice_url = invoice_url;
+  
+  const { data, error } = await supabase.from('orders').update(updateData).eq('id', id).select().single();
   if (error) throw error;
   return data;
 };
