@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useSearchParams } from 'react-router-dom';
 import { getOrders, updateOrderStatus, getOrderById, updateOrderTracking } from '../../lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../components/ui/Table';
@@ -11,6 +12,8 @@ import Barcode from 'react-barcode';
 
 export const AdminOrders: React.FC = () => {
   const queryClient = useQueryClient();
+  const [searchParams] = useSearchParams();
+  const statusFilter = searchParams.get('status');
   const { data: orders = [], isLoading } = useQuery({ queryKey: ['orders'], queryFn: getOrders });
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
@@ -67,10 +70,11 @@ export const AdminOrders: React.FC = () => {
 
   const displayOrders = [mockOrder, ...orders];
 
-  const filteredOrders = displayOrders.filter((o: any) => 
-    o.tracking_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    o.customer_name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredOrders = displayOrders.filter((o: any) => {
+    const matchesSearch = o.tracking_id.toLowerCase().includes(searchTerm.toLowerCase()) || o.customer_name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter ? o.status === statusFilter : true;
+    return matchesSearch && matchesStatus;
+  });
 
   const getStatusBadge = (status: string) => {
     switch(status) {
@@ -122,7 +126,9 @@ export const AdminOrders: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Orders Management</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+          Orders {statusFilter ? `- ${statusFilter.charAt(0).toUpperCase() + statusFilter.slice(1)}` : 'Management'}
+        </h1>
         <div className="relative w-64">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
           <input 
@@ -248,7 +254,7 @@ export const AdminOrders: React.FC = () => {
                         size="sm"
                         className="capitalize"
                         onClick={() => {
-                          if (window.confirm(\`Are you sure you want to update the status to '\${status}'?\`)) {
+                          if (window.confirm(`Are you sure you want to update the status to '${status}'?`)) {
                             setSelectedOrder({...selectedOrder, status});
                             if (selectedOrder.id !== 'mock-1') {
                               updateStatusMutation.mutate({ id: selectedOrder.id, status });
