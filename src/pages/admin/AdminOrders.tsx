@@ -81,18 +81,29 @@ export const AdminOrders: React.FC = () => {
           <head>
             <title>Invoice - ${orderDetails?.tracking_id}</title>
             <style>
-              body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 20px; color: #333; }
-              .invoice-box { max-width: 800px; margin: auto; padding: 30px; border: 1px solid #eee; box-shadow: 0 0 10px rgba(0, 0, 0, 0.15); }
-              .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; border-bottom: 2px solid #f5f5f5; padding-bottom: 20px;}
-              .company-info { font-size: 14px; color: #666; }
-              .invoice-details { text-align: right; }
-              .tracking-codes { display: flex; gap: 20px; align-items: center; margin-top: 20px; padding: 20px; background: #f9fafb; border-radius: 8px;}
-              table { width: 100%; line-height: inherit; text-align: left; border-collapse: collapse; margin-bottom: 30px; }
-              table th { background: #f8fafc; padding: 12px; border-bottom: 2px solid #e2e8f0; }
-              table td { padding: 12px; border-bottom: 1px solid #e2e8f0; }
-              .total-row td { border-top: 2px solid #333; font-weight: bold; font-size: 18px; }
-              .footer { margin-top: 50px; text-align: center; color: #666; font-size: 14px; }
-              @media print { .invoice-box { box-shadow: none; border: none; } }
+              body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 20px; color: #000; font-size: 11px; }
+              .invoice-box { max-width: 800px; margin: auto; border: 1px solid #000; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+              .header { display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 10px; border-bottom: 1px solid #000; }
+              .company-details h2 { font-size: 16px; margin: 0 0 5px 0; font-weight: bold; }
+              .company-details p { margin: 0; line-height: 1.4; font-size: 10px; }
+              .quote-title h1 { font-size: 28px; font-weight: normal; margin: 0; text-transform: uppercase; }
+              table { width: 100%; border-collapse: collapse; font-size: 10px; }
+              table, th, td { border: 1px solid #000; }
+              th, td { padding: 4px 6px; text-align: left; vertical-align: top; }
+              .info-table { margin-bottom: 15px; }
+              .info-table td { width: 50%; }
+              .info-header { background: #f0f0f0; padding: 2px 4px; margin: -4px -6px 4px -6px; border-bottom: 1px solid #000; font-weight: bold; }
+              .items-table th { background: #f0f0f0; font-weight: bold; text-align: center; }
+              .text-right { text-align: right !important; }
+              .text-center { text-align: center !important; }
+              .bold { font-weight: bold; }
+              .footer-grid { display: flex; border: 1px solid #000; margin-top: -1px; }
+              .left-section { width: 65%; border-right: 1px solid #000; padding: 6px; font-size: 10px; }
+              .right-section { width: 35%; display: flex; flex-direction: column; justify-content: space-between; }
+              .summary-table { margin: 0; border: none; }
+              .summary-table td, .summary-table th, .summary-table tr { border: none; padding: 4px 6px; }
+              .signature { text-align: right; margin-top: 50px; padding: 10px; border-top: 1px solid #000; font-size: 10px; }
+              @media print { .invoice-box { box-shadow: none; } body { padding: 0; } }
             </style>
           </head>
           <body>
@@ -221,57 +232,132 @@ export const AdminOrders: React.FC = () => {
                 <div id="invoice-content" style={{ display: 'none' }}>
                   <div className="invoice-box">
                     <div className="header">
-                      <div>
-                        <h1 style={{ margin: 0, color: '#2563eb' }}>NavoYantra Shop</h1>
-                        <div className="company-info">
-                          <p>123 Tech Park, New Delhi, India<br/>support@navoyantra.com<br/>+91 9876543210</p>
-                        </div>
+                      <div className="company-details">
+                        <h2>NavoYantra Technology</h2>
+                        <p>
+                          A-79, panchsheel garden, naveen shahdara,<br/>
+                          Near Shanti Nursing Home and KD field Public School<br/>
+                          Shahdara Delhi 110032<br/>
+                          India<br/>
+                          GSTIN 07AHGPR2684C1ZA<br/>
+                          09582528010<br/>
+                          rohit.programmer.tech@gmail.com
+                        </p>
                       </div>
-                      <div className="invoice-details">
-                        <h2 style={{ margin: 0, color: '#333' }}>INVOICE</h2>
-                        <p>Order ID: <strong>${selectedOrder.tracking_id}</strong><br/>
-                        Date: ${new Date(selectedOrder.created_at).toLocaleDateString()}</p>
+                      <div className="quote-title">
+                        <h1>TAX INVOICE</h1>
                       </div>
-                    </div>
-                    
-                    <div style={{ marginBottom: '30px' }}>
-                      <h3 style={{ borderBottom: '1px solid #eee', paddingBottom: '10px' }}>Bill To:</h3>
-                      <p>
-                        <strong>${selectedOrder.customer_name}</strong><br/>
-                        ${selectedOrder.shipping_address}<br/>
-                        ${selectedOrder.customer_phone || ''}<br/>
-                        ${selectedOrder.customer_email}
-                      </p>
                     </div>
 
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>Item</th>
-                          <th style={{ textAlign: 'center' }}>Qty</th>
-                          <th style={{ textAlign: 'right' }}>Price</th>
-                          <th style={{ textAlign: 'right' }}>Total</th>
-                        </tr>
-                      </thead>
+                    <table className="info-table">
                       <tbody>
-                        ${orderDetails?.order_items ? orderDetails.order_items.map((item: any) => `
-                          <tr>
-                            <td>${item.products?.name || 'Unknown Product'}</td>
-                            <td style="text-align: center;">${item.quantity}</td>
-                            <td style="text-align: right;">₹${item.price_at_time}</td>
-                            <td style="text-align: right;">₹${item.price_at_time * item.quantity}</td>
-                          </tr>
-                        `).join('') : ''}
-                        <tr className="total-row">
-                          <td colSpan="3" style={{ textAlign: 'right' }}>Grand Total:</td>
-                          <td style={{ textAlign: 'right' }}>₹${selectedOrder.total_amount}</td>
+                        <tr>
+                          <td>
+                            <div style={{ display: 'flex' }}>
+                              <div style={{ width: '120px' }}><strong>#</strong></div>
+                              <div>: {selectedOrder.tracking_id}</div>
+                            </div>
+                            <div style={{ display: 'flex' }}>
+                              <div style={{ width: '120px' }}><strong>Date</strong></div>
+                              <div>: {new Date(selectedOrder.created_at).toLocaleDateString()}</div>
+                            </div>
+                          </td>
+                          <td>
+                            <div style={{ display: 'flex' }}>
+                              <div style={{ width: '120px' }}><strong>Place Of Supply</strong></div>
+                              <div>: Delhi (07)</div>
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <div className="info-header">Bill To</div>
+                            <strong>{selectedOrder.customer_name}</strong><br/>
+                            {selectedOrder.shipping_address}<br/>
+                            {selectedOrder.customer_phone}<br/>
+                            {selectedOrder.customer_email}
+                          </td>
+                          <td>
+                            <div className="info-header">Ship To</div>
+                            <strong>{selectedOrder.customer_name}</strong><br/>
+                            {selectedOrder.shipping_address}<br/>
+                            {selectedOrder.customer_phone}
+                          </td>
                         </tr>
                       </tbody>
                     </table>
-                    
-                    <div className="footer">
-                      <p>Thank you for shopping with NavoYantra!</p>
-                      <p>This is a computer generated invoice and requires no signature.</p>
+
+                    <table className="items-table">
+                      <thead>
+                        <tr>
+                          <th rowSpan={2} style={{ width: '30px' }}>#</th>
+                          <th rowSpan={2}>Item & Description</th>
+                          <th rowSpan={2}>HSN/SAC</th>
+                          <th rowSpan={2}>Qty</th>
+                          <th rowSpan={2}>Rate</th>
+                          <th colSpan={2}>IGST</th>
+                          <th rowSpan={2}>Amount</th>
+                        </tr>
+                        <tr>
+                          <th style={{ width: '40px' }}>%</th>
+                          <th style={{ width: '60px' }}>Amt</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {orderDetails?.order_items ? orderDetails.order_items.map((item: any, index: number) => {
+                          const rate = (item.price_at_time / 1.18).toFixed(2);
+                          const igstAmt = (item.price_at_time - (item.price_at_time / 1.18)).toFixed(2);
+                          const amount = (item.price_at_time * item.quantity).toFixed(2);
+                          return (
+                            <tr key={item.id || index}>
+                              <td className="text-center">{index + 1}</td>
+                              <td>{item.products?.name || 'Unknown Product'}</td>
+                              <td>95031000</td>
+                              <td className="text-right">{item.quantity}.00</td>
+                              <td className="text-right">{rate}</td>
+                              <td className="text-right">18%</td>
+                              <td className="text-right">{igstAmt}</td>
+                              <td className="text-right">{amount}</td>
+                            </tr>
+                          );
+                        }) : null}
+                      </tbody>
+                    </table>
+
+                    <div className="footer-grid">
+                      <div className="left-section">
+                        <p>Total In Words<br/><strong>Indian Rupee {(selectedOrder.total_amount).toLocaleString('en-IN')} Only</strong></p>
+                        <br/>
+                        <p>Notes<br/>Looking forward for your business.</p>
+                        <br/>
+                        <p>Terms & Conditions:<br/>
+                        1. Validity: This invoice is valid for 15 days from the date of issue.<br/>
+                        2. Payment Terms: 50% advance payment is required to start the work, and the remaining 50% upon delivery/completion.<br/>
+                        3. Delivery: Delivery will be processed within 10-15 working days after receiving the advance payment.<br/>
+                        4. Jurisdiction: All contracts and disputes arising out of this quotation shall be subject to the exclusive jurisdiction of the local courts in Delhi.</p>
+                      </div>
+                      <div className="right-section">
+                        <table className="summary-table">
+                          <tbody>
+                            <tr>
+                              <td>Sub Total</td>
+                              <td className="text-right">{(selectedOrder.total_amount / 1.18).toFixed(2)}</td>
+                            </tr>
+                            <tr>
+                              <td>IGST18 (18%)</td>
+                              <td className="text-right">{(selectedOrder.total_amount - (selectedOrder.total_amount / 1.18)).toFixed(2)}</td>
+                            </tr>
+                            <tr>
+                              <td className="bold">Total</td>
+                              <td className="text-right bold">₹{Number(selectedOrder.total_amount).toFixed(2)}</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <div style={{ flexGrow: 1 }}></div>
+                        <div className="signature">
+                          Authorized Signature
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
