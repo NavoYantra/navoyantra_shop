@@ -59,8 +59,11 @@ export const AdminCoupons: React.FC = () => {
     
     const payload: any = {
       code: code.toUpperCase(),
-      type,
-      value,
+      discount_type: type,
+      discount_amount: value,
+      description,
+      is_active: true,
+      usage_count: 0,
     };
     
     if (expiryDate) payload.expiry_date = expiryDate;
@@ -221,13 +224,13 @@ export const AdminCoupons: React.FC = () => {
                       </span>
                     </TableCell>
                     <TableCell>
-                      <span className="capitalize text-slate-600">{coupon.type}</span>
+                      <span className="capitalize text-slate-600">{coupon.discount_type}</span>
                     </TableCell>
                     <TableCell>
                       <div className="font-medium text-slate-900">
-                        {coupon.type === 'percentage' && `${coupon.value}% OFF`}
-                        {coupon.type === 'fixed' && `₹${coupon.value} OFF`}
-                        {coupon.type === 'other' && <span className="text-blue-600 font-semibold">{coupon.description}</span>}
+                        {coupon.discount_type === 'percentage' && `${coupon.discount_amount}% OFF`}
+                        {coupon.discount_type === 'fixed' && `₹${coupon.discount_amount} OFF`}
+                        {coupon.discount_type === 'other' && <span className="text-blue-600 font-semibold">{coupon.description}</span>}
                       </div>
                       {coupon.usage_limit_per_user && (
                         <div className="text-xs text-slate-500 mt-1">Limit: {coupon.usage_limit_per_user}/user</div>
