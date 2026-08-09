@@ -2,6 +2,8 @@ import React from 'react';
 import { HeroSection } from '../components/home/HeroSection';
 import { FeaturedCategories } from '../components/home/FeaturedCategories';
 import { OffersSection } from '../components/home/OffersSection';
+import { NewArrivalsSection } from '../components/home/NewArrivalsSection';
+import { FeaturedProductsSection } from '../components/home/FeaturedProductsSection';
 import { ShopByAgeSection } from '../components/home/ShopByAgeSection';
 import { ShopByTechSection } from '../components/home/ShopByTechSection';
 import { BestSellersSection } from '../components/home/BestSellersSection';
@@ -17,7 +19,9 @@ export const HomePage: React.FC = () => {
     <div className="space-y-0">
       <HeroSection />
       <FeaturedCategories />
+      <NewArrivalsSection />
       <OffersSection />
+      <FeaturedProductsSection />
       <ShopByAgeSection />
       <ShopByTechSection />
       <BestSellersSection />

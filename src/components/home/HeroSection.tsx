@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
-import { PRODUCTS } from '../../data/products';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
 import { 
   Sparkles, ArrowRight,   CheckCircle2, Star, Users, School
@@ -21,11 +20,11 @@ const PARTICLES = Array.from({ length: 30 }).map((_, i) => ({
 }));
 
 export const HeroSection: React.FC = () => {
-  const { setIsQuoteModalOpen, setQuickViewProduct } = useApp();
+  const { setIsQuoteModalOpen, setQuickViewProduct, storeProducts } = useApp();
   
   // Slider state
   const [currentSlide, setCurrentSlide] = useState(0);
-  const newArrivals = PRODUCTS.slice(0, 4);
+  const newArrivals = storeProducts.slice(0, 4);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -188,12 +187,12 @@ export const HeroSection: React.FC = () => {
           {/* Right Hero Visual Feature Highlight (5 Columns) */}
           <div className="lg:col-span-5 relative mt-8 lg:mt-0">
             
-            {/* New Arrivals Header */}
+            {/* Top Selling Header */}
             <div className="flex items-center justify-between mb-4 px-2">
               <h3 className="text-white font-bold flex items-center space-x-2">
-                <Sparkles className="w-5 h-5 text-orange-400" />
-                <span className="text-lg">New Arrivals</span>
-              </h3>
+                  <Sparkles className="w-5 h-5 text-orange-500" />
+                  <span className="text-white font-black text-xl tracking-tight">Top Selling</span>
+                </h3>
               <div className="flex space-x-2">
                 {newArrivals.map((_, idx) => (
                   <button
