@@ -2,10 +2,12 @@ import React from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useAdminStore } from '../../../store/adminStore';
 import { useAdminAuthStore } from '../../../store/adminAuthStore';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { getNotifications, markNotificationRead } from '../../../lib/api';
 import { 
   LayoutDashboard, Package, Boxes, 
   Settings, Image as ImageIcon, Bell, Search,
-  ChevronDown, ChevronRight, LogOut
+  ChevronDown, ChevronRight, LogOut, ShoppingCart
 } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 
@@ -24,6 +26,7 @@ export const AdminLayout: React.FC = () => {
 
   const navItems = [
     { name: 'Dashboard', path: '/admin', icon: LayoutDashboard },
+    { name: 'Orders', path: '/admin/orders', icon: ShoppingCart },
     { 
       name: 'Products', 
       icon: Package, 
@@ -44,6 +47,17 @@ export const AdminLayout: React.FC = () => {
   if (adminUser?.role === 'Super Admin') {
     navItems.push({ name: 'Settings', path: '/admin/settings', icon: Settings });
   }
+
+  // Fetch notifications
+  const queryClient = useQueryClient();
+  const { data: notifications = [] } = useQuery({ queryKey: ['notifications'], queryFn: getNotifications });
+  
+  const markAsReadMutation = useMutation({
+    mutationFn: (id: string) => markNotificationRead(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['notifications'] })
+  });
+
+  const unreadCount = notifications.filter((n: any) => !n.is_read).length;
 
   return (
     <div className="min-h-screen bg-slate-50 flex">
@@ -160,10 +174,46 @@ export const AdminLayout: React.FC = () => {
           </div>
           
           <div className="flex items-center space-x-4">
-            <button className="relative p-2 text-slate-400 hover:bg-slate-100 rounded-full transition-colors">
-              <Bell size={20} />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-orange-500 rounded-full border-2 border-white"></span>
-            </button>
+            {/* Notifications Dropdown */}
+            <div className="relative group/notif">
+              <button className="relative p-2 text-slate-400 hover:bg-slate-100 rounded-full transition-colors">
+                <Bell size={20} />
+                {unreadCount > 0 && (
+                  <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white"></span>
+                )}
+              </button>
+              
+              <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-slate-200 py-2 opacity-0 group-hover/notif:opacity-100 pointer-events-none group-hover/notif:pointer-events-auto transition-all z-50">
+                <div className="px-4 pb-2 border-b border-slate-100 flex justify-between items-center">
+                  <h3 className="text-sm font-semibold text-slate-900">Notifications</h3>
+                  {unreadCount > 0 && <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">{unreadCount} New</span>}
+                </div>
+                <div className="max-h-[300px] overflow-y-auto">
+                  {notifications.length === 0 ? (
+                    <div className="px-4 py-6 text-center text-sm text-slate-500">No notifications yet</div>
+                  ) : (
+                    notifications.map((notif: any) => (
+                      <Link 
+                        key={notif.id}
+                        to={notif.action_link || '#'}
+                        onClick={() => !notif.is_read && markAsReadMutation.mutate(notif.id)}
+                        className={cn(
+                          "block px-4 py-3 hover:bg-slate-50 border-b border-slate-50 last:border-0 transition-colors",
+                          !notif.is_read ? "bg-blue-50/30" : ""
+                        )}
+                      >
+                        <div className="flex justify-between items-start mb-1">
+                          <p className={cn("text-sm font-medium", !notif.is_read ? "text-slate-900" : "text-slate-600")}>{notif.title}</p>
+                          {!notif.is_read && <span className="w-1.5 h-1.5 rounded-full bg-blue-600 mt-1.5 flex-shrink-0"></span>}
+                        </div>
+                        <p className="text-xs text-slate-500 line-clamp-2">{notif.message}</p>
+                        <p className="text-[10px] text-slate-400 mt-1">{new Date(notif.created_at).toLocaleString()}</p>
+                      </Link>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
             <div className="relative group">
               <div className="w-9 h-9 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center cursor-pointer border border-blue-200">
                 {user?.email?.[0].toUpperCase() || 'AD'}

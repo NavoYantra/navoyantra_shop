@@ -18,6 +18,7 @@ const AdminReviews = lazy(() => import('./pages/admin/AdminReviews').then(m => (
 const AdminSettings = lazy(() => import('./pages/admin/AdminSettings').then(m => ({ default: m.AdminSettings })));
 const AdminCoupons = lazy(() => import('./pages/admin/AdminCoupons').then(m => ({ default: m.AdminCoupons })));
 const AdminTags = lazy(() => import('./pages/admin/AdminTags').then(m => ({ default: m.AdminTags })));
+const AdminOrders = lazy(() => import('./pages/admin/AdminOrders').then(m => ({ default: m.AdminOrders })));
 
 export const AdminApp: React.FC = () => {
   return (
@@ -38,6 +39,7 @@ export const AdminApp: React.FC = () => {
             <Route path="reviews" element={<AdminReviews />} />
             <Route path="settings" element={<AdminSettings />} />
             <Route path="coupons" element={<AdminCoupons />} />
+            <Route path="orders" element={<AdminOrders />} />
           </Route>
         </Route>
         <Route path="*" element={<Navigate to="/admin" replace />} />

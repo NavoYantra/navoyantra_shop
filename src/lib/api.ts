@@ -185,3 +185,41 @@ export const deleteAdminUser = async (id: string) => {
   const { error } = await supabase.from('admin_users').delete().eq('id', id);
   if (error) throw error;
 };
+
+// --- Orders ---
+export const getOrders = async () => {
+  const { data, error } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
+  if (error) throw error;
+  return data;
+};
+
+export const getOrderById = async (id: string) => {
+  const { data, error } = await supabase.from('orders').select(`
+    *,
+    order_items (
+      *,
+      products (name, images)
+    )
+  `).eq('id', id).single();
+  
+  if (error) throw error;
+  return data;
+};
+
+export const updateOrderStatus = async (id: string, status: string) => {
+  const { data, error } = await supabase.from('orders').update({ status }).eq('id', id).select().single();
+  if (error) throw error;
+  return data;
+};
+
+// --- Notifications ---
+export const getNotifications = async () => {
+  const { data, error } = await supabase.from('notifications').select('*').order('created_at', { ascending: false }).limit(20);
+  if (error) throw error;
+  return data;
+};
+
+export const markNotificationRead = async (id: string) => {
+  const { error } = await supabase.from('notifications').update({ is_read: true }).eq('id', id);
+  if (error) throw error;
+};
