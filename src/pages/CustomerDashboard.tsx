@@ -9,14 +9,21 @@ import { getOrdersByEmail } from '../lib/api';
 import { PRODUCTS } from '../data/products';
 
 export const CustomerDashboard: React.FC = () => {
-  const { user, showToast, setCurrentPage } = useApp();
+  const { user, showToast, setCurrentPage, wishlist, toggleWishlist, addToCart } = useApp();
   const [activeTab, setActiveTab] = useState<'overview' | 'orders' | 'wishlist' | 'addresses' | 'settings'>('overview');
   const [orders, setOrders] = useState<any[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(true);
+  const [savedAddress, setSavedAddress] = useState<any>(null);
 
   useEffect(() => {
-    if (user?.email) {
-      getOrdersByEmail(user.email).then(data => {
+    const saved = localStorage.getItem('ny_shipping');
+    const parsedAddress = saved ? JSON.parse(saved) : null;
+    if (parsedAddress) setSavedAddress(parsedAddress);
+
+    const emailToUse = parsedAddress?.email || user?.email;
+    
+    if (emailToUse) {
+      getOrdersByEmail(emailToUse).then(data => {
         const formatted = data.map(o => ({
           id: o.tracking_id,
           date: new Date(o.created_at).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
@@ -39,23 +46,10 @@ export const CustomerDashboard: React.FC = () => {
       }).finally(() => {
         setLoadingOrders(false);
       });
+    } else {
+      setLoadingOrders(false);
     }
   }, [user]);
-
-  // Dummy Data for Addresses
-  const dummyAddresses = [
-    {
-      id: 1,
-      type: 'Home',
-      name: user?.name || 'Customer Name',
-      street: '123 Maker Street, Tech Park',
-      city: 'New Delhi',
-      state: 'Delhi',
-      zip: '110001',
-      phone: '+91 9876543210',
-      isDefault: true
-    }
-  ];
 
   const handleLogout = async () => {
     try {
@@ -241,16 +235,42 @@ export const CustomerDashboard: React.FC = () => {
 
       case 'wishlist':
         return (
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-12 text-center">
-            <Heart className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-            <h3 className="text-lg font-bold text-slate-900 mb-2">Your wishlist is syncing</h3>
-            <p className="text-slate-500 max-w-sm mx-auto mb-6">We are currently integrating your local wishlist with your account. Check back soon!</p>
-            <button 
-              onClick={() => setCurrentPage('shop')}
-              className="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-colors"
-            >
-              Continue Shopping
-            </button>
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden p-6">
+            <h3 className="text-lg font-bold text-slate-900 mb-6">Your Wishlist</h3>
+            {wishlist.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {wishlist.map((item: any) => (
+                  <div key={item.id} className="border border-slate-200 rounded-xl p-4 flex flex-col relative group hover:shadow-md transition-shadow bg-white">
+                    <button 
+                      onClick={() => toggleWishlist(item)} 
+                      className="absolute top-2 right-2 z-10 p-2 bg-red-50 text-red-500 rounded-full hover:bg-red-100 transition-colors opacity-0 group-hover:opacity-100"
+                    >
+                      <Heart className="w-4 h-4 fill-current" />
+                    </button>
+                    <div className="aspect-square bg-slate-50 rounded-lg mb-4 flex items-center justify-center p-4">
+                      <img src={item.images[0]} alt={item.name} className="max-h-full object-contain mix-blend-multiply" />
+                    </div>
+                    <h4 className="font-bold text-slate-900 text-sm mb-1 line-clamp-2">{item.name}</h4>
+                    <p className="text-blue-600 font-bold text-sm mb-3">₹{(item.discountPrice || item.price || 0).toLocaleString()}</p>
+                    <button 
+                      onClick={() => { addToCart(item, 1); showToast('Added to cart'); }} 
+                      className="mt-auto w-full py-2 bg-slate-900 text-white rounded-lg text-sm font-semibold hover:bg-blue-600 transition-colors"
+                    >
+                      Move to Cart
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-12 text-center text-slate-500 border border-dashed border-slate-300 rounded-xl">
+                <Heart className="w-12 h-12 mx-auto text-slate-300 mb-4" />
+                <h3 className="text-xl font-bold text-slate-900 mb-2">Your wishlist is empty</h3>
+                <p className="mb-6 max-w-md mx-auto">Explore our products and save your favorites here.</p>
+                <button onClick={() => setCurrentPage('shop')} className="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-colors">
+                  Explore Products
+                </button>
+              </div>
+            )}
           </div>
         );
 
@@ -259,35 +279,29 @@ export const CustomerDashboard: React.FC = () => {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-bold text-slate-900">Saved Addresses</h3>
-              <button className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition-colors shadow-sm">
-                + Add New Address
-              </button>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {dummyAddresses.map(addr => (
-                <div key={addr.id} className="bg-white p-6 rounded-2xl border-2 border-blue-100 shadow-sm relative">
-                  {addr.isDefault && (
-                    <span className="absolute top-4 right-4 px-2 py-1 bg-blue-100 text-blue-700 text-[10px] font-bold uppercase rounded-md">
-                      Default
-                    </span>
-                  )}
+              {savedAddress ? (
+                <div className="border-2 border-blue-600 rounded-xl p-5 relative bg-white">
+                  <div className="absolute top-4 right-4"><span className="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-1 rounded">CHECKOUT ADDRESS</span></div>
                   <div className="flex items-center space-x-2 mb-3">
                     <MapPin className="w-5 h-5 text-blue-600" />
-                    <h4 className="font-bold text-slate-900">{addr.type}</h4>
+                    <h4 className="font-bold text-slate-900">Primary</h4>
                   </div>
-                  <div className="space-y-1 text-sm text-slate-600 mb-4">
-                    <p className="font-bold text-slate-900">{addr.name}</p>
-                    <p>{addr.street}</p>
-                    <p>{addr.city}, {addr.state} - {addr.zip}</p>
-                    <p className="pt-2 font-medium">Phone: {addr.phone}</p>
-                  </div>
-                  <div className="flex items-center space-x-3 pt-4 border-t border-slate-100">
-                    <button className="text-sm font-semibold text-blue-600 hover:underline">Edit</button>
-                    <button className="text-sm font-semibold text-rose-600 hover:underline">Delete</button>
-                  </div>
+                  <p className="text-sm font-bold text-slate-900 mb-1">{savedAddress.fullName}</p>
+                  <p className="text-sm text-slate-600 mb-1">{savedAddress.address}</p>
+                  {savedAddress.landmark && <p className="text-sm text-slate-600 mb-1">{savedAddress.landmark}</p>}
+                  <p className="text-sm text-slate-600 mb-3">{savedAddress.city}, {savedAddress.state} - {savedAddress.pincode}</p>
+                  <p className="text-sm text-slate-600 mb-4">Phone: {savedAddress.phone}</p>
+                  <p className="text-sm text-slate-600 mb-4">Email: {savedAddress.email}</p>
                 </div>
-              ))}
+              ) : (
+                <div className="col-span-full text-center py-12 border border-dashed border-slate-300 rounded-xl">
+                  <MapPin className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+                  <p className="text-slate-500">No checkout address saved yet.</p>
+                </div>
+              )}
             </div>
           </div>
         );

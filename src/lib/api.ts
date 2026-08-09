@@ -235,9 +235,9 @@ export const createOrder = async (orderData: any, items: any[]) => {
 
   const orderItems = items.map(item => ({
     order_id: order.id,
-    product_id: item.id || item.product_id,
+    product_id: item.product?.id || item.id || item.product_id,
     quantity: item.quantity,
-    price_at_time: item.price || item.discountPrice || item.regularPrice || 0
+    price_at_time: item.product?.discountPrice || item.product?.price || item.price || 0
   }));
 
   const { error: itemsError } = await supabase.from('order_items').insert(orderItems);
