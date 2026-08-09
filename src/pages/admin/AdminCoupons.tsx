@@ -32,6 +32,9 @@ export const AdminCoupons: React.FC = () => {
       setDescription('');
       setExpiryDate('');
       setUsageLimitPerUser('');
+    },
+    onError: (error: any) => {
+      alert(`Failed to create coupon: ${error.message}`);
     }
   });
 
@@ -54,16 +57,19 @@ export const AdminCoupons: React.FC = () => {
     e.preventDefault();
     if (!code) return;
     
-    createMutation.mutate({
+    const payload: any = {
       code: code.toUpperCase(),
       type,
       value,
       description,
-      expiry_date: expiryDate || null,
       is_active: true,
       usage_count: 0,
-      usage_limit_per_user: usageLimitPerUser === '' ? null : usageLimitPerUser
-    });
+    };
+    
+    if (expiryDate) payload.expiry_date = expiryDate;
+    if (usageLimitPerUser !== '') payload.usage_limit_per_user = usageLimitPerUser;
+
+    createMutation.mutate(payload);
   };
 
   const handleDeleteCoupon = (id: string) => {
