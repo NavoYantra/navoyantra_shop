@@ -11,7 +11,7 @@ import { PRODUCTS } from '../data/products';
 import { ProductCard } from '../components/product/ProductCard';
 
 export const CustomerDashboard: React.FC = () => {
-  const { user, showToast, setCurrentPage, wishlist, toggleWishlist, addToCart, storeProducts } = useApp();
+  const { user, showToast, setCurrentPage, wishlist, storeProducts } = useApp();
   const [activeTab, setActiveTab] = useState<'overview' | 'orders' | 'wishlist' | 'addresses' | 'settings'>('overview');
   const [orders, setOrders] = useState<any[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(true);
