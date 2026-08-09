@@ -294,7 +294,7 @@ export const CustomerDashboard: React.FC = () => {
                                         setOrders(orders.map(o => o.dbId === order.dbId ? { ...o, status: 'cancelled', displayStatus: 'Cancelled' } : o));
                                         showToast('Order cancelled successfully', 'success');
                                       } catch(err) {
-                                        showToast('Error cancelling order', 'error');
+                                        showToast('Error cancelling order', 'warning');
                                       }
                                     }
                                   }}

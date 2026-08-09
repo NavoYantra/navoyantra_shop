@@ -248,46 +248,64 @@ export const AdminOrders: React.FC = () => {
                   <div>
                     <h4 className="text-sm font-semibold text-slate-900 mb-2">Update Status</h4>
                     <div className="flex gap-2 flex-wrap">
-                      {['pending', 'processing', 'shipped', 'delivered'].map((status) => (
-                        <Button
-                          key={status}
-                          variant={selectedOrder.status === status ? 'default' : 'outline'}
-                          size="sm"
-                          className="capitalize"
-                          onClick={() => {
-                            if (selectedOrder.status === status) return;
-                            if (status === 'shipped') {
-                              const tid = window.prompt("Enter transport tracking ID for shipping (Optional):");
-                              if (window.confirm(`Are you sure you want to update the status to '${status}'?`)) {
-                                setSelectedOrder({...selectedOrder, status, shipping_tracking_id: tid || selectedOrder.shipping_tracking_id});
-                                updateStatusMutation.mutate({ id: selectedOrder.id, status, tracking_id: tid || undefined });
+                      {['pending', 'processing', 'shipped', 'delivered'].map((status, index) => {
+                        const currentIdx = ['pending', 'processing', 'shipped', 'delivered'].indexOf(selectedOrder.status);
+                        return (
+                          <Button
+                            key={status}
+                            variant={selectedOrder.status === status ? 'default' : 'outline'}
+                            size="sm"
+                            className="capitalize"
+                            onClick={() => {
+                              if (selectedOrder.status === status) return;
+                              if (status === 'shipped') {
+                                const tid = window.prompt("Enter transport tracking ID for shipping (Optional):");
+                                if (window.confirm(`Are you sure you want to update the status to '${status}'?`)) {
+                                  setSelectedOrder({...selectedOrder, status, shipping_tracking_id: tid || selectedOrder.shipping_tracking_id});
+                                  updateStatusMutation.mutate({ id: selectedOrder.id, status, tracking_id: tid || undefined });
+                                }
+                              } else {
+                                if (window.confirm(`Are you sure you want to update the status to '${status}'?`)) {
+                                  setSelectedOrder({...selectedOrder, status});
+                                  updateStatusMutation.mutate({ id: selectedOrder.id, status });
+                                }
                               }
-                            } else {
-                              if (window.confirm(`Are you sure you want to update the status to '${status}'?`)) {
-                                setSelectedOrder({...selectedOrder, status});
-                                updateStatusMutation.mutate({ id: selectedOrder.id, status });
-                              }
-                            }
-                          }}
-                          disabled={updateStatusMutation.isPending && selectedOrder.id !== 'mock-1'}
-                        >
-                          {status}
-                        </Button>
-                      ))}
+                            }}
+                            disabled={index < currentIdx || (updateStatusMutation.isPending && selectedOrder.id !== 'mock-1')}
+                          >
+                            {status}
+                          </Button>
+                        );
+                      })}
                     </div>
                   </div>
 
-                  {selectedOrder.status === 'shipped' && (
+                  {(selectedOrder.status === 'shipped' || selectedOrder.status === 'delivered') && (
                     <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 mt-4">
                       <h4 className="text-sm font-semibold text-blue-900 mb-2">Shipping Information</h4>
-                      <p className="text-sm text-blue-800 mb-3">Tracking ID: <strong>{selectedOrder.shipping_tracking_id || 'Not provided'}</strong></p>
+                      <p className="text-sm text-blue-800 mb-3 flex items-center">
+                        Tracking ID: <strong className="ml-2 mr-3">{selectedOrder.shipping_tracking_id || 'Not provided'}</strong>
+                        <button 
+                          className="text-xs px-2 py-1 bg-white border border-blue-200 rounded text-blue-600 hover:bg-blue-100 transition-colors"
+                          onClick={() => {
+                            const tid = window.prompt("Enter new tracking ID:", selectedOrder.shipping_tracking_id || "");
+                            if (tid !== null) {
+                              setSelectedOrder({...selectedOrder, shipping_tracking_id: tid});
+                              updateStatusMutation.mutate({ id: selectedOrder.id, status: selectedOrder.status, tracking_id: tid });
+                            }
+                          }}
+                        >
+                          Edit
+                        </button>
+                      </p>
                       
-                      <div className="space-y-2">
-                        <label className="text-xs font-semibold text-blue-900 uppercase">Upload Invoice (PDF/Image)</label>
+                      <div className="space-y-3 mt-4 pt-4 border-t border-blue-100">
+                        <label className="text-xs font-semibold text-blue-900 uppercase">Upload / Update Invoice (PDF/Image)</label>
                         <div className="flex items-center space-x-2">
                           <input 
                             type="file" 
                             id="invoice-upload" 
+                            accept=".pdf,image/*"
                             className="text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200"
                             onChange={async (e) => {
                               const file = e.target.files?.[0];
@@ -313,9 +331,14 @@ export const AdminOrders: React.FC = () => {
                           />
                         </div>
                         {selectedOrder.invoice_url && (
-                          <p className="text-xs text-green-600 font-medium flex items-center mt-2">
-                            <CheckCircle2 className="w-3 h-3 mr-1" /> Invoice has been uploaded.
-                          </p>
+                          <div className="mt-3 bg-white p-3 rounded-lg border border-green-200 flex flex-col space-y-2">
+                            <p className="text-xs text-green-700 font-medium flex items-center">
+                              <CheckCircle2 className="w-4 h-4 mr-1" /> Invoice is uploaded and available.
+                            </p>
+                            <a href={selectedOrder.invoice_url} target="_blank" rel="noreferrer" className="text-sm font-bold text-blue-600 hover:underline inline-flex">
+                              View Invoice Document (PDF)
+                            </a>
+                          </div>
                         )}
                       </div>
                     </div>
