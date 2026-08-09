@@ -248,7 +248,7 @@ export const AdminOrders: React.FC = () => {
                   <div>
                     <h4 className="text-sm font-semibold text-slate-900 mb-2">Update Status</h4>
                     <div className="flex gap-2 flex-wrap">
-                      {['pending', 'processing', 'shipped', 'delivered', 'cancelled'].map((status) => (
+                      {['pending', 'processing', 'shipped', 'delivered'].map((status) => (
                         <Button
                           key={status}
                           variant={selectedOrder.status === status ? 'default' : 'outline'}

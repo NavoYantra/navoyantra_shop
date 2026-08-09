@@ -6,7 +6,7 @@ import {
   ChevronDown, ChevronUp, CheckCircle2, Circle, XCircle
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { getOrdersByEmail } from '../lib/api';
+import { getOrdersByEmail, updateOrderStatus } from '../lib/api';
 import { PRODUCTS } from '../data/products';
 
 export const CustomerDashboard: React.FC = () => {
@@ -27,6 +27,7 @@ export const CustomerDashboard: React.FC = () => {
     if (emailToUse) {
       getOrdersByEmail(emailToUse).then(data => {
         const formatted = data.map(o => ({
+          dbId: o.id,
           id: o.tracking_id,
           date: new Date(o.created_at).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
           total: o.total_amount,
@@ -284,7 +285,21 @@ export const CustomerDashboard: React.FC = () => {
                           {/* Cancel Button */}
                           {(order.status === 'pending' || order.status === 'processing') && (
                             <div className="flex justify-end mt-4">
-                                <button className="px-4 py-2 bg-white border border-rose-200 text-rose-600 text-sm font-bold rounded-lg hover:bg-rose-50 transition-colors">
+                                <button 
+                                  onClick={async (e) => {
+                                    e.stopPropagation();
+                                    if (window.confirm("Are you sure you want to cancel this order?")) {
+                                      try {
+                                        await updateOrderStatus(order.dbId, 'cancelled');
+                                        setOrders(orders.map(o => o.dbId === order.dbId ? { ...o, status: 'cancelled', displayStatus: 'Cancelled' } : o));
+                                        showToast('Order cancelled successfully', 'success');
+                                      } catch(err) {
+                                        showToast('Error cancelling order', 'error');
+                                      }
+                                    }
+                                  }}
+                                  className="px-4 py-2 bg-white border border-rose-200 text-rose-600 text-sm font-bold rounded-lg hover:bg-rose-50 transition-colors"
+                                >
                                   Cancel Order
                                 </button>
                             </div>
