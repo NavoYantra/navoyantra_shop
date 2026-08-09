@@ -26,7 +26,18 @@ export const AdminLayout: React.FC = () => {
 
   const navItems = [
     { name: 'Dashboard', path: '/admin', icon: LayoutDashboard },
-    { name: 'Orders', path: '/admin/orders', icon: ShoppingCart },
+    { 
+      name: 'Orders', 
+      icon: ShoppingCart,
+      children: [
+        { name: 'All Orders', path: '/admin/orders' },
+        { name: 'Pending', path: '/admin/orders?status=pending' },
+        { name: 'Processing', path: '/admin/orders?status=processing' },
+        { name: 'Shipped', path: '/admin/orders?status=shipped' },
+        { name: 'Delivered', path: '/admin/orders?status=delivered' },
+        { name: 'Cancelled', path: '/admin/orders?status=cancelled' },
+      ]
+    },
     { 
       name: 'Products', 
       icon: Package, 
@@ -112,7 +123,9 @@ export const AdminLayout: React.FC = () => {
                   {isSidebarOpen && isExpanded && (
                     <div className="pl-9 space-y-1 mt-1">
                       {item.children.map(child => {
-                        const isActive = location.pathname === child.path;
+                        const childPath = child.path.split('?')[0];
+                        const childSearch = child.path.includes('?') ? child.path.substring(child.path.indexOf('?')) : '';
+                        const isActive = location.pathname === childPath && location.search === childSearch;
                         return (
                           <Link
                             key={child.name}
