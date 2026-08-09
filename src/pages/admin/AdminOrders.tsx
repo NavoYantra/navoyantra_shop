@@ -72,38 +72,28 @@ export const AdminOrders: React.FC = () => {
     }
   };
 
-  const handlePrintInvoice = () => {
-    const printContent = document.getElementById('invoice-content');
+  const handlePrintSummary = () => {
+    const printContent = document.getElementById('summary-content');
     const windowPrint = window.open('', '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
     if (windowPrint && printContent) {
       windowPrint.document.write(`
         <html>
           <head>
-            <title>Invoice - ${orderDetails?.tracking_id}</title>
+            <title>Order Summary - ${orderDetails?.tracking_id}</title>
             <style>
-              body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 20px; color: #000; font-size: 11px; }
-              .invoice-box { max-width: 800px; margin: auto; border: 1px solid #000; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
-              .header { display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 10px; border-bottom: 1px solid #000; }
-              .company-details h2 { font-size: 16px; margin: 0 0 5px 0; font-weight: bold; }
-              .company-details p { margin: 0; line-height: 1.4; font-size: 10px; }
-              .quote-title h1 { font-size: 28px; font-weight: normal; margin: 0; text-transform: uppercase; }
-              table { width: 100%; border-collapse: collapse; font-size: 10px; }
+              body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 20px; color: #000; font-size: 14px; }
+              .summary-box { max-width: 800px; margin: auto; padding: 20px; }
+              .header { border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; text-align: center; }
+              .header h1 { margin: 0; font-size: 24px; text-transform: uppercase; letter-spacing: 2px; }
+              .order-details { margin-bottom: 30px; display: flex; justify-content: space-between; font-size: 16px; }
+              .customer-info { margin-bottom: 30px; padding: 15px; border: 1px solid #ccc; background: #f9f9f9; }
+              .customer-info h3 { margin-top: 0; margin-bottom: 10px; border-bottom: 1px solid #ddd; padding-bottom: 5px; font-size: 16px; }
+              table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
               table, th, td { border: 1px solid #000; }
-              th, td { padding: 4px 6px; text-align: left; vertical-align: top; }
-              .info-table { margin-bottom: 15px; }
-              .info-table td { width: 50%; }
-              .info-header { background: #f0f0f0; padding: 2px 4px; margin: -4px -6px 4px -6px; border-bottom: 1px solid #000; font-weight: bold; }
-              .items-table th { background: #f0f0f0; font-weight: bold; text-align: center; }
-              .text-right { text-align: right !important; }
-              .text-center { text-align: center !important; }
-              .bold { font-weight: bold; }
-              .footer-grid { display: flex; border: 1px solid #000; margin-top: -1px; }
-              .left-section { width: 65%; border-right: 1px solid #000; padding: 6px; font-size: 10px; }
-              .right-section { width: 35%; display: flex; flex-direction: column; justify-content: space-between; }
-              .summary-table { margin: 0; border: none; }
-              .summary-table td, .summary-table th, .summary-table tr { border: none; padding: 4px 6px; }
-              .signature { text-align: right; margin-top: 50px; padding: 10px; border-top: 1px solid #000; font-size: 10px; }
-              @media print { .invoice-box { box-shadow: none; } body { padding: 0; } }
+              th, td { padding: 10px; text-align: left; }
+              th { background: #f0f0f0; font-weight: bold; }
+              .text-center { text-align: center; }
+              @media print { .summary-box { padding: 0; } body { padding: 0; } }
             </style>
           </head>
           <body>
@@ -197,8 +187,8 @@ export const AdminOrders: React.FC = () => {
                     <CardTitle className="text-lg">Order Details</CardTitle>
                     <p className="text-sm text-slate-500 font-mono mt-1">{selectedOrder.tracking_id}</p>
                   </div>
-                  <Button variant="outline" size="sm" onClick={handlePrintInvoice}>
-                    <Printer className="w-4 h-4 mr-2" /> Print Bill
+                  <Button variant="outline" size="sm" onClick={handlePrintSummary}>
+                    <Printer className="w-4 h-4 mr-2" /> Print Summary
                   </Button>
                 </div>
               </CardHeader>
@@ -229,135 +219,46 @@ export const AdminOrders: React.FC = () => {
                 </div>
 
                 {/* Hidden Invoice Content for Printing */}
-                <div id="invoice-content" style={{ display: 'none' }}>
-                  <div className="invoice-box">
+                <div id="summary-content" style={{ display: 'none' }}>
+                  <div className="summary-box">
                     <div className="header">
-                      <div className="company-details">
-                        <h2>NavoYantra Technology</h2>
-                        <p>
-                          A-79, panchsheel garden, naveen shahdara,<br/>
-                          Near Shanti Nursing Home and KD field Public School<br/>
-                          Shahdara Delhi 110032<br/>
-                          India<br/>
-                          GSTIN 07AHGPR2684C1ZA<br/>
-                          09582528010<br/>
-                          rohit.programmer.tech@gmail.com
-                        </p>
-                      </div>
-                      <div className="quote-title">
-                        <h1>TAX INVOICE</h1>
-                      </div>
+                      <h1>Order Summary / Packing Slip</h1>
                     </div>
 
-                    <table className="info-table">
-                      <tbody>
-                        <tr>
-                          <td>
-                            <div style={{ display: 'flex' }}>
-                              <div style={{ width: '120px' }}><strong>#</strong></div>
-                              <div>: {selectedOrder.tracking_id}</div>
-                            </div>
-                            <div style={{ display: 'flex' }}>
-                              <div style={{ width: '120px' }}><strong>Date</strong></div>
-                              <div>: {new Date(selectedOrder.created_at).toLocaleDateString()}</div>
-                            </div>
-                          </td>
-                          <td>
-                            <div style={{ display: 'flex' }}>
-                              <div style={{ width: '120px' }}><strong>Place Of Supply</strong></div>
-                              <div>: Delhi (07)</div>
-                            </div>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>
-                            <div className="info-header">Bill To</div>
-                            <strong>{selectedOrder.customer_name}</strong><br/>
-                            {selectedOrder.shipping_address}<br/>
-                            {selectedOrder.customer_phone}<br/>
-                            {selectedOrder.customer_email}
-                          </td>
-                          <td>
-                            <div className="info-header">Ship To</div>
-                            <strong>{selectedOrder.customer_name}</strong><br/>
-                            {selectedOrder.shipping_address}<br/>
-                            {selectedOrder.customer_phone}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
+                    <div className="order-details">
+                      <div><strong>Order No:</strong> {selectedOrder.tracking_id}</div>
+                      <div><strong>Date:</strong> {new Date(selectedOrder.created_at).toLocaleDateString()}</div>
+                    </div>
 
-                    <table className="items-table">
+                    <div className="customer-info">
+                      <h3>Customer Details</h3>
+                      <strong>Name:</strong> {selectedOrder.customer_name}<br/>
+                      <strong>Address:</strong> {selectedOrder.shipping_address}<br/>
+                      <strong>Phone:</strong> {selectedOrder.customer_phone || 'N/A'}<br/>
+                      <strong>Email:</strong> {selectedOrder.customer_email}
+                    </div>
+
+                    <table>
                       <thead>
                         <tr>
-                          <th rowSpan={2} style={{ width: '30px' }}>#</th>
-                          <th rowSpan={2}>Item & Description</th>
-                          <th rowSpan={2}>HSN/SAC</th>
-                          <th rowSpan={2}>Qty</th>
-                          <th rowSpan={2}>Rate</th>
-                          <th colSpan={2}>IGST</th>
-                          <th rowSpan={2}>Amount</th>
-                        </tr>
-                        <tr>
-                          <th style={{ width: '40px' }}>%</th>
-                          <th style={{ width: '60px' }}>Amt</th>
+                          <th style={{ width: '50px', textAlign: 'center' }}>S.No</th>
+                          <th>Product Name</th>
+                          <th style={{ width: '100px', textAlign: 'center' }}>Quantity</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {orderDetails?.order_items ? orderDetails.order_items.map((item: any, index: number) => {
-                          const rate = (item.price_at_time / 1.18).toFixed(2);
-                          const igstAmt = (item.price_at_time - (item.price_at_time / 1.18)).toFixed(2);
-                          const amount = (item.price_at_time * item.quantity).toFixed(2);
-                          return (
-                            <tr key={item.id || index}>
-                              <td className="text-center">{index + 1}</td>
-                              <td>{item.products?.name || 'Unknown Product'}</td>
-                              <td>95031000</td>
-                              <td className="text-right">{item.quantity}.00</td>
-                              <td className="text-right">{rate}</td>
-                              <td className="text-right">18%</td>
-                              <td className="text-right">{igstAmt}</td>
-                              <td className="text-right">{amount}</td>
-                            </tr>
-                          );
-                        }) : null}
+                        {orderDetails?.order_items ? orderDetails.order_items.map((item: any, index: number) => (
+                          <tr key={item.id || index}>
+                            <td className="text-center">{index + 1}</td>
+                            <td>{item.products?.name || 'Unknown Product'}</td>
+                            <td className="text-center"><strong>{item.quantity}</strong></td>
+                          </tr>
+                        )) : null}
                       </tbody>
                     </table>
-
-                    <div className="footer-grid">
-                      <div className="left-section">
-                        <p>Total In Words<br/><strong>Indian Rupee {(selectedOrder.total_amount).toLocaleString('en-IN')} Only</strong></p>
-                        <br/>
-                        <p>Notes<br/>Looking forward for your business.</p>
-                        <br/>
-                        <p>Terms & Conditions:<br/>
-                        1. Validity: This invoice is valid for 15 days from the date of issue.<br/>
-                        2. Payment Terms: 50% advance payment is required to start the work, and the remaining 50% upon delivery/completion.<br/>
-                        3. Delivery: Delivery will be processed within 10-15 working days after receiving the advance payment.<br/>
-                        4. Jurisdiction: All contracts and disputes arising out of this quotation shall be subject to the exclusive jurisdiction of the local courts in Delhi.</p>
-                      </div>
-                      <div className="right-section">
-                        <table className="summary-table">
-                          <tbody>
-                            <tr>
-                              <td>Sub Total</td>
-                              <td className="text-right">{(selectedOrder.total_amount / 1.18).toFixed(2)}</td>
-                            </tr>
-                            <tr>
-                              <td>IGST18 (18%)</td>
-                              <td className="text-right">{(selectedOrder.total_amount - (selectedOrder.total_amount / 1.18)).toFixed(2)}</td>
-                            </tr>
-                            <tr>
-                              <td className="bold">Total</td>
-                              <td className="text-right bold">₹{Number(selectedOrder.total_amount).toFixed(2)}</td>
-                            </tr>
-                          </tbody>
-                        </table>
-                        <div style={{ flexGrow: 1 }}></div>
-                        <div className="signature">
-                          Authorized Signature
-                        </div>
-                      </div>
+                    
+                    <div style={{ marginTop: '50px', textAlign: 'center', fontSize: '12px', color: '#666' }}>
+                      Generated by NavoYantra Shop Admin System
                     </div>
                   </div>
                 </div>
