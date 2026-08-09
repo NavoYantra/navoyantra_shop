@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { ShieldAlert, Lock, Mail, Loader2 } from 'lucide-react';
 
@@ -9,6 +9,13 @@ export const AdminLogin: React.FC = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  React.useEffect(() => {
+    if (searchParams.get('error') === 'unauthorized') {
+      setError('Your account is not authorized to access the Admin Panel. Please contact a Super Admin.');
+    }
+  }, [searchParams]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
