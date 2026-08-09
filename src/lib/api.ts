@@ -218,6 +218,23 @@ export const updateOrderTracking = async (id: string, tracking_id: string) => {
   return data;
 };
 
+export const createOrder = async (orderData: any, items: any[]) => {
+  const { data: order, error: orderError } = await supabase.from('orders').insert([orderData]).select().single();
+  if (orderError) throw orderError;
+
+  const orderItems = items.map(item => ({
+    order_id: order.id,
+    product_id: item.id || item.product_id,
+    quantity: item.quantity,
+    price_at_time: item.price || item.discountPrice || item.regularPrice || 0
+  }));
+
+  const { error: itemsError } = await supabase.from('order_items').insert(orderItems);
+  if (itemsError) throw itemsError;
+
+  return order;
+};
+
 // --- Notifications ---
 export const getNotifications = async () => {
   const { data, error } = await supabase.from('notifications').select('*').order('created_at', { ascending: false }).limit(20);

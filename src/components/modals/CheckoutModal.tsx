@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
+import { createOrder } from '../../lib/api';
 import { 
   X, CheckCircle2, ShieldCheck, MapPin, CreditCard, QrCode, Truck, ArrowRight 
 } from 'lucide-react';
@@ -8,7 +9,8 @@ export const CheckoutModal: React.FC = () => {
   const { 
     isCheckoutModalOpen, 
     setIsCheckoutModalOpen, 
-        cartTotal, 
+    cartTotal, 
+    cart,
     clearCart,
     showToast 
   } = useApp();
@@ -33,23 +35,41 @@ export const CheckoutModal: React.FC = () => {
 
   if (!isCheckoutModalOpen) return null;
 
-  const handlePlaceOrder = () => {
-    const randomOrder = 'NY-2026-' + Math.floor(100000 + Math.random() * 900000);
-    setOrderId(randomOrder);
-    setStep('confirmation');
-    clearCart();
-    showToast(`Order #${randomOrder} placed successfully! Tracking sent to SMS`, 'success');
+  const freeShippingThreshold = 999;
+  const shippingCost = cartTotal >= freeShippingThreshold || cartTotal === 0 ? 0 : 99;
+  const gstAmount = Math.round(cartTotal * 0.18);
+  const finalTotal = cartTotal + shippingCost + gstAmount;
+
+  const handlePlaceOrder = async () => {
+    try {
+      const trackingId = 'NY-2026-' + Math.floor(100000 + Math.random() * 900000);
+      const addressString = `${shippingData.address}, ${shippingData.landmark ? shippingData.landmark + ', ' : ''}${shippingData.city}, ${shippingData.state} - ${shippingData.pincode}`;
+      
+      const orderData = {
+        tracking_id: trackingId,
+        customer_name: shippingData.fullName,
+        customer_email: shippingData.email,
+        customer_phone: shippingData.phone,
+        shipping_address: addressString,
+        total_amount: finalTotal,
+      };
+
+      await createOrder(orderData, cart);
+      
+      setOrderId(trackingId);
+      setStep('confirmation');
+      clearCart();
+      showToast(`Order #${trackingId} placed successfully! Tracking sent to SMS`, 'success');
+    } catch (error) {
+      console.error(error);
+      showToast('Failed to place order. Please try again.', 'warning');
+    }
   };
 
   const handleClose = () => {
     setIsCheckoutModalOpen(false);
     setStep('shipping');
   };
-
-  const freeShippingThreshold = 999;
-  const shippingCost = cartTotal >= freeShippingThreshold || cartTotal === 0 ? 0 : 99;
-  const gstAmount = Math.round(cartTotal * 0.18);
-  const finalTotal = cartTotal + shippingCost + gstAmount;
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4">

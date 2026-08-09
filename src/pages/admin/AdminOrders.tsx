@@ -42,34 +42,14 @@ export const AdminOrders: React.FC = () => {
     document.body.removeChild(link);
   };
 
-  const mockOrder = {
-    id: 'mock-1',
-    tracking_id: 'NY-TRACK-12345678',
-    customer_name: 'Rohit Rathore (Mock)',
-    customer_email: 'rohit@example.com',
-    customer_phone: '+91 9876543210',
-    shipping_address: '123 Fake Street, Tech Park, New Delhi, India 110001',
-    created_at: new Date().toISOString(),
-    status: 'processing',
-    total_amount: 1499.00
-  };
-
-  const mockOrderDetails = {
-    ...mockOrder,
-    order_items: [
-      { id: 'item-1', quantity: 2, price_at_time: 499.50, products: { name: 'Smart Fitness Band' } },
-      { id: 'item-2', quantity: 1, price_at_time: 500.00, products: { name: 'Wireless Earbuds' } }
-    ]
-  };
-
   // Fetch full order details when an order is selected
   const { data: fetchedOrderDetails } = useQuery({
     queryKey: ['order', selectedOrder?.id],
     queryFn: () => getOrderById(selectedOrder.id),
-    enabled: !!selectedOrder && selectedOrder.id !== 'mock-1'
+    enabled: !!selectedOrder
   });
   
-  const orderDetails = selectedOrder?.id === 'mock-1' ? mockOrderDetails : fetchedOrderDetails;
+  const orderDetails = fetchedOrderDetails;
 
   const updateStatusMutation = useMutation({
     mutationFn: ({ id, status }: { id: string, status: string }) => updateOrderStatus(id, status),
@@ -90,9 +70,7 @@ export const AdminOrders: React.FC = () => {
     }
   });
 
-  const displayOrders = [mockOrder, ...orders];
-
-  const filteredOrders = displayOrders.filter((o: any) => {
+  const filteredOrders = orders.filter((o: any) => {
     const matchesSearch = o.tracking_id.toLowerCase().includes(searchTerm.toLowerCase()) || o.customer_name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter ? o.status === statusFilter : true;
     return matchesSearch && matchesStatus;
@@ -233,12 +211,7 @@ export const AdminOrders: React.FC = () => {
                           className="border border-slate-300 rounded px-2 py-1 text-sm font-mono focus:outline-none focus:border-blue-500"
                         />
                         <Button size="sm" variant="ghost" onClick={() => {
-                          if (selectedOrder.id !== 'mock-1') {
-                            updateTrackingMutation.mutate({ id: selectedOrder.id, tracking_id: editTrackingId });
-                          } else {
-                            setSelectedOrder({ ...selectedOrder, tracking_id: editTrackingId });
-                            setIsEditingTracking(false);
-                          }
+                          updateTrackingMutation.mutate({ id: selectedOrder.id, tracking_id: editTrackingId });
                         }} disabled={updateTrackingMutation.isPending}>
                           <Save className="w-4 h-4 text-green-600" />
                         </Button>
@@ -284,17 +257,13 @@ export const AdminOrders: React.FC = () => {
                             }
                             if (window.confirm(`Are you sure you want to update the status to '${status}'?`)) {
                               setSelectedOrder({...selectedOrder, status, tracking_id: trackingId});
-                              if (selectedOrder.id !== 'mock-1') {
-                                updateTrackingMutation.mutate({ id: selectedOrder.id, tracking_id: trackingId });
-                                updateStatusMutation.mutate({ id: selectedOrder.id, status });
-                              }
+                              updateTrackingMutation.mutate({ id: selectedOrder.id, tracking_id: trackingId });
+                              updateStatusMutation.mutate({ id: selectedOrder.id, status });
                             }
                           } else {
                             if (window.confirm(`Are you sure you want to update the status to '${status}'?`)) {
                               setSelectedOrder({...selectedOrder, status});
-                              if (selectedOrder.id !== 'mock-1') {
-                                updateStatusMutation.mutate({ id: selectedOrder.id, status });
-                              }
+                              updateStatusMutation.mutate({ id: selectedOrder.id, status });
                             }
                           }
                         }}
