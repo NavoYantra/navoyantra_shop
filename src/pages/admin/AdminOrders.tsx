@@ -56,9 +56,14 @@ export const AdminOrders: React.FC = () => {
     mutationFn: ({ id, status, tracking_id, invoice_url }: { id: string, status: string, tracking_id?: string, invoice_url?: string }) => updateOrderStatus(id, status, tracking_id, invoice_url),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['orders'] });
+      // Order status updated successfully
       if (selectedOrder) {
         queryClient.invalidateQueries({ queryKey: ['order', selectedOrder.id] });
       }
+    },
+    onError: (err: any) => {
+      alert(`Error updating order: ${err.message}`);
+      console.error(err);
     }
   });
 

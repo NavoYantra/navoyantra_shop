@@ -334,7 +334,7 @@ export const CustomerDashboard: React.FC = () => {
                       <Heart className="w-4 h-4 fill-current" />
                     </button>
                     <div className="aspect-square bg-slate-50 rounded-lg mb-4 flex items-center justify-center p-4">
-                      <img src={item.images[0]} alt={item.name} className="max-h-full object-contain mix-blend-multiply" />
+                      <img src={item.images?.[0] || item.image_url || item.image || 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=200'} alt={item.name} className="max-h-full object-contain mix-blend-multiply" />
                     </div>
                     <h4 className="font-bold text-slate-900 text-sm mb-1 line-clamp-2">{item.name}</h4>
                     <p className="text-blue-600 font-bold text-sm mb-3">₹{(item.discountPrice || item.price || 0).toLocaleString()}</p>
