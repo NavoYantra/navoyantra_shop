@@ -325,27 +325,30 @@ export const CustomerDashboard: React.FC = () => {
             <h3 className="text-lg font-bold text-slate-900 mb-6">Your Wishlist</h3>
             {wishlist.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {wishlist.map((item: any) => (
-                  <div key={item.id} className="border border-slate-200 rounded-xl p-4 flex flex-col relative group hover:shadow-md transition-shadow bg-white">
+                {wishlist.map((wishlistItem: any) => {
+                  const product = wishlistItem.product || wishlistItem;
+                  return (
+                  <div key={product.id} className="border border-slate-200 rounded-xl p-4 flex flex-col relative group hover:shadow-md transition-shadow bg-white">
                     <button 
-                      onClick={() => toggleWishlist(item)} 
+                      onClick={() => toggleWishlist(product)} 
                       className="absolute top-2 right-2 z-10 p-2 bg-red-50 text-red-500 rounded-full hover:bg-red-100 transition-colors opacity-0 group-hover:opacity-100"
                     >
                       <Heart className="w-4 h-4 fill-current" />
                     </button>
                     <div className="aspect-square bg-slate-50 rounded-lg mb-4 flex items-center justify-center p-4">
-                      <img src={item.images?.[0] || item.image_url || item.image || 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=200'} alt={item.name} className="max-h-full object-contain mix-blend-multiply" />
+                      <img src={product.images?.[0] || product.image_url || product.image || 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=200'} alt={product.name} className="max-h-full object-contain mix-blend-multiply" />
                     </div>
-                    <h4 className="font-bold text-slate-900 text-sm mb-1 line-clamp-2">{item.name}</h4>
-                    <p className="text-blue-600 font-bold text-sm mb-3">₹{(item.discountPrice || item.price || 0).toLocaleString()}</p>
+                    <h4 className="font-bold text-slate-900 text-sm mb-1 line-clamp-2">{product.name}</h4>
+                    <p className="text-blue-600 font-bold text-sm mb-3">₹{(product.discountPrice || product.price || 0).toLocaleString()}</p>
                     <button 
-                      onClick={() => { addToCart(item, 1); showToast('Added to cart'); }} 
+                      onClick={() => { addToCart(product, 1); }} 
                       className="mt-auto w-full py-2 bg-slate-900 text-white rounded-lg text-sm font-semibold hover:bg-blue-600 transition-colors"
                     >
                       Move to Cart
                     </button>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             ) : (
               <div className="p-12 text-center text-slate-500 border border-dashed border-slate-300 rounded-xl">

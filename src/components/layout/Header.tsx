@@ -262,7 +262,7 @@ export const Header: React.FC = () => {
                       <div className="space-y-3 max-h-64 overflow-y-auto custom-scrollbar">
                         {wishlist.map(item => (
                           <div key={item.product.id} className="flex items-center space-x-3 group cursor-pointer" onClick={() => { setCurrentPage('shop'); setIsWishlistOpen(false); }}>
-                            <img src={item.product.images[0]} alt={item.product.name} className="w-12 h-12 rounded-lg object-cover bg-slate-100" />
+                            <img src={item.product.images?.[0] || item.product.image_url || item.product.image || 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=200'} alt={item.product.name} className="w-12 h-12 rounded-lg object-cover bg-slate-100" />
                             <div className="flex-1 min-w-0">
                               <p className="text-xs font-bold text-slate-900 truncate group-hover:text-blue-600 transition-colors">{item.product.name}</p>
                               <p className="text-[10px] text-blue-600 font-bold">₹{item.product.price.toLocaleString('en-IN')}</p>

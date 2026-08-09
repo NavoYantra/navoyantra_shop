@@ -60,6 +60,8 @@ export interface Product {
   techStack: TechStackType[];
   skillLevel: 'Beginner' | 'Intermediate' | 'Advanced';
   images: string[];
+  image_url?: string;
+  image?: string;
   badges: string[];
   inStock: boolean;
   stockCount: number;
