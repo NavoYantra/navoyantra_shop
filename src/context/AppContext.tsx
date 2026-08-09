@@ -300,6 +300,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       originalPrice: p.price,
       rating: 5, // mock for now
       reviewCount: 0,
+      featured: p.featured || false,
+      isFeatured: p.featured || false,
       badges: p.featured ? ['Featured'] : [],
       category: p.categories?.name || 'Uncategorized',
       ageGroup: '8-10', // mock for now
