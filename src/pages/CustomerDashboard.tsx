@@ -9,7 +9,7 @@ import { getOrdersByEmail } from '../lib/api';
 import { PRODUCTS } from '../data/products';
 
 export const CustomerDashboard: React.FC = () => {
-  const { user, showToast, setCurrentPage, wishlist, toggleWishlist, addToCart } = useApp();
+  const { user, showToast, setCurrentPage, wishlist, toggleWishlist, addToCart, storeProducts } = useApp();
   const [activeTab, setActiveTab] = useState<'overview' | 'orders' | 'wishlist' | 'addresses' | 'settings'>('overview');
   const [orders, setOrders] = useState<any[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(true);
@@ -32,9 +32,11 @@ export const CustomerDashboard: React.FC = () => {
           trackingId: o.shipping_tracking_id,
           invoiceUrl: o.invoice_url,
           items: o.order_items.map((item: any) => {
-            const product = PRODUCTS.find(p => p.id === item.product_id);
+            const productStatic = PRODUCTS.find(p => p.id === item.product_id);
+            const productDb = storeProducts.find(p => p.id === item.product_id);
+            const productName = productDb ? productDb.name : (productStatic ? productStatic.name : (item.products?.name || 'Unknown Product'));
             return {
-              name: product ? product.name : 'Unknown Product',
+              name: productName,
               qty: item.quantity,
               price: item.price_at_time
             };
@@ -49,7 +51,7 @@ export const CustomerDashboard: React.FC = () => {
     } else {
       setLoadingOrders(false);
     }
-  }, [user]);
+  }, [user, storeProducts]);
 
   const handleLogout = async () => {
     try {

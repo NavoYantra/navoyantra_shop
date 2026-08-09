@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
-import { getOrders, updateOrderStatus, getOrderById } from '../../lib/api';
+import { getOrders, updateOrderStatus, getOrderById, getProducts } from '../../lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../components/ui/Table';
 import { Badge } from '../../components/ui/Badge';
@@ -17,6 +17,7 @@ export const AdminOrders: React.FC = () => {
   const [searchParams] = useSearchParams();
   const statusFilter = searchParams.get('status');
   const { data: orders = [], isLoading } = useQuery({ queryKey: ['orders'], queryFn: getOrders });
+  const { data: dbProducts = [] } = useQuery({ queryKey: ['store-products'], queryFn: getProducts });
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
 
@@ -211,18 +212,22 @@ export const AdminOrders: React.FC = () => {
                     {orderDetails?.order_items && orderDetails.order_items.length > 0 ? (
                       <div className="divide-y divide-slate-100">
                         {orderDetails.order_items.map((item: any, idx: number) => {
-                          const product = PRODUCTS.find(p => p.id === item.product_id);
+                          const productStatic = PRODUCTS.find(p => p.id === item.product_id);
+                          const productDb = dbProducts.find((p: any) => p.id === item.product_id);
+                          const productName = productDb ? productDb.name : (productStatic ? productStatic.name : (item.products?.name || 'Unknown Product'));
+                          const productImages = productDb ? productDb.images : (productStatic ? productStatic.images : []);
+                          
                           return (
                             <div key={idx} className="flex items-center p-3 gap-3">
-                              {product && product.images[0] ? (
-                                <img src={product.images[0]} alt={product.name} className="w-12 h-12 rounded bg-slate-50 object-contain p-1" />
+                              {productImages && productImages[0] ? (
+                                <img src={productImages[0]} alt={productName} className="w-12 h-12 rounded bg-slate-50 object-contain p-1" />
                               ) : (
                                 <div className="w-12 h-12 rounded bg-slate-100 flex items-center justify-center text-slate-400">
                                   <Package className="w-6 h-6" />
                                 </div>
                               )}
                               <div className="flex-1 min-w-0">
-                                <p className="text-sm font-semibold text-slate-900 truncate">{product ? product.name : (item.products?.name || 'Unknown Product')}</p>
+                                <p className="text-sm font-semibold text-slate-900 truncate">{productName}</p>
                                 <p className="text-xs text-slate-500">Qty: {item.quantity} × ₹{item.price_at_time}</p>
                               </div>
                               <div className="text-sm font-bold text-slate-900">
@@ -346,11 +351,14 @@ export const AdminOrders: React.FC = () => {
                       </thead>
                       <tbody>
                         {orderDetails?.order_items ? orderDetails.order_items.map((item: any, index: number) => {
-                          const product = PRODUCTS.find(p => p.id === item.product_id);
+                          const productStatic = PRODUCTS.find(p => p.id === item.product_id);
+                          const productDb = dbProducts.find((p: any) => p.id === item.product_id);
+                          const productName = productDb ? productDb.name : (productStatic ? productStatic.name : (item.products?.name || 'Unknown Product'));
+                          
                           return (
                             <tr key={item.id || index}>
                               <td className="text-center">{index + 1}</td>
-                              <td>{product ? product.name : (item.products?.name || 'Unknown Product')}</td>
+                              <td>{productName}</td>
                               <td className="text-center"><strong>{item.quantity}</strong></td>
                             </tr>
                           );
