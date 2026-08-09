@@ -19,16 +19,16 @@ export const CheckoutModal: React.FC = () => {
   const [paymentMethod, setPaymentMethod] = useState<'upi' | 'card' | 'cod'>('upi');
 
   const [shippingData, setShippingData] = useState({
-    fullName: 'Aarav Sharma',
-    email: 'aarav@example.com',
-    phone: '9876543210',
+    fullName: '',
+    email: '',
+    phone: '',
     companyName: '',
     gstNumber: '',
-    address: 'Flat 402, Green View Apartments, Indiranagar',
-    landmark: 'Opposite Metro Station',
-    pincode: '560038',
-    city: 'Bengaluru',
-    state: 'Karnataka'
+    address: '',
+    landmark: '',
+    pincode: '',
+    city: '',
+    state: ''
   });
 
   const [orderId, setOrderId] = useState('');

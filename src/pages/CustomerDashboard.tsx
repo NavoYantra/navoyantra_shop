@@ -1,38 +1,44 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { 
   User, Package, Heart, MapPin, Settings, LogOut, 
-  ChevronRight, Search, Filter, ShieldCheck, Truck, Star
+  ChevronRight, Search, Filter, ShieldCheck, Truck, Star, Loader2
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { getOrdersByEmail } from '../lib/api';
+import { PRODUCTS } from '../data/products';
 
 export const CustomerDashboard: React.FC = () => {
   const { user, showToast, setCurrentPage } = useApp();
   const [activeTab, setActiveTab] = useState<'overview' | 'orders' | 'wishlist' | 'addresses' | 'settings'>('overview');
+  const [orders, setOrders] = useState<any[]>([]);
+  const [loadingOrders, setLoadingOrders] = useState(true);
 
-  // Dummy Data for Orders
-  const dummyOrders = [
-    {
-      id: 'ORD-2026-8901',
-      date: 'Aug 04, 2026',
-      total: 4500,
-      status: 'Shipped',
-      items: [
-        { name: 'Advanced Robotics Starter Kit', qty: 1, price: 3500 },
-        { name: 'ESP32 IoT Board', qty: 2, price: 500 }
-      ]
-    },
-    {
-      id: 'ORD-2026-6722',
-      date: 'Jul 15, 2026',
-      total: 1200,
-      status: 'Delivered',
-      items: [
-        { name: 'Arduino Uno R3', qty: 1, price: 800 },
-        { name: 'Ultrasonic Sensor HC-SR04', qty: 2, price: 200 }
-      ]
+  useEffect(() => {
+    if (user?.email) {
+      getOrdersByEmail(user.email).then(data => {
+        const formatted = data.map(o => ({
+          id: o.tracking_id,
+          date: new Date(o.created_at).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
+          total: o.total_amount,
+          status: o.status === 'pending' ? 'Processing' : (o.status.charAt(0).toUpperCase() + o.status.slice(1)),
+          items: o.order_items.map((item: any) => {
+            const product = PRODUCTS.find(p => p.id === item.product_id);
+            return {
+              name: product ? product.name : 'Unknown Product',
+              qty: item.quantity,
+              price: item.price_at_time
+            };
+          })
+        }));
+        setOrders(formatted);
+      }).catch(err => {
+        console.error('Error fetching orders:', err);
+      }).finally(() => {
+        setLoadingOrders(false);
+      });
     }
-  ];
+  }, [user]);
 
   // Dummy Data for Addresses
   const dummyAddresses = [
@@ -85,7 +91,7 @@ export const CustomerDashboard: React.FC = () => {
                 <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mb-3">
                   <Package className="w-6 h-6" />
                 </div>
-                <h3 className="text-2xl font-bold text-slate-900">{dummyOrders.length}</h3>
+                <h3 className="text-2xl font-bold text-slate-900">{orders.length}</h3>
                 <p className="text-sm text-slate-500 font-medium">Total Orders</p>
               </div>
               <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center justify-center text-center">
@@ -115,20 +121,30 @@ export const CustomerDashboard: React.FC = () => {
                 </button>
               </div>
               <div className="p-6 bg-slate-50">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                  <div>
-                    <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Order #{dummyOrders[0].id}</p>
-                    <p className="text-sm text-slate-700 font-medium">Placed on {dummyOrders[0].date}</p>
+                {loadingOrders ? (
+                  <div className="flex items-center justify-center py-4">
+                    <Loader2 className="w-6 h-6 text-blue-600 animate-spin" />
                   </div>
-                  <div className="flex items-center space-x-3">
-                    <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold flex items-center">
-                      <Truck className="w-3 h-3 mr-1.5" /> {dummyOrders[0].status}
-                    </span>
-                    <button className="px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-semibold hover:bg-slate-50 transition-colors shadow-sm">
-                      Track Order
-                    </button>
+                ) : orders.length > 0 ? (
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div>
+                      <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Order #{orders[0].id}</p>
+                      <p className="text-sm text-slate-700 font-medium">Placed on {orders[0].date}</p>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold flex items-center ${
+                        orders[0].status === 'Delivered' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'
+                      }`}>
+                        <Truck className="w-3 h-3 mr-1.5" /> {orders[0].status}
+                      </span>
+                      <button className="px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-semibold hover:bg-slate-50 transition-colors shadow-sm">
+                        Track Order
+                      </button>
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <p className="text-slate-500 text-sm">No recent orders found.</p>
+                )}
               </div>
             </div>
           </div>
@@ -151,50 +167,61 @@ export const CustomerDashboard: React.FC = () => {
             </div>
             
             <div className="divide-y divide-slate-100">
-              {dummyOrders.map(order => (
-                <div key={order.id} className="p-6 hover:bg-slate-50 transition-colors">
-                  <div className="flex flex-col md:flex-row justify-between gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <h4 className="font-bold text-slate-900">Order {order.id}</h4>
-                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                          order.status === 'Delivered' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'
-                        }`}>
-                          {order.status}
-                        </span>
-                      </div>
-                      <p className="text-xs text-slate-500 mb-4">Placed on {order.date}</p>
-                      
-                      <div className="space-y-2">
-                        {order.items.map((item, idx) => (
-                          <div key={idx} className="flex items-center justify-between text-sm">
-                            <div className="flex items-center space-x-2">
-                              <span className="w-6 text-slate-400">{item.qty}x</span>
-                              <span className="font-medium text-slate-700">{item.name}</span>
+              {loadingOrders ? (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+                </div>
+              ) : orders.length > 0 ? (
+                orders.map(order => (
+                  <div key={order.id} className="p-6 hover:bg-slate-50 transition-colors">
+                    <div className="flex flex-col md:flex-row justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-3 mb-2">
+                          <h4 className="font-bold text-slate-900">Order {order.id}</h4>
+                          <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                            order.status === 'Delivered' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'
+                          }`}>
+                            {order.status}
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-500 mb-4">Placed on {order.date}</p>
+                        
+                        <div className="space-y-2">
+                          {order.items.map((item: any, idx: number) => (
+                            <div key={idx} className="flex items-center justify-between text-sm">
+                              <div className="flex items-center space-x-2">
+                                <span className="w-6 text-slate-400">{item.qty}x</span>
+                                <span className="font-medium text-slate-700">{item.name}</span>
+                              </div>
+                              <span className="text-slate-600 font-medium">₹{(item.price * item.qty).toLocaleString()}</span>
                             </div>
-                            <span className="text-slate-600 font-medium">₹{(item.price * item.qty).toLocaleString()}</span>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                    
-                    <div className="flex flex-col items-end justify-between border-t md:border-t-0 md:border-l border-slate-100 pt-4 md:pt-0 md:pl-6 min-w-[150px]">
-                      <div className="text-right w-full mb-4 md:mb-0">
-                        <p className="text-xs text-slate-500 mb-1">Total Amount</p>
-                        <p className="text-xl font-bold text-slate-900">₹{order.total.toLocaleString()}</p>
-                      </div>
-                      <div className="flex flex-col space-y-2 w-full">
-                        <button className="w-full px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition-colors text-center">
-                          Track Order
-                        </button>
-                        <button className="w-full px-3 py-1.5 bg-white border border-slate-200 text-slate-700 rounded-lg text-xs font-bold hover:bg-slate-50 transition-colors text-center">
-                          View Invoice
-                        </button>
+                      
+                      <div className="flex flex-col items-end justify-between border-t md:border-t-0 md:border-l border-slate-100 pt-4 md:pt-0 md:pl-6 min-w-[150px]">
+                        <div className="text-right w-full mb-4 md:mb-0">
+                          <p className="text-xs text-slate-500 mb-1">Total Amount</p>
+                          <p className="text-xl font-bold text-slate-900">₹{order.total.toLocaleString()}</p>
+                        </div>
+                        <div className="flex flex-col space-y-2 w-full">
+                          <button className="w-full px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition-colors text-center">
+                            Track Order
+                          </button>
+                          <button className="w-full px-3 py-1.5 bg-white border border-slate-200 text-slate-700 rounded-lg text-xs font-bold hover:bg-slate-50 transition-colors text-center">
+                            View Invoice
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
+                ))
+              ) : (
+                <div className="p-12 text-center text-slate-500">
+                  <Package className="w-12 h-12 mx-auto text-slate-300 mb-4" />
+                  <p>You haven't placed any orders yet.</p>
                 </div>
-              ))}
+              )}
             </div>
           </div>
         );

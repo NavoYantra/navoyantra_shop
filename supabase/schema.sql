@@ -1,5 +1,5 @@
 -- Create Categories Table
-CREATE TABLE categories (
+CREATE TABLE IF NOT EXISTS categories (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   name TEXT NOT NULL,
   slug TEXT NOT NULL UNIQUE,
@@ -8,7 +8,7 @@ CREATE TABLE categories (
 );
 
 -- Create Brands Table
-CREATE TABLE brands (
+CREATE TABLE IF NOT EXISTS brands (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   name TEXT NOT NULL,
   slug TEXT NOT NULL UNIQUE,
@@ -18,7 +18,7 @@ CREATE TABLE brands (
 );
 
 -- Create Tags Table
-CREATE TABLE tags (
+CREATE TABLE IF NOT EXISTS tags (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   name TEXT NOT NULL,
   slug TEXT NOT NULL UNIQUE,
@@ -27,7 +27,7 @@ CREATE TABLE tags (
 );
 
 -- Create Coupons Table
-CREATE TABLE coupons (
+CREATE TABLE IF NOT EXISTS coupons (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   code TEXT NOT NULL UNIQUE,
   type TEXT NOT NULL, -- 'percentage', 'fixed', 'other'
@@ -41,7 +41,7 @@ CREATE TABLE coupons (
 );
 
 -- Create Products Table
-CREATE TABLE products (
+CREATE TABLE IF NOT EXISTS products (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   name TEXT NOT NULL,
   slug TEXT NOT NULL UNIQUE,
@@ -65,14 +65,14 @@ CREATE TABLE products (
 );
 
 -- Create Product Tags junction table
-CREATE TABLE product_tags (
+CREATE TABLE IF NOT EXISTS product_tags (
   product_id UUID REFERENCES products(id) ON DELETE CASCADE,
   tag_id UUID REFERENCES tags(id) ON DELETE CASCADE,
   PRIMARY KEY (product_id, tag_id)
 );
 
 -- Create Reviews Table
-CREATE TABLE reviews (
+CREATE TABLE IF NOT EXISTS reviews (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   product_id UUID REFERENCES products(id) ON DELETE CASCADE,
   author_name TEXT NOT NULL,
@@ -83,4 +83,64 @@ CREATE TABLE reviews (
 );
 
 -- Create storage bucket for images
-insert into storage.buckets (id, name, public) values ('product-images', 'product-images', true);
+insert into storage.buckets (id, name, public) values ('product-images', 'product-images', true) ON CONFLICT (id) DO NOTHING;
+
+-- Create Orders Table
+CREATE TABLE IF NOT EXISTS orders (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  tracking_id TEXT NOT NULL UNIQUE,
+  customer_name TEXT NOT NULL,
+  customer_email TEXT,
+  customer_phone TEXT,
+  shipping_address TEXT,
+  total_amount NUMERIC NOT NULL,
+  status TEXT DEFAULT 'pending', -- 'pending', 'processing', 'shipped', 'delivered', 'cancelled'
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create Order Items Table
+CREATE TABLE IF NOT EXISTS order_items (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  order_id UUID REFERENCES orders(id) ON DELETE CASCADE,
+  product_id TEXT,
+  quantity INTEGER NOT NULL,
+  price_at_time NUMERIC NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create Notifications Table
+CREATE TABLE IF NOT EXISTS notifications (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  title TEXT NOT NULL,
+  message TEXT,
+  type TEXT,
+  is_read BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create Admin Users Table
+CREATE TABLE IF NOT EXISTS admin_users (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  email TEXT NOT NULL UNIQUE,
+  name TEXT,
+  role TEXT DEFAULT 'admin',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- ==========================================
+-- ROW LEVEL SECURITY (RLS) POLICIES
+-- ==========================================
+
+-- Enable RLS for Orders and Order Items
+ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE order_items ENABLE ROW LEVEL SECURITY;
+
+-- Allow ANYONE (including guests) to place an order (Insert)
+CREATE POLICY "Allow public insert on orders" ON orders FOR INSERT WITH CHECK (true);
+CREATE POLICY "Allow public insert on order_items" ON order_items FOR INSERT WITH CHECK (true);
+
+-- Allow ONLY authenticated users (Admins) to read/update the data
+CREATE POLICY "Allow authenticated select on orders" ON orders FOR SELECT TO authenticated USING (true);
+CREATE POLICY "Allow authenticated update on orders" ON orders FOR UPDATE TO authenticated USING (true);
+CREATE POLICY "Allow authenticated select on order_items" ON order_items FOR SELECT TO authenticated USING (true);
+
