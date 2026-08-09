@@ -69,6 +69,7 @@ export interface Product {
   whatsInside: string[];
   sampleProjects: string[];
   isFeatured?: boolean;
+  featured?: boolean;
   
   // Advanced fields
   shortDescription?: string;

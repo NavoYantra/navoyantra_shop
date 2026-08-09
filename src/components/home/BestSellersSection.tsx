@@ -3,7 +3,7 @@ import { useApp } from '../../context/AppContext';
 import { ProductCard } from '../product/ProductCard';
 import { ProductFilterDrawer } from '../product/ProductFilterDrawer';
 import { 
-  Sparkles, Search, X, SlidersHorizontal, ArrowUpDown, Bot 
+  Sparkles, Search, X, SlidersHorizontal, ArrowUpDown, Bot, ArrowRight 
 } from 'lucide-react';
 
 export const BestSellersSection: React.FC = () => {
@@ -11,7 +11,8 @@ export const BestSellersSection: React.FC = () => {
     filteredProducts, 
     filters, 
     setFilters, 
-    resetFilters 
+    resetFilters,
+    setCurrentPage
   } = useApp();
 
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
@@ -51,7 +52,7 @@ export const BestSellersSection: React.FC = () => {
               <span>PREMIUM STEM HARDWARE</span>
             </span>
             <h2 className="text-3xl sm:text-5xl font-extrabold font-heading text-slate-900  mt-1 tracking-tight">
-              Best Selling STEM & AI Kits
+              Explore All Products
             </h2>
           </div>
           <p className="text-sm text-slate-600  mt-2 md:mt-0 max-w-md">
@@ -213,10 +214,22 @@ export const BestSellersSection: React.FC = () => {
 
         {/* Product Grid */}
         {filteredProducts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredProducts.map(product => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+          <div className="space-y-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredProducts.slice(0, 12).map(product => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+            
+            <div className="flex justify-center mt-8">
+              <button
+                onClick={() => setCurrentPage('shop')}
+                className="px-8 py-3.5 rounded-2xl bg-slate-900 text-white font-bold text-sm shadow-xl hover:bg-blue-600 transition-all hover:scale-105 flex items-center space-x-2 group"
+              >
+                <span>Explore More Kits</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </button>
+            </div>
           </div>
         ) : (
           /* Empty State */

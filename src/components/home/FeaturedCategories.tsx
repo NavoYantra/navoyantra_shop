@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 
 export const FeaturedCategories: React.FC = () => {
-  const { setFilters } = useApp();
+  const { setFilters, setCurrentPage } = useApp();
 
   const getIcon = (iconName: string) => {
     switch (iconName) {
@@ -28,10 +28,7 @@ export const FeaturedCategories: React.FC = () => {
       selectedAgeGroups: [],
       selectedTechStacks: []
     }));
-    const section = document.getElementById('featured-kits');
-    if (section) {
-      section.scrollIntoView({ behavior: 'smooth' });
-    }
+    setCurrentPage('shop');
   };
 
   return (

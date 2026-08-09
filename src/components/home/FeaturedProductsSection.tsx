@@ -6,15 +6,13 @@ import { Sparkles } from 'lucide-react';
 export const FeaturedProductsSection: React.FC = () => {
   const { storeProducts } = useApp();
   
-  // Try to find products that are actually featured, or just take 8 best ones
-  const featured = storeProducts.filter(p => p.featured || p.isFeatured).slice(0, 8);
+  // Use featured products, or if none exist, we just show empty or a fallback
+  let displayProducts = storeProducts.filter(p => p.featured || p.isFeatured).slice(0, 8);
   
-  // If not enough featured, fill up with top rated or any
-  const displayProducts = featured.length >= 4 
-    ? featured 
-    : [...storeProducts].slice(4, 12); // just some fallback logic for demo
-
-  if (displayProducts.length === 0) return null;
+  // If absolutely zero featured products exist in DB, fallback to top 8 just so the section isn't completely empty initially
+  if (displayProducts.length === 0) {
+    displayProducts = [...storeProducts].slice(0, 8);
+  }
 
   return (
     <section className="py-20 bg-slate-50">

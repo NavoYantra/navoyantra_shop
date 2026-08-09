@@ -4,7 +4,7 @@ import { TechStackType } from '../../types';
 import { Cpu, ArrowRight } from 'lucide-react';
 
 export const ShopByTechSection: React.FC = () => {
-  const { setFilters } = useApp();
+  const { setFilters, setCurrentPage } = useApp();
 
   const techStacks: { id: TechStackType; name: string; desc: string; count: string; bg: string; image: string }[] = [
     {
@@ -64,10 +64,7 @@ export const ShopByTechSection: React.FC = () => {
       selectedAgeGroups: [],
       selectedTechStacks: [tech]
     }));
-    const section = document.getElementById('featured-kits');
-    if (section) {
-      section.scrollIntoView({ behavior: 'smooth' });
-    }
+    setCurrentPage('shop');
   };
 
   return (

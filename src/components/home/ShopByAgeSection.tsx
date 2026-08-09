@@ -4,7 +4,7 @@ import { AgeGroupType } from '../../types';
 import { Sparkles, ArrowRight, Cpu, Brain, Rocket } from 'lucide-react';
 
 export const ShopByAgeSection: React.FC = () => {
-  const { setFilters } = useApp();
+  const { setFilters, setCurrentPage } = useApp();
 
   const handleAgeClick = (age: AgeGroupType) => {
     setFilters(prev => ({
@@ -13,10 +13,7 @@ export const ShopByAgeSection: React.FC = () => {
       selectedAgeGroups: [age],
       selectedTechStacks: []
     }));
-    const section = document.getElementById('featured-kits');
-    if (section) {
-      section.scrollIntoView({ behavior: 'smooth' });
-    }
+    setCurrentPage('shop');
   };
 
   const ageBrackets = [
