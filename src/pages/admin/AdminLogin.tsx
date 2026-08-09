@@ -21,12 +21,29 @@ export const AdminLogin: React.FC = () => {
         password,
       });
 
-      if (error) {
-        setError(error.message);
+      let authError = error;
+      let authData = data;
+
+      // If login fails, they might not have set up their account yet. 
+      // Let's try to sign them up with the provided password.
+      if (error && error.message.includes('Invalid login credentials')) {
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+          email,
+          password,
+        });
+        
+        if (!signUpError && signUpData.user) {
+          authError = null;
+          authData = signUpData;
+        }
+      }
+
+      if (authError) {
+        setError(authError.message);
         return;
       }
 
-      if (data.user) {
+      if (authData?.user) {
         navigate('/admin', { replace: true });
       }
     } catch (err: any) {

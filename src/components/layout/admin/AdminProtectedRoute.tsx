@@ -10,6 +10,13 @@ export const AdminProtectedRoute: React.FC = () => {
     initialize();
   }, [initialize]);
 
+  useEffect(() => {
+    // If user is logged in via Supabase but doesn't exist in admin_users table
+    if (user && !adminUser && !isLoading) {
+      signOut();
+    }
+  }, [user, adminUser, isLoading, signOut]);
+
   if (isLoading) {
     return (
       <div className="h-screen w-full flex items-center justify-center bg-slate-50">
@@ -22,10 +29,7 @@ export const AdminProtectedRoute: React.FC = () => {
     return <Navigate to="/admin/login" replace />;
   }
 
-  // If user is logged in via Supabase but doesn't exist in admin_users table
   if (user && !adminUser && !isLoading) {
-    // Log them out immediately and send to login
-    signOut();
     return <Navigate to="/admin/login?error=unauthorized" replace />;
   }
 
