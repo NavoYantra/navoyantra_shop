@@ -61,7 +61,6 @@ export const AdminCoupons: React.FC = () => {
       code: code.toUpperCase(),
       type,
       value,
-      description,
       is_active: true,
       usage_count: 0,
     };
