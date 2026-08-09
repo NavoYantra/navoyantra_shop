@@ -4,31 +4,36 @@ import { Button } from '../../components/ui/Button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../components/ui/Table';
 import { Badge } from '../../components/ui/Badge';
 import { Check, X, Star } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
-import { getProducts } from '../../lib/api';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { getReviews, updateReviewStatus } from '../../lib/api';
 
 export const AdminReviews: React.FC = () => {
-  const { data: rawProducts = [] } = useQuery({ queryKey: ['products'], queryFn: getProducts });
+  const queryClient = useQueryClient();
+  const { data: rawReviews = [], isLoading } = useQuery({ queryKey: ['reviews'], queryFn: getReviews });
   const [selectedProduct, setSelectedProduct] = React.useState<string>('All');
   
-  // Create static mock reviews based on products so they don't regenerate on every render
-  const reviews = React.useMemo(() => {
-    return rawProducts.slice(0, 10).map((p: any) => ({
-      id: `rev_${Math.random().toString(36).substr(2, 9)}`,
-      author: 'John Doe',
-      product: p.name,
-      rating: 5,
-      comment: 'Excellent product! The quality is top notch and it was exactly as described.',
-      date: '2023-10-15',
-      status: 'Pending'
-    }));
-  }, [rawProducts]);
+  const updateStatusMutation = useMutation({
+    mutationFn: ({ id, status }: { id: string, status: 'approved' | 'declined' }) => updateReviewStatus(id, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['reviews'] });
+    }
+  });
+
+  const reviews = rawReviews.map((r: any) => ({
+    id: r.id,
+    author: r.author_name,
+    product: r.products?.name || 'Unknown Product',
+    rating: r.rating,
+    comment: r.comment,
+    date: r.created_at,
+    status: r.status
+  }));
 
   const filteredReviews = selectedProduct === 'All' 
     ? reviews 
-    : reviews.filter(r => r.product === selectedProduct);
+    : reviews.filter((r: any) => r.product === selectedProduct);
 
-  const productNames = Array.from(new Set(reviews.map(r => r.product)));
+  const productNames = Array.from(new Set(reviews.map((r: any) => r.product)));
 
   return (
     <div className="space-y-6">
@@ -63,7 +68,13 @@ export const AdminReviews: React.FC = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredReviews.length === 0 ? (
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-8 text-slate-500">
+                    Loading reviews...
+                  </TableCell>
+                </TableRow>
+              ) : filteredReviews.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-8 text-slate-500">
                     No reviews found for this product.
@@ -83,15 +94,33 @@ export const AdminReviews: React.FC = () => {
                   </TableCell>
                   <TableCell className="text-sm text-slate-600 italic">"{review.comment}"</TableCell>
                   <TableCell>
-                    <Badge variant="secondary">Pending</Badge>
+                    <Badge variant={review.status === 'approved' ? 'default' : review.status === 'declined' ? 'destructive' : 'secondary'} className="capitalize">
+                      {review.status}
+                    </Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="icon" className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50">
-                      <Check className="w-4 h-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon" className="text-red-600 hover:text-red-700 hover:bg-red-50">
-                      <X className="w-4 h-4" />
-                    </Button>
+                    {review.status === 'pending' && (
+                      <>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
+                          onClick={() => updateStatusMutation.mutate({ id: review.id, status: 'approved' })}
+                          disabled={updateStatusMutation.isPending}
+                        >
+                          <Check className="w-4 h-4" />
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          onClick={() => updateStatusMutation.mutate({ id: review.id, status: 'declined' })}
+                          disabled={updateStatusMutation.isPending}
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </>
+                    )}
                   </TableCell>
                 </TableRow>
               )))}

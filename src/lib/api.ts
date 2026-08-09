@@ -114,6 +114,12 @@ export const createCoupon = async (coupon: any) => {
   return data;
 };
 
+export const updateCoupon = async (id: string, coupon: any) => {
+  const { data, error } = await supabase.from('coupons').update(coupon).eq('id', id).select().single();
+  if (error) throw error;
+  return data;
+};
+
 export const deleteCoupon = async (id: string) => {
   const { error } = await supabase.from('coupons').delete().eq('id', id);
   if (error) throw error;
@@ -149,6 +155,18 @@ export const getReviews = async () => {
   if (error) throw error;
   return data;
 };
+
+export const updateReviewStatus = async (id: string, status: 'approved' | 'declined') => {
+  const { data, error } = await supabase.from('reviews').update({ status }).eq('id', id).select().single();
+  if (error) throw error;
+  return data;
+};
+
+export const deleteReview = async (id: string) => {
+  const { error } = await supabase.from('reviews').delete().eq('id', id);
+  if (error) throw error;
+};
+
 
 // --- Admin Users ---
 export const getAdminUsers = async () => {

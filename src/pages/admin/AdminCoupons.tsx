@@ -6,13 +6,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { Plus, Tag, Trash2, Edit2, Percent, Calendar } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getCoupons, createCoupon, deleteCoupon } from '../../lib/api';
+import { getCoupons, createCoupon, updateCoupon, deleteCoupon } from '../../lib/api';
 
 type DiscountType = 'percentage' | 'fixed' | 'other';
 
 export const AdminCoupons: React.FC = () => {
   const queryClient = useQueryClient();
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingCoupon, setEditingCoupon] = useState<any>(null);
   
   // Fetch Coupons
   const { data: coupons = [], isLoading } = useQuery({
@@ -21,20 +22,36 @@ export const AdminCoupons: React.FC = () => {
   });
 
   // Mutations
+  const resetForm = () => {
+    setIsFormOpen(false);
+    setEditingCoupon(null);
+    setCode('');
+    setType('percentage');
+    setValue(0);
+    setDescription('');
+    setExpiryDate('');
+    setUsageLimitPerUser('');
+  };
+
   const createMutation = useMutation({
     mutationFn: createCoupon,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['coupons'] });
-      setIsFormOpen(false);
-      setCode('');
-      setType('percentage');
-      setValue(0);
-      setDescription('');
-      setExpiryDate('');
-      setUsageLimitPerUser('');
+      resetForm();
     },
     onError: (error: any) => {
       alert(`Failed to create coupon: ${error.message}`);
+    }
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: any }) => updateCoupon(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['coupons'] });
+      resetForm();
+    },
+    onError: (error: any) => {
+      alert(`Failed to update coupon: ${error.message}`);
     }
   });
 
@@ -69,7 +86,22 @@ export const AdminCoupons: React.FC = () => {
     if (expiryDate) payload.expiry_date = expiryDate;
     if (usageLimitPerUser !== '') payload.usage_limit_per_user = usageLimitPerUser;
 
-    createMutation.mutate(payload);
+    if (editingCoupon) {
+      updateMutation.mutate({ id: editingCoupon.id, data: payload });
+    } else {
+      createMutation.mutate(payload);
+    }
+  };
+
+  const handleEditClick = (coupon: any) => {
+    setEditingCoupon(coupon);
+    setCode(coupon.code);
+    setType(coupon.discount_type);
+    setValue(coupon.discount_amount);
+    setDescription(coupon.description || '');
+    setExpiryDate(coupon.expiry_date ? coupon.expiry_date.split('T')[0] : '');
+    setUsageLimitPerUser(coupon.usage_limit_per_user || '');
+    setIsFormOpen(true);
   };
 
   const handleDeleteCoupon = (id: string) => {
@@ -82,7 +114,10 @@ export const AdminCoupons: React.FC = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight text-slate-900">Coupons & Offers</h1>
-        <Button onClick={() => setIsFormOpen(!isFormOpen)}>
+        <Button onClick={() => {
+          resetForm();
+          setIsFormOpen(!isFormOpen);
+        }}>
           <Plus className="h-4 w-4 mr-2" /> Add New Coupon
         </Button>
       </div>
@@ -90,7 +125,7 @@ export const AdminCoupons: React.FC = () => {
       {isFormOpen && (
         <Card className="border-blue-100 bg-blue-50/50">
           <CardHeader>
-            <CardTitle>Create New Coupon / Offer</CardTitle>
+            <CardTitle>{editingCoupon ? 'Edit Coupon / Offer' : 'Create New Coupon / Offer'}</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleAddCoupon} className="space-y-4">
@@ -178,9 +213,9 @@ export const AdminCoupons: React.FC = () => {
               </div>
 
               <div className="pt-4 flex justify-end space-x-2">
-                <Button type="button" variant="outline" onClick={() => setIsFormOpen(false)}>Cancel</Button>
-                <Button type="submit" disabled={createMutation.isPending}>
-                  {createMutation.isPending ? 'Creating...' : 'Create Coupon'}
+                <Button type="button" variant="outline" onClick={resetForm}>Cancel</Button>
+                <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending}>
+                  {createMutation.isPending || updateMutation.isPending ? 'Saving...' : (editingCoupon ? 'Save Changes' : 'Create Coupon')}
                 </Button>
               </div>
             </form>
@@ -252,7 +287,7 @@ export const AdminCoupons: React.FC = () => {
                     <TableCell className="text-slate-500">{coupon.usage_count}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end space-x-2">
-                        <Button variant="ghost" size="icon" className="text-slate-400 hover:text-blue-600">
+                        <Button variant="ghost" size="icon" className="text-slate-400 hover:text-blue-600" onClick={() => handleEditClick(coupon)}>
                           <Edit2 className="h-4 w-4" />
                         </Button>
                         <Button variant="ghost" size="icon" className="text-slate-400 hover:text-red-600" onClick={() => handleDeleteCoupon(coupon.id)}>
