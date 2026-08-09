@@ -4,6 +4,7 @@ import { BlogPost } from '../types';
 import { 
   Sparkles, Clock, ArrowRight, X, Calendar, ShieldCheck 
 } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 export const BlogsPage: React.FC = () => {
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
@@ -26,6 +27,43 @@ export const BlogsPage: React.FC = () => {
     };
   }, [selectedPost, isSubmitModalOpen, isAdminModalOpen]);
 
+  const [dbBlogs, setDbBlogs] = useState<BlogPost[]>([]);
+  
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        const { data, error } = await supabase.from('blogs').select('*').order('created_at', { ascending: false });
+        if (error) throw error;
+        
+        const formattedBlogs: BlogPost[] = (data || []).map((b: any) => ({
+          id: b.id,
+          title: b.title,
+          excerpt: b.excerpt || '',
+          content: b.content || '',
+          category: b.category || 'Uncategorized',
+          author: {
+            name: b.author_name || 'Admin',
+            role: b.author_role || 'Editor',
+            avatar: b.author_avatar || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80',
+            isOfficial: true
+          },
+          publishedDate: new Date(b.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+          readTime: b.read_time || '5 min read',
+          coverImage: b.cover_image || 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=200',
+          tags: b.tags || [],
+          isFeatured: b.is_featured,
+          status: b.status
+        }));
+        
+        setDbBlogs(formattedBlogs);
+      } catch (err) {
+        console.error('Error fetching blogs:', err);
+      }
+    };
+    
+    fetchBlogs();
+  }, []);
+
   const handleAddComment = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedPost || !newCommentName || !newCommentText) return;
@@ -38,8 +76,10 @@ export const BlogsPage: React.FC = () => {
     setNewCommentText('');
   };
 
-  const featuredPosts = BLOG_POSTS.filter(p => p.isFeatured && p.status === 'published');
-  const publishedPosts = BLOG_POSTS.filter(p => p.status === 'published');
+  const allBlogs = [...dbBlogs, ...BLOG_POSTS];
+
+  const featuredPosts = allBlogs.filter(p => p.isFeatured && p.status === 'published');
+  const publishedPosts = allBlogs.filter(p => p.status === 'published' || p.status === undefined);
 
   const filteredPosts = selectedTag
     ? publishedPosts.filter(p => p.tags.includes(selectedTag))

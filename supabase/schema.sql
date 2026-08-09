@@ -169,3 +169,37 @@ CREATE POLICY "Public Read invoices" ON storage.objects FOR SELECT USING (bucket
 
 -- Allow authenticated users to upload invoices
 CREATE POLICY "Auth Insert invoices" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'invoices');
+
+-- ==========================================
+-- BLOGS TABLE
+-- ==========================================
+
+CREATE TABLE IF NOT EXISTS blogs (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  title TEXT NOT NULL,
+  slug TEXT NOT NULL UNIQUE,
+  excerpt TEXT,
+  content TEXT,
+  category TEXT,
+  author_name TEXT,
+  author_role TEXT,
+  author_avatar TEXT,
+  published_date TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  read_time TEXT,
+  cover_image TEXT,
+  tags TEXT[] DEFAULT '{}',
+  is_featured BOOLEAN DEFAULT FALSE,
+  status TEXT DEFAULT 'draft', -- 'draft', 'published'
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Enable RLS
+ALTER TABLE blogs ENABLE ROW LEVEL SECURITY;
+
+-- Allow public read access to blogs
+CREATE POLICY "Allow public select on blogs" ON blogs FOR SELECT USING (true);
+
+-- Allow authenticated users (Admins) to insert/update/delete blogs
+CREATE POLICY "Allow authenticated insert on blogs" ON blogs FOR INSERT TO authenticated WITH CHECK (true);
+CREATE POLICY "Allow authenticated update on blogs" ON blogs FOR UPDATE TO authenticated USING (true);
+CREATE POLICY "Allow authenticated delete on blogs" ON blogs FOR DELETE TO authenticated USING (true);

@@ -7,7 +7,7 @@ import { getNotifications, markNotificationRead } from '../../../lib/api';
 import { 
   LayoutDashboard, Package, Boxes, 
   Settings, Image as ImageIcon, Bell, Search,
-  ChevronDown, ChevronRight, LogOut, ShoppingCart
+  ChevronDown, ChevronRight, LogOut, ShoppingCart, FileText
 } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 
@@ -53,6 +53,7 @@ export const AdminLayout: React.FC = () => {
       ]
     },
     { name: 'Inventory', path: '/admin/inventory', icon: Boxes },
+    { name: 'Blogs', path: '/admin/blogs', icon: FileText },
     { name: 'Media Library', path: '/admin/media', icon: ImageIcon },
   ];
 
