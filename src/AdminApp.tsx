@@ -26,7 +26,7 @@ export const AdminApp: React.FC = () => {
       <Routes>
         <Route path="login" element={<AdminLogin />} />
         <Route element={<AdminProtectedRoute />}>
-          <Route path="/" element={<AdminLayout />}>
+          <Route element={<AdminLayout />}>
             <Route index element={<AdminDashboardHome />} />
             <Route path="products" element={<AdminProductList />} />
             <Route path="products/new" element={<AdminProductForm />} />
