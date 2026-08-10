@@ -263,3 +263,21 @@ export const markNotificationRead = async (id: string) => {
   const { error } = await supabase.from('notifications').update({ is_read: true }).eq('id', id);
   if (error) throw error;
 };
+
+// --- Blog Reviews ---
+export const getBlogReviews = async () => {
+  const { data, error } = await supabase.from('blog_reviews').select('*, blogs(title)').order('created_at', { ascending: false });
+  if (error) throw error;
+  return data;
+};
+
+export const updateBlogReviewStatus = async (id: string, status: 'approved' | 'declined') => {
+  const { data, error } = await supabase.from('blog_reviews').update({ status }).eq('id', id).select().single();
+  if (error) throw error;
+  return data;
+};
+
+export const deleteBlogReview = async (id: string) => {
+  const { error } = await supabase.from('blog_reviews').delete().eq('id', id);
+  if (error) throw error;
+};

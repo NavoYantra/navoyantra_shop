@@ -203,3 +203,31 @@ CREATE POLICY "Allow public select on blogs" ON blogs FOR SELECT USING (true);
 CREATE POLICY "Allow authenticated insert on blogs" ON blogs FOR INSERT TO authenticated WITH CHECK (true);
 CREATE POLICY "Allow authenticated update on blogs" ON blogs FOR UPDATE TO authenticated USING (true);
 CREATE POLICY "Allow authenticated delete on blogs" ON blogs FOR DELETE TO authenticated USING (true);
+
+-- ==========================================
+-- BLOG REVIEWS TABLE
+-- ==========================================
+
+CREATE TABLE IF NOT EXISTS blog_reviews (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  blog_id UUID REFERENCES blogs(id) ON DELETE CASCADE,
+  author_name TEXT NOT NULL,
+  rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
+  comment TEXT,
+  status TEXT DEFAULT 'pending', -- 'pending', 'approved', 'declined'
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Enable RLS
+ALTER TABLE blog_reviews ENABLE ROW LEVEL SECURITY;
+
+-- Allow ANYONE (including guests) to place a blog review (Insert)
+CREATE POLICY "Allow public insert on blog_reviews" ON blog_reviews FOR INSERT WITH CHECK (true);
+
+-- Allow public read access to approved blog reviews
+CREATE POLICY "Allow public select on blog_reviews" ON blog_reviews FOR SELECT USING (status = 'approved');
+
+-- Allow ONLY authenticated users (Admins) to read/update all blog reviews
+CREATE POLICY "Allow authenticated select on all blog_reviews" ON blog_reviews FOR SELECT TO authenticated USING (true);
+CREATE POLICY "Allow authenticated update on blog_reviews" ON blog_reviews FOR UPDATE TO authenticated USING (true);
+CREATE POLICY "Allow authenticated delete on blog_reviews" ON blog_reviews FOR DELETE TO authenticated USING (true);

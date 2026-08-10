@@ -41,7 +41,7 @@ export const AdminBlogs: React.FC = () => {
       setBlogs(data || []);
     } catch (err: any) {
       console.error('Error fetching blogs:', err);
-      showToast(`Error: ${err.message}`, 'error');
+      showToast(`Error: ${err.message}`, 'warning');
     } finally {
       setLoading(false);
     }
@@ -92,7 +92,7 @@ export const AdminBlogs: React.FC = () => {
       fetchBlogs();
     } catch (err: any) {
       console.error('Error deleting blog:', err);
-      showToast(`Error: ${err.message}`, 'error');
+      showToast(`Error: ${err.message}`, 'warning');
     }
   };
 
@@ -133,7 +133,7 @@ export const AdminBlogs: React.FC = () => {
       fetchBlogs();
     } catch (err: any) {
       console.error('Error saving blog:', err);
-      showToast(`Error: ${err.message}`, 'error');
+      showToast(`Error: ${err.message}`, 'warning');
     }
   };
 
@@ -224,20 +224,23 @@ export const AdminBlogs: React.FC = () => {
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-2xl w-full max-w-4xl shadow-2xl my-8 mt-24">
-            <div className="flex justify-between items-center p-6 border-b border-slate-100">
-              <h3 className="text-xl font-bold text-slate-900">
-                {editingBlog ? 'Edit Blog Post' : 'Create New Blog Post'}
-              </h3>
-              <button 
-                onClick={() => setIsModalOpen(false)}
-                className="p-2 hover:bg-slate-100 rounded-full text-slate-500 transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+          <div className="bg-white rounded-2xl w-full max-w-7xl shadow-2xl my-8 mt-24 flex flex-col md:flex-row max-h-[90vh]">
             
-            <form onSubmit={handleSubmit} className="p-6">
+            {/* Form Side */}
+            <div className="flex-1 flex flex-col border-r border-slate-100 overflow-y-auto relative">
+              <div className="flex justify-between items-center p-6 border-b border-slate-100 sticky top-0 bg-white z-10">
+                <h3 className="text-xl font-bold text-slate-900">
+                  {editingBlog ? 'Edit Blog Post' : 'Create New Blog Post'}
+                </h3>
+                <button 
+                  onClick={() => setIsModalOpen(false)}
+                  className="p-2 hover:bg-slate-100 rounded-full text-slate-500 transition-colors md:hidden"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              
+              <form onSubmit={handleSubmit} className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div className="md:col-span-2">
                   <label className="block text-sm font-semibold text-slate-700 mb-1">Title *</label>
@@ -384,6 +387,55 @@ export const AdminBlogs: React.FC = () => {
                 </button>
               </div>
             </form>
+            </div>
+            
+            {/* Preview Side */}
+            <div className="flex-1 bg-slate-50 flex-col overflow-y-auto hidden md:flex relative">
+               <div className="p-6 border-b border-slate-100 sticky top-0 bg-slate-50 z-10 flex justify-between items-center">
+                 <h3 className="text-lg font-bold text-slate-900">
+                   Live Preview
+                 </h3>
+                 <button 
+                   type="button"
+                   onClick={() => setIsModalOpen(false)}
+                   className="p-2 hover:bg-slate-200 rounded-full text-slate-500 transition-colors"
+                 >
+                   <X className="w-5 h-5" />
+                 </button>
+               </div>
+               
+               <div className="p-8">
+                 <article className="prose prose-slate max-w-none bg-white p-8 rounded-2xl shadow-sm border border-slate-200/60">
+                   {coverImage && (
+                     <img src={coverImage} alt="Cover" className="w-full h-64 object-cover rounded-xl mb-8" />
+                   )}
+                   <div className="mb-8">
+                     <span className="text-blue-600 font-semibold text-sm uppercase tracking-wider">{category || 'Category'}</span>
+                     <h1 className="text-3xl font-extrabold text-slate-900 mt-2 mb-4 leading-tight">
+                       {title || 'Blog Title'}
+                     </h1>
+                     <p className="text-xl text-slate-500 italic mb-6">{excerpt || 'Blog excerpt goes here...'}</p>
+                     
+                     <div className="flex items-center space-x-4">
+                        {authorAvatar ? (
+                           <img src={authorAvatar} alt={authorName} className="w-12 h-12 rounded-full object-cover" />
+                        ) : (
+                           <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 font-bold">
+                             {authorName ? authorName[0].toUpperCase() : 'A'}
+                           </div>
+                        )}
+                        <div>
+                           <p className="font-bold text-slate-900">{authorName || 'Author Name'}</p>
+                           <p className="text-sm text-slate-500">{authorRole || 'Author Role'} • {readTime || '5 min read'}</p>
+                        </div>
+                     </div>
+                   </div>
+                   
+                   <div dangerouslySetInnerHTML={{ __html: content || '<p>Content will appear here...</p>' }} />
+                 </article>
+               </div>
+            </div>
+            
           </div>
         </div>
       )}

@@ -53,7 +53,14 @@ export const AdminLayout: React.FC = () => {
       ]
     },
     { name: 'Inventory', path: '/admin/inventory', icon: Boxes },
-    { name: 'Blogs', path: '/admin/blogs', icon: FileText },
+    { 
+      name: 'Blogs', 
+      icon: FileText,
+      children: [
+        { name: 'All Blogs', path: '/admin/blogs' },
+        { name: 'Reviews', path: '/admin/blogs/reviews' },
+      ]
+    },
     { name: 'Media Library', path: '/admin/media', icon: ImageIcon },
   ];
 
