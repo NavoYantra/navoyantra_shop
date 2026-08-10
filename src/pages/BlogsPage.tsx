@@ -44,7 +44,7 @@ export const BlogsPage: React.FC = () => {
           author: {
             name: b.author_name || 'Admin',
             role: b.author_role || 'Editor',
-            avatar: b.author_avatar || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80',
+            avatar: b.author_avatar || '',
             isOfficial: true
           },
           publishedDate: new Date(b.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
@@ -161,11 +161,17 @@ export const BlogsPage: React.FC = () => {
 
                     <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
                       <div className="flex items-center space-x-3">
-                        <img
-                          src={post.author.avatar}
-                          alt={post.author.name}
-                          className={`w-10 h-10 rounded-full object-cover border ${post.author.isOfficial ? 'border-blue-500' : 'border-slate-200'}`}
-                        />
+                        {post.author.avatar ? (
+                          <img
+                            src={post.author.avatar}
+                            alt={post.author.name}
+                            className={`w-10 h-10 rounded-full object-cover border ${post.author.isOfficial ? 'border-blue-500' : 'border-slate-200'}`}
+                          />
+                        ) : (
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-blue-700 bg-blue-100 border ${post.author.isOfficial ? 'border-blue-500' : 'border-slate-200'}`}>
+                            {post.author.name ? post.author.name[0].toUpperCase() : 'A'}
+                          </div>
+                        )}
                         <div>
                           <h4 className="text-xs font-bold text-slate-900 flex items-center space-x-1">
                             <span>{post.author.name}</span>
@@ -259,7 +265,13 @@ export const BlogsPage: React.FC = () => {
 
               <div className="p-6 pt-0 flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <img src={post.author.avatar} alt={post.author.name} className={`w-7 h-7 rounded-full object-cover border ${post.author.isOfficial ? 'border-blue-500' : 'border-slate-200'}`} />
+                  {post.author.avatar ? (
+                    <img src={post.author.avatar} alt={post.author.name} className={`w-7 h-7 rounded-full object-cover border ${post.author.isOfficial ? 'border-blue-500' : 'border-slate-200'}`} />
+                  ) : (
+                    <div className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-blue-700 bg-blue-100 border ${post.author.isOfficial ? 'border-blue-500' : 'border-slate-200'} text-[10px]`}>
+                      {post.author.name ? post.author.name[0].toUpperCase() : 'A'}
+                    </div>
+                  )}
                   <span className="text-xs font-bold text-slate-700 flex items-center space-x-1">
                     <span>{post.author.name}</span>
                     {post.author.isOfficial && <ShieldCheck className="w-3.5 h-3.5 text-blue-500" />}
@@ -296,7 +308,13 @@ export const BlogsPage: React.FC = () => {
 
               <div className="flex items-center space-x-4 border-y border-slate-100 py-3 text-xs text-slate-500">
                 <div className="flex items-center space-x-2">
-                  <img src={selectedPost.author.avatar} alt="Author" className="w-8 h-8 rounded-full" />
+                  {selectedPost.author.avatar ? (
+                    <img src={selectedPost.author.avatar} alt="Author" className="w-8 h-8 rounded-full object-cover" />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-blue-700 bg-blue-100">
+                      {selectedPost.author.name ? selectedPost.author.name[0].toUpperCase() : 'A'}
+                    </div>
+                  )}
                   <span className="font-bold text-slate-900">{selectedPost.author.name}</span>
                 </div>
                 <span>•</span>
