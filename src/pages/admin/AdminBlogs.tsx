@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
-import { Plus, Edit2, Trash2, X, Search, FileText } from 'lucide-react';
+import { Plus, Edit2, Trash2, X, FileText } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { useAdminAuthStore } from '../../store/adminAuthStore';
 
