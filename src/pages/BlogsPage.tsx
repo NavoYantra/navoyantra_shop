@@ -105,13 +105,19 @@ export const BlogsPage: React.FC = () => {
             Insights, step-by-step tutorial guides, AI vision breakdowns, and school Atal Tinkering Lab setup articles written by STEM educators.
           </p>
 
-          <div className="pt-4 flex justify-center space-x-4">
+          <div className="pt-4 flex flex-wrap justify-center gap-4">
             <button
               onClick={() => setIsSubmitModalOpen(true)}
               className="px-6 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-lg transition-transform hover:scale-105"
             >
-              Submit Your Tutorial
+              Submit Your Blog
             </button>
+            <a
+              href="/"
+              className="px-6 py-3 rounded-2xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs shadow-sm transition-transform hover:scale-105 flex items-center"
+            >
+              Go to Home Page
+            </a>
           </div>
         </div>
 
@@ -408,7 +414,7 @@ export const BlogsPage: React.FC = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm">
           <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 p-8 w-full max-w-2xl animate-in zoom-in-95 duration-200">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold font-heading text-slate-900">Submit a Tutorial</h2>
+              <h2 className="text-2xl font-bold font-heading text-slate-900">Submit a Blog</h2>
               <button onClick={() => setIsSubmitModalOpen(false)} className="text-slate-400 hover:text-slate-900"><X className="w-5 h-5"/></button>
             </div>
             <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); alert('Blog submitted for admin approval!'); setIsSubmitModalOpen(false); }}>

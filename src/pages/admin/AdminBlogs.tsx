@@ -465,7 +465,7 @@ export const AdminBlogs: React.FC = () => {
                      <img src={coverImage} alt="Cover" className="w-full h-64 object-cover rounded-xl mb-8" />
                    )}
                    <div className="mb-8">
-                     <span className="text-blue-600 font-semibold text-sm uppercase tracking-wider">{category || 'Category'}</span>
+                     <span className="text-blue-600 font-semibold text-sm uppercase tracking-wider">{(categories && categories.length > 0) ? categories.join(', ') : 'Category'}</span>
                      <h1 className="text-3xl font-extrabold text-slate-900 mt-2 mb-4 leading-tight">
                        {title || 'Blog Title'}
                      </h1>
