@@ -115,7 +115,7 @@ export interface BlogPost {
   title: string;
   excerpt: string;
   content: string;
-  category: string;
+  categories: string[];
   author: {
     name: string;
     role: string;

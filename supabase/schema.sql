@@ -180,7 +180,7 @@ CREATE TABLE IF NOT EXISTS blogs (
   slug TEXT NOT NULL UNIQUE,
   excerpt TEXT,
   content TEXT,
-  category TEXT,
+  categories TEXT[] DEFAULT '{}',
   author_name TEXT,
   author_role TEXT,
   author_avatar TEXT,
@@ -203,6 +203,36 @@ CREATE POLICY "Allow public select on blogs" ON blogs FOR SELECT USING (true);
 CREATE POLICY "Allow authenticated insert on blogs" ON blogs FOR INSERT TO authenticated WITH CHECK (true);
 CREATE POLICY "Allow authenticated update on blogs" ON blogs FOR UPDATE TO authenticated USING (true);
 CREATE POLICY "Allow authenticated delete on blogs" ON blogs FOR DELETE TO authenticated USING (true);
+
+-- ==========================================
+-- BLOG CATEGORIES & TAGS
+-- ==========================================
+
+CREATE TABLE IF NOT EXISTS blog_categories (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  name TEXT NOT NULL UNIQUE,
+  slug TEXT NOT NULL UNIQUE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS blog_tags (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  name TEXT NOT NULL UNIQUE,
+  slug TEXT NOT NULL UNIQUE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Enable RLS
+ALTER TABLE blog_categories ENABLE ROW LEVEL SECURITY;
+ALTER TABLE blog_tags ENABLE ROW LEVEL SECURITY;
+
+-- Allow public read
+CREATE POLICY "Allow public select on blog_categories" ON blog_categories FOR SELECT USING (true);
+CREATE POLICY "Allow public select on blog_tags" ON blog_tags FOR SELECT USING (true);
+
+-- Allow authenticated (Admins) all
+CREATE POLICY "Allow auth all on blog_categories" ON blog_categories FOR ALL TO authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "Allow auth all on blog_tags" ON blog_tags FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
 -- ==========================================
 -- BLOG REVIEWS TABLE

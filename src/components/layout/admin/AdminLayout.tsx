@@ -59,6 +59,8 @@ export const AdminLayout: React.FC = () => {
       children: [
         { name: 'All Blogs', path: '/admin/blogs' },
         { name: 'Reviews', path: '/admin/blogs/reviews' },
+        { name: 'Categories', path: '/admin/blogs/categories' },
+        { name: 'Tags', path: '/admin/blogs/tags' },
       ]
     },
     { name: 'Media Library', path: '/admin/media', icon: ImageIcon },

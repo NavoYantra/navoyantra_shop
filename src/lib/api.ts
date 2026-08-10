@@ -313,3 +313,39 @@ export const uploadAvatar = async (file: File, userId: string) => {
   
   return data.publicUrl;
 };
+
+// --- Blog Categories ---
+export const getBlogCategories = async () => {
+  const { data, error } = await supabase.from('blog_categories').select('*').order('name');
+  if (error) throw error;
+  return data;
+};
+
+export const createBlogCategory = async (category: any) => {
+  const { data, error } = await supabase.from('blog_categories').insert(category).select().single();
+  if (error) throw error;
+  return data;
+};
+
+export const deleteBlogCategory = async (id: string) => {
+  const { error } = await supabase.from('blog_categories').delete().eq('id', id);
+  if (error) throw error;
+};
+
+// --- Blog Tags ---
+export const getBlogTags = async () => {
+  const { data, error } = await supabase.from('blog_tags').select('*').order('name');
+  if (error) throw error;
+  return data;
+};
+
+export const createBlogTag = async (tag: any) => {
+  const { data, error } = await supabase.from('blog_tags').insert(tag).select().single();
+  if (error) throw error;
+  return data;
+};
+
+export const deleteBlogTag = async (id: string) => {
+  const { error } = await supabase.from('blog_tags').delete().eq('id', id);
+  if (error) throw error;
+};

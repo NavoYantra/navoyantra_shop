@@ -39,7 +39,7 @@ export const BlogsPage: React.FC = () => {
           title: b.title,
           excerpt: b.excerpt || '',
           content: b.content || '',
-          category: b.category || 'Uncategorized',
+          categories: b.categories || (b.category ? [b.category] : ['Uncategorized']),
           author: {
             name: b.author_name || 'Admin',
             role: b.author_role || 'Editor',
@@ -141,7 +141,7 @@ export const BlogsPage: React.FC = () => {
                   <div className="p-6 sm:p-8 flex flex-col justify-between space-y-6">
                     <div className="space-y-4">
                       <div className="flex items-center space-x-3 text-xs text-slate-400 font-semibold">
-                        <span className="text-purple-600 font-bold">{post.category}</span>
+                        <span className="text-purple-600 font-bold">{(post.categories || []).join(', ')}</span>
                         <span>•</span>
                         <span className="flex items-center space-x-1">
                           <Clock className="w-3.5 h-3.5" />
@@ -231,9 +231,13 @@ export const BlogsPage: React.FC = () => {
                     alt={post.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-slate-900/80 text-white text-[10px] font-extrabold uppercase backdrop-blur-md">
-                    {post.category}
-                  </span>
+                  <div className="absolute top-3 left-3 flex flex-wrap gap-1">
+                    {(post.categories || []).map((cat: string) => (
+                      <span key={cat} className="px-2.5 py-1 rounded-full bg-slate-900/80 text-white text-[10px] font-extrabold uppercase backdrop-blur-md">
+                        {cat}
+                      </span>
+                    ))}
+                  </div>
                 </div>
 
                 <div className="p-6 space-y-3">
@@ -292,9 +296,13 @@ export const BlogsPage: React.FC = () => {
         <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="w-full max-w-3xl bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in zoom-in-95 duration-200 my-8">
             <div className="p-6 bg-slate-900 text-white flex items-center justify-between">
-              <span className="px-3 py-1 rounded-full bg-blue-600 text-white text-xs font-bold">
-                {selectedPost.category}
-              </span>
+                  <div className="flex flex-wrap gap-2">
+                    {(selectedPost.categories || []).map((cat: string) => (
+                      <span key={cat} className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-purple-100 text-purple-700 text-[11px] font-bold uppercase tracking-wider">
+                        {cat}
+                      </span>
+                    ))}
+                  </div>
               <button onClick={() => setSelectedPost(null)} className="p-2 rounded-xl text-slate-400 hover:bg-slate-800">
                 <X className="w-5 h-5" />
               </button>
