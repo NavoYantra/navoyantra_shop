@@ -1,19 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { BlogPost } from '../types';
 import { 
-  Sparkles, Clock, ArrowRight, X, Calendar, ShieldCheck 
+  Sparkles, Clock, ArrowRight, X, Calendar, ShieldCheck, Star
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { useApp } from '../context/AppContext';
 
 export const BlogsPage: React.FC = () => {
+  const { showToast, user } = useApp();
+  const [dbReviews, setDbReviews] = useState<any[]>([]);
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
   const [isAdminModalOpen] = useState(false);
   
   const [postComments, setPostComments] = useState<Record<string, {name: string, text: string, date: string}[]>>({});
-  const [newCommentName, setNewCommentName] = useState('');
+  const [newCommentName, setNewCommentName] = useState(user?.name || '');
   const [newCommentText, setNewCommentText] = useState('');
+  const [newCommentRating, setNewCommentRating] = useState(5);
+
+  useEffect(() => {
+    if (user?.name) {
+      setNewCommentName(user.name);
+    }
+  }, [user]);
 
   useEffect(() => {
     if (selectedPost || isSubmitModalOpen || isAdminModalOpen) {
@@ -25,6 +35,16 @@ export const BlogsPage: React.FC = () => {
       document.body.style.overflow = 'unset';
     };
   }, [selectedPost, isSubmitModalOpen, isAdminModalOpen]);
+
+  useEffect(() => {
+    if (selectedPost) {
+      const fetchReviews = async () => {
+        const { data } = await supabase.from('blog_reviews').select('*').eq('blog_id', selectedPost.id).eq('status', 'approved').order('created_at', { ascending: false });
+        if (data) setDbReviews(data);
+      };
+      fetchReviews();
+    }
+  }, [selectedPost]);
 
   const [dbBlogs, setDbBlogs] = useState<BlogPost[]>([]);
   
@@ -63,16 +83,27 @@ export const BlogsPage: React.FC = () => {
     fetchBlogs();
   }, []);
 
-  const handleAddComment = (e: React.FormEvent) => {
+  const handleAddComment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedPost || !newCommentName || !newCommentText) return;
-    const newComment = { name: newCommentName, text: newCommentText, date: new Date().toLocaleDateString() };
-    setPostComments(prev => ({
-      ...prev,
-      [selectedPost.id]: [...(prev[selectedPost.id] || []), newComment]
-    }));
-    setNewCommentName('');
-    setNewCommentText('');
+    
+    try {
+      const { error } = await supabase.from('blog_reviews').insert([{
+        blog_id: selectedPost.id,
+        author_name: newCommentName,
+        comment: newCommentText,
+        rating: newCommentRating,
+        status: 'pending'
+      }]);
+      
+      if (error) throw error;
+      showToast('Review submitted successfully and is pending approval!', 'success');
+      setNewCommentName(user?.name || '');
+      setNewCommentText('');
+      setNewCommentRating(5);
+    } catch (err: any) {
+      showToast(`Error submitting review: ${err.message}`, 'warning');
+    }
   };
 
   const allBlogs = dbBlogs;
@@ -349,14 +380,21 @@ export const BlogsPage: React.FC = () => {
                 <h3 className="text-xl font-bold text-slate-900 mb-6">Comments & Reviews</h3>
                 
                 <div className="space-y-6 mb-8">
-                  {(postComments[selectedPost.id] || []).length > 0 ? (
-                    (postComments[selectedPost.id] || []).map((comment, idx) => (
+                  {dbReviews.length > 0 ? (
+                    dbReviews.map((review, idx) => (
                       <div key={idx} className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
                         <div className="flex justify-between items-start mb-2">
-                          <span className="font-bold text-slate-900 text-sm">{comment.name}</span>
-                          <span className="text-[10px] text-slate-400">{comment.date}</span>
+                          <div>
+                            <span className="font-bold text-slate-900 text-sm mr-2">{review.author_name}</span>
+                            <span className="text-[10px] text-slate-400">{new Date(review.created_at).toLocaleDateString()}</span>
+                          </div>
+                          <div className="flex text-amber-500">
+                            {[...Array(review.rating)].map((_, i) => (
+                              <Star key={i} className="w-3 h-3 fill-current" />
+                            ))}
+                          </div>
                         </div>
-                        <p className="text-sm text-slate-600">{comment.text}</p>
+                        <p className="text-sm text-slate-600">{review.comment}</p>
                       </div>
                     ))
                   ) : (
@@ -375,6 +413,21 @@ export const BlogsPage: React.FC = () => {
                       onChange={e => setNewCommentName(e.target.value)}
                       className="w-full px-4 py-2 rounded-xl bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                     />
+                  </div>
+                  <div className="flex items-center space-x-2 mb-2">
+                    <span className="text-sm font-semibold text-slate-700">Rating:</span>
+                    <div className="flex">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button
+                          key={star}
+                          type="button"
+                          onClick={() => setNewCommentRating(star)}
+                          className={`p-1 ${newCommentRating >= star ? 'text-amber-500' : 'text-slate-300'} hover:text-amber-400 transition-colors`}
+                        >
+                          <Star className="w-5 h-5 fill-current" />
+                        </button>
+                      ))}
+                    </div>
                   </div>
                   <div>
                     <textarea 

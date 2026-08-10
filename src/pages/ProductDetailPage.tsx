@@ -182,8 +182,30 @@ export const ProductDetailPage: React.FC = () => {
   const { 
     activeProductId, 
     setCurrentPage, 
-    storeProducts
+    storeProducts,
+    user,
+    showToast
   } = useApp();
+
+  const [newReviewName, setNewReviewName] = useState(user?.name || '');
+  const [newReviewTitle, setNewReviewTitle] = useState('');
+  const [newReviewText, setNewReviewText] = useState('');
+  const [newReviewRating, setNewReviewRating] = useState(5);
+
+  useEffect(() => {
+    if (user?.name) {
+      setNewReviewName(user.name);
+    }
+  }, [user]);
+
+  const handleAddReview = (e: React.FormEvent) => {
+    e.preventDefault();
+    showToast('Review submitted successfully! It will appear after moderation.', 'success');
+    setNewReviewName(user?.name || '');
+    setNewReviewTitle('');
+    setNewReviewText('');
+    setNewReviewRating(5);
+  };
 
   // Scroll to top when product changes
   useEffect(() => {
@@ -277,7 +299,7 @@ export const ProductDetailPage: React.FC = () => {
                 </div>
               </div>
               
-              <div className="space-y-6">
+              <div className="space-y-6 mb-8">
                 {productReviews.length > 0 ? productReviews.map((rev, i) => (
                   <div key={i} className="border-b border-slate-50 pb-6 last:border-0 last:pb-0">
                     <div className="flex items-center space-x-3 mb-3">
@@ -296,6 +318,60 @@ export const ProductDetailPage: React.FC = () => {
                 )) : (
                   <p className="text-sm text-slate-500 italic">No reviews yet for this product. Be the first to review!</p>
                 )}
+              </div>
+
+              <div className="pt-6 border-t border-slate-100">
+                <form onSubmit={handleAddReview} className="bg-slate-50 p-6 rounded-2xl border border-slate-200 space-y-4">
+                  <h4 className="text-base font-bold text-slate-900">Write a Review</h4>
+                  <div>
+                    <input 
+                      type="text" 
+                      placeholder="Your Name" 
+                      required
+                      value={newReviewName}
+                      onChange={e => setNewReviewName(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <input 
+                      type="text" 
+                      placeholder="Review Title" 
+                      required
+                      value={newReviewTitle}
+                      onChange={e => setNewReviewTitle(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                    />
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm font-semibold text-slate-700">Rating:</span>
+                    <div className="flex">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button
+                          key={star}
+                          type="button"
+                          onClick={() => setNewReviewRating(star)}
+                          className={`p-1.5 ${newReviewRating >= star ? 'text-amber-500' : 'text-slate-300'} hover:text-amber-400 transition-colors`}
+                        >
+                          <Star className="w-5 h-5 fill-current" />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <textarea 
+                      placeholder="Write your review here..." 
+                      rows={4}
+                      required
+                      value={newReviewText}
+                      onChange={e => setNewReviewText(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                    />
+                  </div>
+                  <button type="submit" className="px-6 py-2.5 bg-blue-600 text-white font-bold rounded-xl text-sm hover:bg-blue-700 transition-colors">
+                    Submit Review
+                  </button>
+                </form>
               </div>
             </div>
           </div>

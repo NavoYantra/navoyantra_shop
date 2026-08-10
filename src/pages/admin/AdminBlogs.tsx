@@ -205,7 +205,7 @@ export const AdminBlogs: React.FC = () => {
                       <div className="font-semibold text-slate-900">{blog.title}</div>
                       <div className="text-xs text-slate-500 truncate max-w-xs">{blog.excerpt}</div>
                     </td>
-                    <td className="p-4 text-sm text-slate-600">{blog.category || 'Uncategorized'}</td>
+                    <td className="p-4 text-sm text-slate-600">{(blog.categories && blog.categories.length > 0) ? blog.categories.join(', ') : 'Uncategorized'}</td>
                     <td className="p-4">
                       <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
                         blog.status === 'published' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'

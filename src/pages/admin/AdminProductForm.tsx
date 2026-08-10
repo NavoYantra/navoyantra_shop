@@ -20,12 +20,18 @@ const productSchema = z.object({
   description: z.string(),
   price: z.number().min(0, 'Price must be positive'),
   originalPrice: z.number().min(0),
+  skuPrefix: z.string().optional(),
   
   // Display & Detail fields
   shortDescription: z.string().optional(),
   tileDescription: z.string().optional(),
   features: z.array(z.object({ value: z.string() })).optional(),
   youtubeVideoUrl: z.string().optional(),
+
+  // Product Detail Page
+  whatsInside: z.array(z.object({ value: z.string() })).optional(),
+  sampleProjects: z.array(z.object({ value: z.string() })).optional(),
+  technicalSpecs: z.array(z.object({ key: z.string(), value: z.string() })).optional(),
 
   // Categorization
   category: z.array(z.string()).min(1, 'At least one category is required'),
@@ -76,9 +82,13 @@ export const AdminProductForm: React.FC = () => {
       description: existingProductRaw.description || '',
       price: existingProductRaw.sale_price || existingProductRaw.price,
       originalPrice: existingProductRaw.price,
+      skuPrefix: existingProductRaw.sku ? existingProductRaw.sku.split('-')[1] : '',
       shortDescription: existingProductRaw.short_description || '',
       tileDescription: '',
       features: [],
+      whatsInside: existingProductRaw.dimensions?.whatsInside || [],
+      sampleProjects: existingProductRaw.dimensions?.sampleProjects || [],
+      technicalSpecs: existingProductRaw.dimensions?.technicalSpecs || [],
       youtubeVideoUrl: existingProductRaw.video_url || '',
       category: existingProductRaw.categories?.name ? [existingProductRaw.categories.name] : ['Robotics'],
       tags: existingProductRaw.tags?.map((t:any) => t.name) || [],
@@ -130,6 +140,9 @@ export const AdminProductForm: React.FC = () => {
       shortDescription: existingProduct.shortDescription,
       tileDescription: existingProduct.tileDescription,
       features: existingProduct.features.map((f: any) => ({ value: f })),
+      whatsInside: existingProduct.whatsInside?.map((x: string) => ({ value: x })) || [],
+      sampleProjects: existingProduct.sampleProjects?.map((x: string) => ({ value: x })) || [],
+      technicalSpecs: existingProduct.technicalSpecs?.map((x: any) => ({ key: x.key, value: x.value })) || [],
       youtubeVideoUrl: existingProduct.youtubeVideoUrl,
       category: existingProduct.category,
       tags: existingProduct.tags,
@@ -155,6 +168,9 @@ export const AdminProductForm: React.FC = () => {
       isFeatured: false,
       inStock: true,
       stockCount: 10,
+      whatsInside: [],
+      sampleProjects: [],
+      technicalSpecs: [],
       images: [{ url: '' }],
       publishStatus: 'Draft',
       hasVariants: false,
@@ -170,6 +186,7 @@ export const AdminProductForm: React.FC = () => {
         description: existingProduct.description,
         price: existingProduct.price,
         originalPrice: existingProduct.originalPrice,
+        skuPrefix: existingProduct.skuPrefix,
         shortDescription: existingProduct.shortDescription,
         tileDescription: existingProduct.tileDescription,
         features: existingProduct.features.map((f: any) => ({ value: f })),
@@ -193,6 +210,9 @@ export const AdminProductForm: React.FC = () => {
   const { fields: imageFields, append: appendImage, remove: removeImage } = useFieldArray({ control: form.control, name: "images" });
   const { fields: featureFields, append: appendFeature, remove: removeFeature } = useFieldArray({ control: form.control, name: "features" });
   const { fields: variantFields, append: appendVariant, remove: removeVariant } = useFieldArray({ control: form.control, name: "variants" });
+  const { fields: whatsInsideFields, append: appendWhatsInside, remove: removeWhatsInside } = useFieldArray({ control: form.control, name: "whatsInside" });
+  const { fields: projectFields, append: appendProject, remove: removeProject } = useFieldArray({ control: form.control, name: "sampleProjects" });
+  const { fields: techSpecFields, append: appendTechSpec, remove: removeTechSpec } = useFieldArray({ control: form.control, name: "technicalSpecs" });
 
   const onSubmit = (data: ProductFormValues) => {
     // Transform arrays back to strings for the Product interface
@@ -200,6 +220,9 @@ export const AdminProductForm: React.FC = () => {
       ...data,
       images: data.images.map(img => img.url).filter(Boolean),
       features: data.features?.map(f => f.value).filter(Boolean) || [],
+      whatsInside: data.whatsInside?.map(f => f.value).filter(Boolean) || [],
+      sampleProjects: data.sampleProjects?.map(f => f.value).filter(Boolean) || [],
+      technicalSpecs: data.technicalSpecs?.filter(f => f.key && f.value) || [],
       variants: data.variants?.map((v, idx) => ({ id: `var_${idx}`, name: v.name, options: v.options.split(',').map(s => s.trim()) })) || []
     };
 
@@ -220,7 +243,10 @@ export const AdminProductForm: React.FC = () => {
       dimensions: {
         length: formattedData.shipping?.length,
         width: formattedData.shipping?.width,
-        height: formattedData.shipping?.height
+        height: formattedData.shipping?.height,
+        whatsInside: formattedData.whatsInside,
+        sampleProjects: formattedData.sampleProjects,
+        technicalSpecs: formattedData.technicalSpecs
       },
       // brand_id, category_id will be mapped if they match
       // For simplicity, finding ID from name (in real app, form should bind to ID directly)
@@ -229,14 +255,9 @@ export const AdminProductForm: React.FC = () => {
     };
     
     // Auto-generate Custom SKU (NY-{PREFIX}-{4-DIGIT})
-    const selectedCategory = categories.find((c: any) => c.id === supabasePayload.category_id);
-    let customPrefix = selectedCategory?.name?.substring(0, 3).toUpperCase() || 'GEN';
-    if (selectedCategory?.description) {
-      const match = selectedCategory.description.match(/\[SKU:([A-Z0-9]+)\]/i);
-      if (match) customPrefix = match[1];
-    }
+    const customPrefix = formattedData.skuPrefix || 'GEN';
     const randomNum = Math.floor(1000 + Math.random() * 9000);
-    const generatedSku = `NY-${customPrefix}-${randomNum}`;
+    const generatedSku = `NY-${customPrefix.toUpperCase()}-${randomNum}`;
 
     if (isEditing && id) {
       // Don't overwrite SKU on edit if we wanted to keep it, but here we just re-generate if we didn't store it.
@@ -325,9 +346,9 @@ export const AdminProductForm: React.FC = () => {
         {/* LEFT MAIN CONTENT (FORM) */}
         <div className="space-y-8">
           
-          {/* SECTION 1: Basic Information */}
+          {/* SECTION 1: General Information */}
           <section className="space-y-4">
-            <h2 className="text-xl font-bold text-slate-800">1. Basic Information</h2>
+            <h2 className="text-xl font-bold text-slate-800">1. General Information</h2>
             <Card>
               <CardContent className="space-y-4 pt-6">
                 <div className="space-y-2">
@@ -336,46 +357,120 @@ export const AdminProductForm: React.FC = () => {
                   {form.formState.errors.name && <p className="text-red-500 text-sm">{form.formState.errors.name.message}</p>}
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-slate-700">Full Description (Amazon Style)</label>
-                  <p className="text-xs text-slate-500 mb-2">Detailed explanation of the product, its benefits, and what it includes.</p>
-                  <textarea 
-                    {...form.register('description')}
-                    className="flex min-h-[150px] w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
-                    placeholder="Detailed product description..."
-                  />
+                  <label className="text-sm font-semibold text-slate-700">SKU Prefix</label>
+                  <p className="text-xs text-slate-500 mb-2">Middle part of the SKU. e.g., 'RBK' for NY-RBK-XXXX</p>
+                  <Input {...form.register('skuPrefix')} placeholder="e.g., RBK" />
+                </div>
+                
+                <div className="pt-4 border-t border-slate-100">
+                  <h3 className="text-sm font-semibold text-slate-700 mb-4">Product Images (Google Drive Links)</h3>
+                  <div className="space-y-4">
+                    {imageFields.map((field, index) => (
+                      <div key={field.id} className="flex items-start space-x-4">
+                        <div className="flex-1 space-y-2">
+                          <div className="flex space-x-2">
+                            <Input {...form.register(`images.${index}.url` as const)} placeholder="Image URL will appear here..." readOnly />
+                            <div className="relative overflow-hidden rounded-md">
+                              <Button type="button" variant="outline" className="shrink-0" disabled={isUploading}>
+                                <Upload className="w-4 h-4 mr-2" /> {isUploading ? 'Uploading...' : 'Upload'}
+                              </Button>
+                              <input 
+                                type="file" 
+                                accept="image/*" 
+                                onChange={(e) => handleImageUpload(e, index)}
+                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                disabled={isUploading}
+                              />
+                            </div>
+                          </div>
+                          {form.watch(`images.${index}.url`) && (
+                            <div className="w-24 h-24 rounded-lg bg-slate-100 border border-slate-200 overflow-hidden">
+                              <img src={form.watch(`images.${index}.url`)} className="w-full h-full object-cover" alt="Preview" onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/150'; }} />
+                            </div>
+                          )}
+                        </div>
+                        <Button type="button" variant="ghost" size="icon" onClick={() => removeImage(index)} className="mt-1">
+                          <Trash2 className="w-4 h-4 text-red-500" />
+                        </Button>
+                      </div>
+                    ))}
+                    <Button type="button" variant="outline" size="sm" onClick={() => appendImage({ url: '' })}>
+                      <ImageIcon className="w-4 h-4 mr-2" /> Add Another Image
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
           </section>
 
-          {/* SECTION 2: Pricing */}
+          {/* SECTION 2: Pricing & Organization */}
           <section className="space-y-4">
-            <h2 className="text-xl font-bold text-slate-800">2. Pricing</h2>
+            <h2 className="text-xl font-bold text-slate-800">2. Pricing & Organization</h2>
             <Card>
               <CardContent className="space-y-4 pt-6">
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-sm font-semibold text-slate-700">Regular Price (₹)</label>
-                    <p className="text-xs text-slate-500 mb-2">Original MSRP price (will be crossed out).</p>
                     <Input type="number" {...form.register('originalPrice', { valueAsNumber: true })} />
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-semibold text-slate-700">Sale Price (₹)</label>
-                    <p className="text-xs text-slate-500 mb-2">Actual selling price.</p>
                     <Input type="number" {...form.register('price', { valueAsNumber: true })} />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-slate-100">
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-slate-700">Brand</label>
+                    <select {...form.register('brand')} className="flex h-10 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm">
+                      <option value="">Select Brand...</option>
+                      {brands.map((b: any) => (
+                        <option key={b.id} value={b.name}>{b.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-slate-700">Categories</label>
+                    <select multiple {...form.register('category')} className="flex min-h-[80px] w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-sm">
+                      {categories.map((c: any) => (
+                        <option key={c.id} value={c.name}>{c.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-slate-700">Tags</label>
+                    <select multiple {...form.register('tags')} className="flex min-h-[80px] w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-sm">
+                      {tags.map((t: any) => (
+                        <option key={t.id} value={t.name}>{t.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-slate-700">Status</label>
+                    <select {...form.register('publishStatus')} className="flex h-10 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm">
+                      <option value="Published">Published</option>
+                      <option value="Draft">Draft</option>
+                    </select>
+                    <div className="pt-4 flex items-center space-x-2">
+                      <input type="checkbox" id="isFeatured" {...form.register('isFeatured')} className="rounded border-slate-300 text-blue-600 focus:ring-blue-600 w-4 h-4" />
+                      <label htmlFor="isFeatured" className="text-sm font-bold text-slate-900 cursor-pointer">Feature this product</label>
+                    </div>
                   </div>
                 </div>
               </CardContent>
             </Card>
           </section>
 
-          {/* SECTION 3: Display & Highlights */}
+          {/* SECTION 3: Tile & Quick View Display */}
           <section className="space-y-4">
-            <h2 className="text-xl font-bold text-slate-800">3. Display & Highlights</h2>
+            <h2 className="text-xl font-bold text-slate-800">3. Tile & Quick View Display</h2>
             <Card>
               <CardContent className="space-y-4 pt-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-slate-700">Short Tagline (e.g. "Ages 8-14")</label>
+                  <label className="text-sm font-semibold text-slate-700">Short Tagline (Tile)</label>
                   <Input {...form.register('tagline')} placeholder="e.g., Build your first robot" />
                 </div>
                 <div className="space-y-2">
@@ -415,58 +510,89 @@ export const AdminProductForm: React.FC = () => {
             </Card>
           </section>
 
-          {/* SECTION 4: Media (Images/Video) */}
+          {/* SECTION 4: Product Detail Page */}
           <section className="space-y-4">
-            <h2 className="text-xl font-bold text-slate-800">4. Media</h2>
+            <h2 className="text-xl font-bold text-slate-800">4. Product Detail Page</h2>
+            
             <Card>
-              <CardHeader><CardTitle>Product Images (Google Drive Links)</CardTitle></CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-sm text-slate-500 mb-4">Paste the public sharing links from Google Drive (or any image URL).</p>
-                {imageFields.map((field, index) => (
-                  <div key={field.id} className="flex items-start space-x-4">
-                    <div className="flex-1 space-y-2">
-                      <div className="flex space-x-2">
-                        <Input {...form.register(`images.${index}.url` as const)} placeholder="Image URL will appear here..." readOnly />
-                        <div className="relative overflow-hidden rounded-md">
-                          <Button type="button" variant="outline" className="shrink-0" disabled={isUploading}>
-                            <Upload className="w-4 h-4 mr-2" /> {isUploading ? 'Uploading...' : 'Upload'}
-                          </Button>
-                          <input 
-                            type="file" 
-                            accept="image/*" 
-                            onChange={(e) => handleImageUpload(e, index)}
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                            disabled={isUploading}
-                          />
-                        </div>
-                      </div>
-                      {form.watch(`images.${index}.url`) && (
-                        <div className="w-24 h-24 rounded-lg bg-slate-100 border border-slate-200 overflow-hidden">
-                          <img src={form.watch(`images.${index}.url`)} className="w-full h-full object-cover" alt="Preview" onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/150'; }} />
-                        </div>
-                      )}
-                    </div>
-                    <Button type="button" variant="ghost" size="icon" onClick={() => removeImage(index)} className="mt-1">
+              <CardContent className="space-y-4 pt-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-slate-700">Full Description (Amazon Style)</label>
+                  <p className="text-xs text-slate-500 mb-2">Detailed explanation of the product, its benefits, and what it includes.</p>
+                  <textarea 
+                    {...form.register('description')}
+                    className="flex min-h-[150px] w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
+                    placeholder="Detailed product description..."
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-slate-700">Video URL</label>
+                  <div className="flex items-center space-x-2">
+                    <Video className="w-5 h-5 text-red-500" />
+                    <Input {...form.register('youtubeVideoUrl')} placeholder="https://youtube.com/watch?v=..." />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader><CardTitle>What's In The Box</CardTitle></CardHeader>
+              <CardContent className="space-y-3">
+                {whatsInsideFields.map((field, index) => (
+                  <div key={field.id} className="flex items-center space-x-2">
+                    <Input {...form.register(`whatsInside.${index}.value` as const)} placeholder="e.g. 1x Arduino Uno" />
+                    <Button type="button" variant="ghost" size="icon" onClick={() => removeWhatsInside(index)}>
                       <Trash2 className="w-4 h-4 text-red-500" />
                     </Button>
                   </div>
                 ))}
-                <Button type="button" variant="outline" size="sm" onClick={() => appendImage({ url: '' })}>
-                  <ImageIcon className="w-4 h-4 mr-2" /> Add Another Image
+                <Button type="button" variant="outline" size="sm" onClick={() => appendWhatsInside({ value: '' })}>
+                  <Plus className="w-4 h-4 mr-2" /> Add Item
                 </Button>
               </CardContent>
             </Card>
 
             <Card>
-              <CardHeader><CardTitle>YouTube Embed</CardTitle></CardHeader>
-              <CardContent className="space-y-2">
-                <label className="text-sm font-semibold text-slate-700">Video URL</label>
-                <div className="flex items-center space-x-2">
-                  <Video className="w-5 h-5 text-red-500" />
-                  <Input {...form.register('youtubeVideoUrl')} placeholder="https://youtube.com/watch?v=..." />
-                </div>
+              <CardHeader><CardTitle>Projects You Can Build</CardTitle></CardHeader>
+              <CardContent className="space-y-3">
+                {projectFields.map((field, index) => (
+                  <div key={field.id} className="flex items-center space-x-2">
+                    <Input {...form.register(`sampleProjects.${index}.value` as const)} placeholder="e.g. Line Follower Robot" />
+                    <Button type="button" variant="ghost" size="icon" onClick={() => removeProject(index)}>
+                      <Trash2 className="w-4 h-4 text-red-500" />
+                    </Button>
+                  </div>
+                ))}
+                <Button type="button" variant="outline" size="sm" onClick={() => appendProject({ value: '' })}>
+                  <Plus className="w-4 h-4 mr-2" /> Add Project
+                </Button>
               </CardContent>
             </Card>
+
+            <Card>
+              <CardHeader><CardTitle>Technical Specs</CardTitle></CardHeader>
+              <CardContent className="space-y-3">
+                {techSpecFields.map((field, index) => (
+                  <div key={field.id} className="grid grid-cols-12 gap-4 items-center bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <div className="col-span-5 space-y-1">
+                      <Input {...form.register(`technicalSpecs.${index}.key` as const)} placeholder="e.g. Microcontroller" />
+                    </div>
+                    <div className="col-span-6 space-y-1">
+                      <Input {...form.register(`technicalSpecs.${index}.value` as const)} placeholder="e.g. ATmega328P" />
+                    </div>
+                    <div className="col-span-1 text-right">
+                      <Button type="button" variant="ghost" size="icon" onClick={() => removeTechSpec(index)}>
+                        <Trash2 className="w-4 h-4 text-red-500" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+                <Button type="button" variant="outline" size="sm" onClick={() => appendTechSpec({ key: '', value: '' })}>
+                  <Plus className="w-4 h-4 mr-2" /> Add Spec
+                </Button>
+              </CardContent>
+            </Card>
+
           </section>
           
           {/* SECTION 5: Variants */}
@@ -548,75 +674,6 @@ export const AdminProductForm: React.FC = () => {
                       <Input type="number" {...form.register('shipping.height', { valueAsNumber: true })} />
                     </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          </section>
-
-          {/* SECTION 7: Organization & Publishing */}
-          <section className="space-y-4">
-            <h2 className="text-xl font-bold text-slate-800">7. Organization & Publishing</h2>
-            <Card>
-              <CardContent className="space-y-6 pt-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-slate-700">Brand</label>
-                    <select {...form.register('brand')} className="flex h-10 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-blue-600">
-                      <option value="">Select Brand...</option>
-                      {brands.map((b: any) => (
-                        <option key={b.id} value={b.name}>{b.name}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-slate-700">Categories</label>
-                    <select 
-                      multiple
-                      {...form.register('category')}
-                      className="flex min-h-[120px] w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-600"
-                    >
-                      {categories.map((c: any) => (
-                        <option key={c.id} value={c.name}>{c.name}</option>
-                      ))}
-                    </select>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-slate-700">Tags</label>
-                    <select 
-                      multiple
-                      {...form.register('tags')}
-                      className="flex min-h-[100px] w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-600"
-                    >
-                      {tags.map((t: any) => (
-                        <option key={t.id} value={t.name}>{t.name}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                <div className="border-t border-slate-100 pt-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-slate-700">Status</label>
-                    <select {...form.register('publishStatus')} className="flex h-10 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:ring-2 focus:ring-blue-600">
-                      <option value="Published">Published</option>
-                      <option value="Draft">Draft</option>
-                    </select>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-slate-700">Schedule Publish</label>
-                    <div className="relative">
-                      <Calendar className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-                      <Input type="datetime-local" {...form.register('scheduledPublishDate')} className="pl-9" />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="pt-4 flex items-center space-x-2">
-                  <input type="checkbox" id="isFeatured" {...form.register('isFeatured')} className="rounded border-slate-300 text-blue-600 focus:ring-blue-600 w-4 h-4" />
-                  <label htmlFor="isFeatured" className="text-sm font-bold text-slate-900 cursor-pointer">Feature this product</label>
                 </div>
               </CardContent>
             </Card>
