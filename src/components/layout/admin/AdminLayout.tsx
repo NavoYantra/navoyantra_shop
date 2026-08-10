@@ -17,8 +17,10 @@ export const AdminLayout: React.FC = () => {
   const location = useLocation();
 
   const [expandedMenus, setExpandedMenus] = React.useState<Record<string, boolean>>({
-    'Products': true,
-    'Orders': true
+    'Products': location.pathname.includes('/products') || location.pathname.includes('/categories') || location.pathname.includes('/brands') || location.pathname.includes('/tags') || location.pathname.includes('/reviews') || location.pathname.includes('/coupons'),
+    'Orders': location.pathname.includes('/orders'),
+    'Blogs': location.pathname.includes('/blogs'),
+    'Tutorials': location.pathname.includes('/tutorials')
   });
 
   const toggleMenu = (name: string) => {
