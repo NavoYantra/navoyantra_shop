@@ -349,3 +349,25 @@ export const deleteBlogTag = async (id: string) => {
   const { error } = await supabase.from('blog_tags').delete().eq('id', id);
   if (error) throw error;
 };
+
+// --- Tutorial Reviews ---
+export const getTutorialReviews = async () => {
+  const { data, error } = await supabase
+    .from('tutorial_reviews')
+    .select('*, tutorials(title)')
+    .order('created_at', { ascending: false });
+    
+  if (error) throw error;
+  return data;
+};
+
+export const updateTutorialReviewStatus = async (id: string, status: 'approved' | 'declined') => {
+  const { data, error } = await supabase
+    .from('tutorial_reviews')
+    .update({ status })
+    .eq('id', id)
+    .select();
+    
+  if (error) throw error;
+  return data;
+};

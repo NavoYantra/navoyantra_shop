@@ -71,6 +71,7 @@ export const AdminLayout: React.FC = () => {
       children: [
         { name: 'All Tutorials', path: '/admin/tutorials' },
         { name: 'Add New', path: '/admin/tutorials/new' },
+        { name: 'Reviews', path: '/admin/tutorials/reviews' },
       ]
     },
     { name: 'Media Library', path: '/admin/media', icon: ImageIcon },

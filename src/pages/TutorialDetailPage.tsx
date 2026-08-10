@@ -3,15 +3,28 @@ import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { Tutorial } from '../types';
 import { SEO } from '../components/SEO';
+import { useApp } from '../context/AppContext';
 import { 
-  BookOpen, Clock, Download, Video, Image as ImageIcon, FileText, ChevronRight
+  BookOpen, Clock, Download, Video, Image as ImageIcon, FileText, ChevronRight, Star, MessageSquare
 } from 'lucide-react';
 
 export const TutorialDetailPage: React.FC<{ previewTutorial?: Tutorial }> = ({ previewTutorial }) => {
   const { id } = useParams<{ id: string }>();
+  const { user, showToast } = useApp();
   const [tutorial, setTutorial] = useState<Tutorial | null>(previewTutorial || null);
   const [isLoading, setIsLoading] = useState(!previewTutorial);
   const [activeTab, setActiveTab] = useState<'content' | 'video' | 'pdf'>('content');
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [newReviewName, setNewReviewName] = useState(user?.name || '');
+  const [newReviewText, setNewReviewText] = useState('');
+  const [newReviewRating, setNewReviewRating] = useState(5);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (user?.name) {
+      setNewReviewName(user.name);
+    }
+  }, [user]);
 
   useEffect(() => {
     if (previewTutorial) {
@@ -51,10 +64,54 @@ export const TutorialDetailPage: React.FC<{ previewTutorial?: Tutorial }> = ({ p
       } else if (!data.content && !data.video_url && data.pdfs?.length > 0) {
         setActiveTab('pdf');
       }
+      
+      // Fetch reviews
+      if (data.id) {
+        const { data: reviewsData } = await supabase
+          .from('tutorial_reviews')
+          .select('*')
+          .eq('tutorial_id', data.id)
+          .eq('status', 'approved')
+          .order('created_at', { ascending: false });
+        
+        if (reviewsData) setReviews(reviewsData);
+      }
     } catch (err) {
       console.error('Error fetching tutorial:', err);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleSubmitReview = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) {
+      showToast('Please log in to submit a review', 'warning');
+      return;
+    }
+    
+    if (!tutorial || !newReviewName || !newReviewText) return;
+    
+    setIsSubmitting(true);
+    try {
+      const { error } = await supabase.from('tutorial_reviews').insert([{
+        tutorial_id: tutorial.id,
+        author_name: user.name, // Force user's actual name
+        comment: newReviewText,
+        rating: newReviewRating,
+        status: 'pending'
+      }]);
+      
+      if (error) throw error;
+      
+      showToast('Review submitted successfully! It will appear once approved by admin.', 'success');
+      setNewReviewText('');
+      setNewReviewRating(5);
+    } catch (err) {
+      console.error('Error submitting review:', err);
+      showToast('Failed to submit review', 'warning');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -260,6 +317,104 @@ export const TutorialDetailPage: React.FC<{ previewTutorial?: Tutorial }> = ({ p
                     </div>
                   </div>
                 ))}
+              </div>
+            )}
+            
+            {/* Reviews Section */}
+            {!previewTutorial && (
+              <div className="mt-16 pt-12 border-t border-slate-200">
+                <div className="flex items-center space-x-3 mb-8">
+                  <MessageSquare className="w-8 h-8 text-blue-600" />
+                  <h3 className="text-2xl font-bold text-slate-900">Tutorial Reviews & Feedback</h3>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                  <div className="lg:col-span-2 space-y-6">
+                    {reviews.length === 0 ? (
+                      <div className="p-8 text-center bg-white border border-slate-200 rounded-2xl shadow-sm">
+                        <Star className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                        <p className="text-slate-500 font-medium">No reviews yet. Be the first to share your experience!</p>
+                      </div>
+                    ) : (
+                      reviews.map((review) => (
+                        <div key={review.id} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                          <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center space-x-3">
+                              <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-lg">
+                                {review.author_name.charAt(0)}
+                              </div>
+                              <div>
+                                <h4 className="font-bold text-slate-900">{review.author_name}</h4>
+                                <p className="text-xs text-slate-500">{new Date(review.created_at).toLocaleDateString()}</p>
+                              </div>
+                            </div>
+                            <div className="flex text-amber-500">
+                              {[...Array(5)].map((_, i) => (
+                                <Star key={i} className={`w-4 h-4 ${i < review.rating ? 'fill-current' : 'text-slate-300'}`} />
+                              ))}
+                            </div>
+                          </div>
+                          <p className="text-slate-600 leading-relaxed">{review.comment}</p>
+                        </div>
+                      ))
+                    )}
+                  </div>
+
+                  <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm h-fit">
+                    <h4 className="font-bold text-slate-900 mb-6 text-lg">Write a Review</h4>
+                    {!user ? (
+                      <div className="text-center py-6 bg-slate-50 rounded-xl border border-slate-200">
+                        <p className="text-slate-600 mb-4 text-sm">You must be logged in to write a review.</p>
+                      </div>
+                    ) : (
+                      <form onSubmit={handleSubmitReview} className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-semibold text-slate-700 mb-2">Rating</label>
+                          <div className="flex space-x-2">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <button
+                                key={star}
+                                type="button"
+                                onClick={() => setNewReviewRating(star)}
+                                className="focus:outline-none transition-transform hover:scale-110"
+                              >
+                                <Star className={`w-8 h-8 ${star <= newReviewRating ? 'fill-amber-500 text-amber-500' : 'text-slate-200'}`} />
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-semibold text-slate-700 mb-2">Your Name</label>
+                          <input 
+                            type="text" 
+                            disabled
+                            value={user.name}
+                            className="w-full px-4 py-2 border border-slate-200 rounded-xl bg-slate-100 text-slate-500 outline-none cursor-not-allowed"
+                            title="Your name is fixed to your account profile."
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-semibold text-slate-700 mb-2">Your Review</label>
+                          <textarea 
+                            required
+                            rows={4}
+                            value={newReviewText}
+                            onChange={(e) => setNewReviewText(e.target.value)}
+                            className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none resize-none"
+                            placeholder="What did you learn from this tutorial?"
+                          ></textarea>
+                        </div>
+                        <button 
+                          type="submit" 
+                          disabled={isSubmitting}
+                          className="w-full py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-colors disabled:opacity-50"
+                        >
+                          {isSubmitting ? 'Submitting...' : 'Submit Review'}
+                        </button>
+                      </form>
+                    )}
+                  </div>
+                </div>
               </div>
             )}
 

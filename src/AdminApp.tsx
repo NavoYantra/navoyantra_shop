@@ -25,6 +25,7 @@ const AdminBlogCategories = lazy(() => import('./pages/admin/AdminBlogCategories
 const AdminBlogTags = lazy(() => import('./pages/admin/AdminBlogTags').then(m => ({ default: m.AdminBlogTags })));
 const AdminTutorials = lazy(() => import('./pages/admin/AdminTutorials').then(m => ({ default: m.AdminTutorials })));
 const AdminTutorialForm = lazy(() => import('./pages/admin/AdminTutorialForm').then(m => ({ default: m.AdminTutorialForm })));
+const AdminTutorialReviews = lazy(() => import('./pages/admin/AdminTutorialReviews').then(m => ({ default: m.AdminTutorialReviews })));
 
 export const AdminApp: React.FC = () => {
   return (
@@ -52,6 +53,7 @@ export const AdminApp: React.FC = () => {
             <Route path="blogs/tags" element={<AdminBlogTags />} />
             <Route path="tutorials" element={<AdminTutorials />} />
             <Route path="tutorials/new" element={<AdminTutorialForm />} />
+            <Route path="tutorials/reviews" element={<AdminTutorialReviews />} />
             <Route path="tutorials/:id/edit" element={<AdminTutorialForm />} />
           </Route>
         </Route>
