@@ -7,9 +7,10 @@ import { supabase } from '../../lib/supabase';
 import { useApp } from '../../context/AppContext';
 import { 
   Save, ArrowLeft, Image as ImageIcon, Trash2, Plus, 
-  Upload, FileText, Video
+  Upload, FileText, Video, Eye, X
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
+import { TutorialDetailPage } from '../TutorialDetailPage';
 
 const tutorialSchema = z.object({
   title: z.string().min(3, "Title is required"),
@@ -35,6 +36,7 @@ export const AdminTutorialForm: React.FC = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(isEditing);
   const [isUploading, setIsUploading] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
 
   const form = useForm<TutorialFormData>({
     resolver: zodResolver(tutorialSchema),
@@ -206,14 +208,24 @@ export const AdminTutorialForm: React.FC = () => {
               {isEditing ? 'Edit Tutorial' : 'Create New Tutorial'}
             </h1>
           </div>
-          <button 
-            type="submit" 
-            disabled={isSaving}
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center space-x-2 disabled:opacity-50"
-          >
-            <Save className="w-4 h-4" />
-            <span>{isSaving ? 'Saving...' : 'Save Tutorial'}</span>
-          </button>
+          <div className="flex items-center space-x-3">
+            <button 
+              type="button" 
+              onClick={() => setShowPreview(true)}
+              className="bg-slate-100 text-slate-700 px-6 py-2 rounded-lg font-semibold hover:bg-slate-200 transition-colors flex items-center space-x-2"
+            >
+              <Eye className="w-4 h-4" />
+              <span>Preview</span>
+            </button>
+            <button 
+              type="submit" 
+              disabled={isSaving}
+              className="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center space-x-2 disabled:opacity-50"
+            >
+              <Save className="w-4 h-4" />
+              <span>{isSaving ? 'Saving...' : 'Save Tutorial'}</span>
+            </button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -360,6 +372,33 @@ export const AdminTutorialForm: React.FC = () => {
 
         </div>
       </form>
+
+      {/* Live Preview Modal */}
+      {showPreview && (
+        <div className="fixed inset-0 z-50 flex flex-col bg-white">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-white">
+            <h2 className="text-xl font-bold text-slate-900 flex items-center space-x-2">
+              <Eye className="w-5 h-5 text-blue-600" />
+              <span>Live Preview</span>
+            </h2>
+            <button 
+              onClick={() => setShowPreview(false)}
+              className="p-2 hover:bg-slate-100 rounded-lg text-slate-500 transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+          <div className="flex-1 overflow-y-auto bg-slate-50 relative">
+            <TutorialDetailPage 
+              previewTutorial={{
+                ...form.getValues(),
+                id: id || 'preview',
+                published_date: new Date().toISOString()
+              }} 
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

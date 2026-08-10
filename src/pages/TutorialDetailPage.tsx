@@ -7,16 +7,30 @@ import {
   BookOpen, Clock, Download, Video, Image as ImageIcon, FileText, ChevronRight
 } from 'lucide-react';
 
-export const TutorialDetailPage: React.FC = () => {
+export const TutorialDetailPage: React.FC<{ previewTutorial?: Tutorial }> = ({ previewTutorial }) => {
   const { id } = useParams<{ id: string }>();
-  const [tutorial, setTutorial] = useState<Tutorial | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [tutorial, setTutorial] = useState<Tutorial | null>(previewTutorial || null);
+  const [isLoading, setIsLoading] = useState(!previewTutorial);
   const [activeTab, setActiveTab] = useState<'content' | 'video' | 'pdf'>('content');
 
   useEffect(() => {
-    fetchTutorial();
+    if (previewTutorial) {
+      setTutorial(previewTutorial);
+      setIsLoading(false);
+      // Auto-switch tab for preview as well
+      if (!previewTutorial.content && previewTutorial.video_url) {
+        setActiveTab('video');
+      } else if (!previewTutorial.content && !previewTutorial.video_url && previewTutorial.pdfs?.length > 0) {
+        setActiveTab('pdf');
+      }
+      return;
+    }
+    
+    if (id) {
+      fetchTutorial();
+    }
     window.scrollTo(0, 0);
-  }, [id]);
+  }, [id, previewTutorial]);
 
   const fetchTutorial = async () => {
     try {
