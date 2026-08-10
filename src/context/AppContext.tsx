@@ -311,6 +311,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const products: Product[] = React.useMemo(() => {
     return rawProducts.map((p: any) => ({
       id: p.id,
+      sku: p.sku,
       name: p.name,
       tagline: p.short_description || '',
       shortDescription: p.dimensions?.quickViewDescription || '',
@@ -323,10 +324,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       isFeatured: p.featured || false,
       badges: p.featured ? ['Featured'] : [],
       category: p.categories?.name || 'Uncategorized',
-      ageGroup: '8-10', // mock for now
-      ageText: 'Yrs',
+      ageGroup: p.dimensions?.ageGroup || '8-14 Yrs',
+      ageText: p.dimensions?.ageGroup || '8-14 Yrs',
       skillLevel: 'Beginner',
-      techStack: p.tags?.map((t: any) => t.name) || [],
+      techStack: p.dimensions?.techStack || p.tags?.map((t: any) => t.name) || [],
       images: p.images || [],
       specs: p.dimensions?.technicalSpecs?.reduce((acc: any, curr: any) => { if(curr.key) acc[curr.key.toLowerCase()] = curr.value; return acc; }, {}) || {},
       whatsInside: p.dimensions?.whatsInside?.map((x: any) => x.value) || [],

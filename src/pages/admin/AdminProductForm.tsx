@@ -38,6 +38,7 @@ const productSchema = z.object({
   tags: z.array(z.string()).optional(),
   brand: z.string().optional(),
   isFeatured: z.boolean().optional(),
+  ageGroup: z.string().optional(),
   
   // Inventory & Shipping
   inStock: z.boolean(),
@@ -94,6 +95,7 @@ export const AdminProductForm: React.FC = () => {
       tags: existingProductRaw.tags?.map((t:any) => t.name) || [],
       brand: 'NavoYantra',
       isFeatured: existingProductRaw.featured || false,
+      ageGroup: existingProductRaw.dimensions?.ageGroup || '',
       inStock: existingProductRaw.stock > 0,
       stockCount: existingProductRaw.stock,
       shipping: { weight: existingProductRaw.weight || 0, length: existingProductRaw.dimensions?.length || 0, width: existingProductRaw.dimensions?.width || 0, height: existingProductRaw.dimensions?.height || 0, shippingClass: 'Standard' },
@@ -166,6 +168,7 @@ export const AdminProductForm: React.FC = () => {
       tags: [],
       brand: 'NavoYantra',
       isFeatured: false,
+      ageGroup: '',
       inStock: true,
       stockCount: 10,
       whatsInside: [],
@@ -195,6 +198,7 @@ export const AdminProductForm: React.FC = () => {
         tags: existingProduct.tags,
         brand: existingProduct.brand,
         isFeatured: existingProduct.isFeatured,
+        ageGroup: existingProduct.ageGroup,
         inStock: existingProduct.inStock,
         stockCount: existingProduct.stockCount,
         shipping: existingProduct.shipping,
@@ -248,7 +252,9 @@ export const AdminProductForm: React.FC = () => {
         sampleProjects: formattedData.sampleProjects,
         technicalSpecs: formattedData.technicalSpecs,
         quickViewDescription: formattedData.shortDescription,
-        tileDescription: formattedData.tileDescription
+        tileDescription: formattedData.tileDescription,
+        ageGroup: formattedData.ageGroup,
+        techStack: formattedData.tags
       },
       // brand_id, category_id will be mapped if they match
       // For simplicity, finding ID from name (in real app, form should bind to ID directly)
@@ -290,7 +296,8 @@ export const AdminProductForm: React.FC = () => {
 
   const formValues = form.watch();
   const mockProduct = {
-    id: 'preview-id',
+    id: existingProductRaw?.id || 'preview-id',
+    sku: existingProductRaw?.sku || 'preview-id',
     name: formValues.name || 'Product Name',
     tagline: formValues.tagline || 'Tagline',
     description: formValues.description || 'Description goes here.',
@@ -302,13 +309,13 @@ export const AdminProductForm: React.FC = () => {
     stockCount: formValues.stockCount || 0,
     inStock: formValues.inStock || false,
     category: formValues.category?.[0] || 'Category',
-    ageText: formValues.tagline || 'Ages 8-14',
-    specs: {
+    ageText: formValues.ageGroup || '8-14 Yrs',
+    specs: formValues.technicalSpecs?.reduce((acc: any, curr: any) => { if (curr.key) acc[curr.key.toLowerCase()] = curr.value; return acc; }, {}) || {
       microcontroller: 'Preview',
       warranty: '1 Year',
     },
-    techStack: ['Preview Stack'],
-    whatsInside: formValues.features?.map(f => f.value).filter(Boolean) || [],
+    techStack: formValues.tags?.length ? formValues.tags : ['Preview Stack'],
+    whatsInside: formValues.whatsInside?.map(f => f.value).filter(Boolean) || [],
     sampleProjects: ['Preview Project'],
     images: formValues.images?.map(i => i.url).filter(Boolean).length ? formValues.images.map(i => i.url).filter(Boolean) : ['https://via.placeholder.com/600'],
     badges: formValues.isFeatured ? ['Bestseller'] : [],
@@ -431,6 +438,13 @@ export const AdminProductForm: React.FC = () => {
                       ))}
                     </select>
                   </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-slate-700">Age Group / Target</label>
+                    <Input {...form.register('ageGroup')} placeholder="e.g. 8+ Yrs, 14+ Yrs" />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-slate-100">
                   <div className="space-y-2">
                     <label className="text-sm font-semibold text-slate-700">Categories</label>
                     <select multiple {...form.register('category')} className="flex min-h-[80px] w-full rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-sm">
