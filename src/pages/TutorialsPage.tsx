@@ -28,7 +28,7 @@ export const TutorialsPage: React.FC = () => {
         setTutorials(data || []);
       } catch (err) {
         console.error('Error fetching tutorials:', err);
-        showToast('Failed to load tutorials', 'error');
+        showToast('Failed to load tutorials', 'warning');
       } finally {
         setLoading(false);
       }
@@ -42,7 +42,7 @@ export const TutorialsPage: React.FC = () => {
   const filteredTutorials = tutorials.filter(t => {
     const matchesCategory = selectedCategory === 'All' || t.category === selectedCategory;
     const matchesSearch = t.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          t.description.toLowerCase().includes(searchQuery.toLowerCase());
+                          (t.content && t.content.toLowerCase().includes(searchQuery.toLowerCase()));
     return matchesCategory && matchesSearch;
   });
 
@@ -113,7 +113,7 @@ export const TutorialsPage: React.FC = () => {
                   <div>
                     <div className="relative aspect-16/10 rounded-2xl overflow-hidden mb-4 bg-slate-100">
                       <img
-                        src={tutorial.thumbnail}
+                        src={tutorial.images?.[0] || 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=600'}
                         alt={tutorial.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
