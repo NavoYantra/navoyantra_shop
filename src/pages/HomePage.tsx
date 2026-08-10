@@ -13,10 +13,16 @@ import { LearningResourcesSection } from '../components/home/LearningResourcesSe
 import { TestimonialsSection } from '../components/home/TestimonialsSection';
 import { PartnersSection } from '../components/home/PartnersSection';
 import { NewsletterSection } from '../components/home/NewsletterSection';
+import { SEO } from '../components/SEO';
 
 export const HomePage: React.FC = () => {
   return (
     <div className="space-y-0">
+      <SEO 
+        title="India's Best DIY Robotics Kits & Labsetup"
+        description="NavoYantra provides the best DIY robotic kits for kids, students, and engineers in India. Explore our labsetup solutions for schools, Atal Tinkering Labs (ATL), AI education, and IoT projects."
+        keywords="DIY robotic, Labsetup, Robotics for kids, Atal Tinkering Lab equipment, School Lab Setup, STEM learning, AI Kits, IoT projects"
+      />
       <HeroSection />
       <FeaturedCategories />
       <NewArrivalsSection />

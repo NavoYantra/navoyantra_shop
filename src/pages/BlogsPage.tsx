@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useApp } from '../context/AppContext';
+import { SEO } from '../components/SEO';
 
 export const BlogsPage: React.FC = () => {
   const { showToast, user } = useApp();
@@ -119,6 +120,11 @@ export const BlogsPage: React.FC = () => {
 
   return (
     <div className="py-12 bg-[#F6F7F9] min-h-screen">
+      <SEO 
+        title="Robotics & AI Labsetup Blog | NavoYantra"
+        description="Read the latest articles on DIY robotic projects, School Lab Setup, Atal Tinkering Labs (ATL) insights, and STEM education trends by NavoYantra."
+        keywords="Robotics blog, STEM education articles, Labsetup guide, DIY robotic projects, Atal Tinkering Lab setup, AI tutorials, NavoYantra blog"
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         
         {/* Banner Header */}

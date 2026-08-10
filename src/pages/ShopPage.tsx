@@ -6,6 +6,7 @@ import { CategoryType, AgeGroupType, TechStackType } from '../types';
 import { 
   ShoppingBag, Search, Filter, ArrowUpDown, X, Sparkles, SlidersHorizontal, Check 
 } from 'lucide-react';
+import { SEO } from '../components/SEO';
 
 export const ShopPage: React.FC = () => {
   const { 
@@ -46,6 +47,11 @@ export const ShopPage: React.FC = () => {
 
   return (
     <div className="py-12 bg-[#F6F7F9] min-h-screen">
+      <SEO 
+        title="Shop DIY Robotic Kits & Labsetup"
+        description="Browse the complete NavoYantra catalog of STEM electronics, AI development boards, DIY robotic kits for students, and complete labsetup materials for Atal Tinkering Labs."
+        keywords="Buy DIY robotic kits, Labsetup online India, Atal Tinkering Lab components, STEM education shop, AI and IoT project kits for students, NavoYantra shop"
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Shop Page Banner Header */}

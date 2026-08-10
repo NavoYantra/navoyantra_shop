@@ -5,6 +5,7 @@ import { ProductCard } from '../components/product/ProductCard';
 import { 
   Star, ShoppingBag, Heart, ShieldCheck, CheckCircle2, Cpu, Box, Sparkles, School, ChevronRight, Share2, Info
 } from 'lucide-react';
+import { SEO } from '../components/SEO';
 
 export const ProductDetailHero: React.FC<{ product: any; isPreview?: boolean }> = ({ product, isPreview }) => {
   const { 
@@ -233,6 +234,12 @@ export const ProductDetailPage: React.FC = () => {
 
   return (
     <div className="bg-[#F6F7F9] min-h-screen pb-20">
+      <SEO 
+        title={`${product.name} | NavoYantra DIY Kit`}
+        description={product.description || `Buy ${product.name} at NavoYantra. Best DIY robotics, STEM education kit, and labsetup component in India.`}
+        keywords={`${product.name}, ${product.category}, Buy DIY robotic kit, NavoYantra, School Lab Setup, Atal Tinkering Lab, STEM, AI Kits, IoT`}
+        image={product.images?.[0] || '/favicon.png'}
+      />
       
       {/* Breadcrumbs */}
       <div className="bg-white border-b border-slate-200 py-3">
