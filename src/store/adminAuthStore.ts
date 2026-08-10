@@ -7,6 +7,7 @@ export interface AdminUser {
   name: string;
   email: string;
   role: string;
+  avatar_url?: string;
 }
 
 interface AdminAuthState {
@@ -39,7 +40,13 @@ export const useAdminAuthStore = create<AdminAuthState>((set) => ({
           .eq('email', session.user.email)
           .single();
           
-        currentAdminUser = adminData;
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('avatar_url')
+          .eq('id', session.user.id)
+          .single();
+          
+        currentAdminUser = { ...adminData, avatar_url: profileData?.avatar_url || session.user.user_metadata?.avatar_url };
       }
       
       set({ session, user: session?.user || null, adminUser: currentAdminUser, isLoading: false });
@@ -53,7 +60,13 @@ export const useAdminAuthStore = create<AdminAuthState>((set) => ({
             .eq('email', session.user.email)
             .single();
             
-          currentAdminUser = adminData;
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('avatar_url')
+            .eq('id', session.user.id)
+            .single();
+            
+          currentAdminUser = { ...adminData, avatar_url: profileData?.avatar_url || session.user.user_metadata?.avatar_url };
         }
         set({ session, user: session?.user || null, adminUser: currentAdminUser });
       });

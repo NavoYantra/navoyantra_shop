@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Product, CartItem, WishlistItem, FilterState, PageType } from '../types';
 import { useQuery } from '@tanstack/react-query';
-import { getProducts } from '../lib/api';
+import { getProducts, getProfile } from '../lib/api';
 import { supabase } from '../lib/supabase';
 
 interface ToastInfo {
@@ -73,8 +73,8 @@ interface AppContextType {
   removeToast: (id: string) => void;
 
   // Auth User state mock
-  user: { name: string; email: string; isLoggedIn: boolean } | null;
-  setUser: React.Dispatch<React.SetStateAction<{ name: string; email: string; isLoggedIn: boolean } | null>>;
+  user: { name: string; email: string; avatar?: string; isLoggedIn: boolean } | null;
+  setUser: React.Dispatch<React.SetStateAction<{ name: string; email: string; avatar?: string; isLoggedIn: boolean } | null>>;
 }
 
 const initialFilters: FilterState = {
@@ -161,27 +161,39 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   // User auth state
-  const [user, setUser] = useState<{ name: string; email: string; isLoggedIn: boolean } | null>(null);
+  const [user, setUser] = useState<{ name: string; email: string; avatar?: string; isLoggedIn: boolean } | null>(null);
 
   // Initialize auth state
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
+    const fetchUserAndProfile = async (sessionUser: any) => {
+      try {
+        const profile = await getProfile(sessionUser.id);
         setUser({
-          name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'User',
-          email: session.user.email || '',
+          name: profile?.full_name || sessionUser.user_metadata?.full_name || sessionUser.email?.split('@')[0] || 'User',
+          email: sessionUser.email || '',
+          avatar: profile?.avatar_url || sessionUser.user_metadata?.avatar_url,
           isLoggedIn: true
         });
+      } catch (error) {
+        // Fallback if profile fetch fails
+        setUser({
+          name: sessionUser.user_metadata?.full_name || sessionUser.email?.split('@')[0] || 'User',
+          email: sessionUser.email || '',
+          avatar: sessionUser.user_metadata?.avatar_url,
+          isLoggedIn: true
+        });
+      }
+    };
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        fetchUserAndProfile(session.user);
       }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
-        setUser({
-          name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'User',
-          email: session.user.email || '',
-          isLoggedIn: true
-        });
+        fetchUserAndProfile(session.user);
       } else {
         setUser(null);
       }

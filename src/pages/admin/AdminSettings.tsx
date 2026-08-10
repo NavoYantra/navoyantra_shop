@@ -3,18 +3,44 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Ca
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../../components/ui/Tabs';
-import { UserPlus, Shield, Mail, Trash2 } from 'lucide-react';
+import { UserPlus, Shield, Mail, Trash2, Camera, Loader2 } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getAdminUsers, addAdminUser, deleteAdminUser } from '../../lib/api';
+import { getAdminUsers, addAdminUser, deleteAdminUser, uploadAvatar } from '../../lib/api';
 import { useAdminAuthStore } from '../../store/adminAuthStore';
+import { supabase } from '../../lib/supabase';
 
 export const AdminSettings: React.FC = () => {
-  const [activeTab, setActiveTab] = React.useState('general');
+  const [activeTab, setActiveTab] = React.useState('profile');
   const [newUserName, setNewUserName] = React.useState('');
   const [newUserEmail, setNewUserEmail] = React.useState('');
   const [newUserRole, setNewUserRole] = React.useState('Product Manager');
-  const { adminUser } = useAdminAuthStore();
+  const [uploadingAvatar, setUploadingAvatar] = React.useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  
+  const { adminUser, initialize } = useAdminAuthStore();
   const queryClient = useQueryClient();
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !adminUser) return;
+    
+    try {
+      setUploadingAvatar(true);
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Not logged in');
+      
+      await uploadAvatar(file, session.user.id);
+      
+      // Refresh admin user state
+      await initialize();
+      alert('Profile picture updated successfully!');
+      
+    } catch (err: any) {
+      alert(`Error updating profile: ${err.message}`);
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
 
   const { data: users = [] } = useQuery({
     queryKey: ['admin_users'],
@@ -49,8 +75,9 @@ export const AdminSettings: React.FC = () => {
         <Button>Save Settings</Button>
       </div>
 
-      <Tabs defaultValue="general" className="w-full">
+      <Tabs defaultValue="profile" className="w-full">
         <TabsList className="mb-4 bg-slate-100 p-1 rounded-xl inline-flex overflow-x-auto w-full md:w-auto">
+          <TabsTrigger value="profile" activeValue={activeTab} onSelectTab={setActiveTab}>My Profile</TabsTrigger>
           <TabsTrigger value="general" activeValue={activeTab} onSelectTab={setActiveTab}>General</TabsTrigger>
           <TabsTrigger value="store" activeValue={activeTab} onSelectTab={setActiveTab}>Store</TabsTrigger>
           <TabsTrigger value="payments" activeValue={activeTab} onSelectTab={setActiveTab}>Payments</TabsTrigger>
@@ -58,6 +85,48 @@ export const AdminSettings: React.FC = () => {
             <TabsTrigger value="users" activeValue={activeTab} onSelectTab={setActiveTab}>Team / Users</TabsTrigger>
           )}
         </TabsList>
+
+        <TabsContent value="profile" activeValue={activeTab}>
+          <Card>
+            <CardHeader>
+              <CardTitle>My Profile</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex flex-col sm:flex-row items-center gap-6">
+                <div className="relative group w-32 h-32 shrink-0">
+                  <div className="w-full h-full rounded-full bg-slate-100 border-4 border-white shadow-md flex items-center justify-center text-4xl font-bold text-blue-600 overflow-hidden relative">
+                    {adminUser?.avatar_url ? (
+                      <img src={adminUser.avatar_url} alt={adminUser.name} className="w-full h-full object-cover" />
+                    ) : (
+                      adminUser?.name?.charAt(0) || 'A'
+                    )}
+                  </div>
+                  <button 
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploadingAvatar}
+                    className="absolute bottom-2 right-2 bg-blue-600 text-white p-2.5 rounded-full shadow-lg hover:bg-blue-700 transition-colors opacity-0 group-hover:opacity-100 disabled:opacity-50"
+                  >
+                    {uploadingAvatar ? <Loader2 className="w-5 h-5 animate-spin" /> : <Camera className="w-5 h-5" />}
+                  </button>
+                  <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    onChange={handleAvatarUpload} 
+                    accept="image/*" 
+                    className="hidden" 
+                  />
+                </div>
+                <div className="space-y-1 text-center sm:text-left">
+                  <h3 className="text-xl font-bold text-slate-900">{adminUser?.name}</h3>
+                  <p className="text-slate-500">{adminUser?.email}</p>
+                  <span className="inline-flex items-center px-2.5 py-1 mt-2 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
+                    {adminUser?.role}
+                  </span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         <TabsContent value="general" activeValue={activeTab}>
           <Card>

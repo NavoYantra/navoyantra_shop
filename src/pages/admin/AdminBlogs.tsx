@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { Plus, Edit2, Trash2, X, Search, FileText } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import { useAdminAuthStore } from '../../store/adminAuthStore';
 
 export const AdminBlogs: React.FC = () => {
   const { showToast } = useApp();
+  const { adminUser } = useAdminAuthStore();
   const [blogs, setBlogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -16,18 +18,27 @@ export const AdminBlogs: React.FC = () => {
   const [excerpt, setExcerpt] = useState('');
   const [content, setContent] = useState('');
   const [category, setCategory] = useState('');
-  const [authorName, setAuthorName] = useState('Admin');
-  const [authorRole, setAuthorRole] = useState('Editor');
-  const [authorAvatar, setAuthorAvatar] = useState('');
+  const [authorName, setAuthorName] = useState(adminUser?.name || 'Admin');
+  const [authorRole, setAuthorRole] = useState(adminUser?.role || 'Editor');
+  const [authorAvatar, setAuthorAvatar] = useState(adminUser?.avatar_url || '');
   const [readTime, setReadTime] = useState('5 min read');
   const [coverImage, setCoverImage] = useState('');
   const [tags, setTags] = useState('');
   const [isFeatured, setIsFeatured] = useState(false);
   const [status, setStatus] = useState('published');
+  const [isNameEditable, setIsNameEditable] = useState(false);
 
   useEffect(() => {
     fetchBlogs();
   }, []);
+
+  useEffect(() => {
+    if (!editingBlog && adminUser) {
+      setAuthorName(adminUser.name || 'Admin');
+      setAuthorRole(adminUser.role || 'Editor');
+      setAuthorAvatar(adminUser.avatar_url || '');
+    }
+  }, [adminUser, editingBlog]);
 
   const fetchBlogs = async () => {
     try {
@@ -53,15 +64,16 @@ export const AdminBlogs: React.FC = () => {
     setExcerpt('');
     setContent('');
     setCategory('');
-    setAuthorName('Admin');
-    setAuthorRole('Editor');
-    setAuthorAvatar('');
+    setAuthorName(adminUser?.name || 'Admin');
+    setAuthorRole(adminUser?.role || 'Editor');
+    setAuthorAvatar(adminUser?.avatar_url || '');
     setReadTime('5 min read');
     setCoverImage('');
     setTags('');
     setIsFeatured(false);
     setStatus('published');
     setEditingBlog(null);
+    setIsNameEditable(false);
   };
 
   const handleEdit = (blog: any) => {
@@ -80,6 +92,7 @@ export const AdminBlogs: React.FC = () => {
     setIsFeatured(blog.is_featured || false);
     setStatus(blog.status || 'published');
     setIsModalOpen(true);
+    setIsNameEditable(false);
   };
 
   const handleDelete = async (id: string) => {
@@ -331,8 +344,18 @@ export const AdminBlogs: React.FC = () => {
                   <label className="block text-sm font-semibold text-slate-700 mb-1">Author Name</label>
                   <input 
                     value={authorName} 
-                    onChange={e => setAuthorName(e.target.value)} 
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all" 
+                    readOnly={!isNameEditable}
+                    onClick={() => {
+                      if (!isNameEditable) {
+                        if (window.confirm('Changing this will also update your name in the main account. Do you want to proceed?')) {
+                          setIsNameEditable(true);
+                        }
+                      }
+                    }}
+                    onChange={e => {
+                      if (isNameEditable) setAuthorName(e.target.value);
+                    }}
+                    className={`w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all ${!isNameEditable ? 'bg-slate-50 cursor-pointer' : 'bg-white'}`} 
                   />
                 </div>
 
@@ -340,8 +363,9 @@ export const AdminBlogs: React.FC = () => {
                   <label className="block text-sm font-semibold text-slate-700 mb-1">Author Role</label>
                   <input 
                     value={authorRole} 
-                    onChange={e => setAuthorRole(e.target.value)} 
-                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all" 
+                    readOnly
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all bg-slate-100 cursor-not-allowed text-slate-500" 
+                    title="Role cannot be changed"
                   />
                 </div>
                 

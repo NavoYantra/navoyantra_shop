@@ -300,8 +300,12 @@ export const Header: React.FC = () => {
                 }}
                 className="hidden sm:flex items-center space-x-2 p-1.5 pr-3 rounded-2xl border border-slate-200 hover:bg-slate-50 transition-colors whitespace-nowrap"
               >
-                <div className="w-7 h-7 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center">
-                  <User className="w-4 h-4" />
+                <div className="w-7 h-7 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center overflow-hidden">
+                  {user?.avatar ? (
+                     <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                  ) : (
+                     <User className="w-4 h-4" />
+                  )}
                 </div>
                 <span className="text-xs font-semibold text-slate-700 truncate max-w-[90px]">
                   {user ? user.name : 'Sign In'}

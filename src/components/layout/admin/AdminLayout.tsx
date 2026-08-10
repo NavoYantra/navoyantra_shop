@@ -237,13 +237,17 @@ export const AdminLayout: React.FC = () => {
               </div>
             </div>
             <div className="relative group">
-              <div className="w-9 h-9 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center cursor-pointer border border-blue-200">
-                {user?.email?.[0].toUpperCase() || 'AD'}
+              <div className="w-9 h-9 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center cursor-pointer border border-blue-200 overflow-hidden">
+                {adminUser?.avatar_url ? (
+                  <img src={adminUser.avatar_url} alt={adminUser.name} className="w-full h-full object-cover" />
+                ) : (
+                  user?.email?.[0].toUpperCase() || 'AD'
+                )}
               </div>
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-slate-200 py-1 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-all z-50">
                 <div className="px-4 py-2 border-b border-slate-100">
-                  <p className="text-sm font-medium text-slate-900 truncate">{user?.email}</p>
-                  <p className="text-xs text-slate-500">Administrator</p>
+                  <p className="text-sm font-medium text-slate-900 truncate">{adminUser?.name || user?.email}</p>
+                  <p className="text-xs text-slate-500">{adminUser?.role || 'Administrator'}</p>
                 </div>
                 <button
                   onClick={() => signOut()}

@@ -3,20 +3,44 @@ import { useApp } from '../context/AppContext';
 import { 
   User, Package, Heart, MapPin, Settings, LogOut, 
   ChevronRight, Search, Filter, ShieldCheck, Truck, Star, Loader2,
-  ChevronDown, ChevronUp, CheckCircle2, Circle, XCircle
+  ChevronDown, ChevronUp, CheckCircle2, Circle, XCircle, Camera
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { getOrdersByEmail, updateOrderStatus } from '../lib/api';
+import { getOrdersByEmail, updateOrderStatus, uploadAvatar } from '../lib/api';
 import { PRODUCTS } from '../data/products';
 import { ProductCard } from '../components/product/ProductCard';
 
 export const CustomerDashboard: React.FC = () => {
-  const { user, showToast, setCurrentPage, wishlist, storeProducts } = useApp();
+  const { user, setUser, showToast, setCurrentPage, wishlist, storeProducts } = useApp();
   const [activeTab, setActiveTab] = useState<'overview' | 'orders' | 'wishlist' | 'addresses' | 'settings'>('overview');
   const [orders, setOrders] = useState<any[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(true);
   const [savedAddress, setSavedAddress] = useState<any>(null);
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    
+    try {
+      setUploadingAvatar(true);
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Not logged in');
+      
+      const publicUrl = await uploadAvatar(file, session.user.id);
+      
+      // Update local context
+      setUser({ ...user, avatar: publicUrl });
+      showToast('Profile picture updated successfully', 'success');
+      
+    } catch (err: any) {
+      showToast(err.message, 'warning');
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
 
   useEffect(() => {
     const saved = localStorage.getItem('ny_shipping');
@@ -442,11 +466,34 @@ export const CustomerDashboard: React.FC = () => {
           
           {/* Sidebar */}
           <div className="w-full md:w-64 shrink-0">
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-4 text-center relative overflow-hidden">
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-4 text-center relative overflow-hidden group">
               <div className="absolute top-0 inset-x-0 h-16 bg-gradient-to-r from-blue-600 to-indigo-600"></div>
-              <div className="w-20 h-20 mx-auto rounded-full bg-white border-4 border-white shadow-md flex items-center justify-center text-3xl font-bold text-blue-600 relative z-10">
-                {user.name.charAt(0)}
+              
+              <div className="relative w-24 h-24 mx-auto mt-2">
+                <div className="w-full h-full rounded-full bg-white border-4 border-white shadow-md flex items-center justify-center text-4xl font-bold text-blue-600 overflow-hidden z-10 relative">
+                  {user.avatar ? (
+                    <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                  ) : (
+                    user.name.charAt(0)
+                  )}
+                </div>
+                
+                <button 
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploadingAvatar}
+                  className="absolute bottom-0 right-0 z-20 bg-blue-600 text-white p-2 rounded-full shadow-lg hover:bg-blue-700 transition-colors opacity-0 group-hover:opacity-100 disabled:opacity-50"
+                >
+                  {uploadingAvatar ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
+                </button>
+                <input 
+                  type="file" 
+                  ref={fileInputRef} 
+                  onChange={handleAvatarUpload} 
+                  accept="image/*" 
+                  className="hidden" 
+                />
               </div>
+              
               <h2 className="mt-4 text-lg font-bold text-slate-900 truncate">{user.name}</h2>
               <p className="text-xs text-slate-500 truncate">{user.email}</p>
             </div>

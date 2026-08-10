@@ -281,3 +281,35 @@ export const deleteBlogReview = async (id: string) => {
   const { error } = await supabase.from('blog_reviews').delete().eq('id', id);
   if (error) throw error;
 };
+
+// --- Profiles & Avatars ---
+export const getProfile = async (userId: string) => {
+  const { data, error } = await supabase.from('profiles').select('*').eq('id', userId).single();
+  if (error && error.code !== 'PGRST116') throw error; // Ignore not found error as trigger might be delayed
+  return data;
+};
+
+export const updateProfile = async (userId: string, profileData: any) => {
+  const { data, error } = await supabase.from('profiles').upsert({ id: userId, ...profileData }).select().single();
+  if (error) throw error;
+  return data;
+};
+
+export const uploadAvatar = async (file: File, userId: string) => {
+  const fileExt = file.name.split('.').pop();
+  const fileName = `${userId}-${Math.random()}.${fileExt}`;
+  const filePath = `${fileName}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from('avatars')
+    .upload(filePath, file);
+
+  if (uploadError) throw uploadError;
+
+  const { data } = supabase.storage.from('avatars').getPublicUrl(filePath);
+  
+  // Update profile with new avatar URL
+  await updateProfile(userId, { avatar_url: data.publicUrl });
+  
+  return data.publicUrl;
+};
