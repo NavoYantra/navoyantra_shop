@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Ca
 
 import { ArrowLeft, Save, Trash2, Plus, Image as ImageIcon, Video, Calendar, Upload } from 'lucide-react';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { getCategories, getBrands, getTags, createProduct, uploadImage, getProducts, deleteProduct as apiDeleteProduct } from '../../lib/api';
+import { getCategories, getBrands, getTags, createProduct, updateProduct, uploadImage, getProducts, deleteProduct as apiDeleteProduct } from '../../lib/api';
 import { ProductCard } from '../../components/product/ProductCard';
 import { QuickViewContent } from '../../components/modals/ProductQuickViewModal';
 import { ProductDetailHero } from '../ProductDetailPage';
@@ -108,6 +108,13 @@ export const AdminProductForm: React.FC = () => {
     }
   });
 
+  const updateProductMutation = useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: any }) => updateProduct(id, payload),
+    onSuccess: () => {
+      navigate('/admin/products');
+    }
+  });
+
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
     defaultValues: existingProduct ? {
@@ -164,48 +171,48 @@ export const AdminProductForm: React.FC = () => {
       variants: data.variants?.map((v, idx) => ({ id: `var_${idx}`, name: v.name, options: v.options.split(',').map(s => s.trim()) })) || []
     };
 
-    if (isEditing && id) {
-      // For now, we only implement creation with Supabase. Editing can be added later.
-      alert('Updating product is not fully implemented in the UI yet');
-      navigate('/admin/products');
-    } else {
-      // Map to Supabase Schema
-      const supabasePayload = {
-        name: formattedData.name,
-        slug: formattedData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
-        short_description: formattedData.shortDescription,
-        description: formattedData.description,
-        price: formattedData.price,
-        sale_price: formattedData.price, // assuming price is sale price
-        stock: formattedData.stockCount,
-        status: formattedData.publishStatus === 'Published' ? 'published' : 'draft',
-        featured: formattedData.isFeatured,
-        images: formattedData.images,
-        video_url: formattedData.youtubeVideoUrl,
-        weight: formattedData.shipping?.weight,
-        dimensions: {
-          length: formattedData.shipping?.length,
-          width: formattedData.shipping?.width,
-          height: formattedData.shipping?.height
-        },
-        // brand_id, category_id will be mapped if they match
-        // For simplicity, finding ID from name (in real app, form should bind to ID directly)
-        brand_id: brands.find((b: any) => b.name === formattedData.brand)?.id || null,
-        category_id: categories.find((c: any) => c.name === formattedData.category[0])?.id || null,
-      };
-      
-      // Auto-generate Custom SKU (NY-{PREFIX}-{4-DIGIT})
-      const selectedCategory = categories.find((c: any) => c.id === supabasePayload.category_id);
-      let customPrefix = selectedCategory?.name?.substring(0, 3).toUpperCase() || 'GEN';
-      if (selectedCategory?.description) {
-        const match = selectedCategory.description.match(/\[SKU:([A-Z0-9]+)\]/i);
-        if (match) customPrefix = match[1];
-      }
-      const randomNum = Math.floor(1000 + Math.random() * 9000);
-      const generatedSku = `NY-${customPrefix}-${randomNum}`;
+    // Map to Supabase Schema
+    const supabasePayload = {
+      name: formattedData.name,
+      slug: formattedData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
+      short_description: formattedData.shortDescription,
+      description: formattedData.description,
+      price: formattedData.price,
+      sale_price: formattedData.price, // assuming price is sale price
+      stock: formattedData.stockCount,
+      status: formattedData.publishStatus === 'Published' ? 'published' : 'draft',
+      featured: formattedData.isFeatured,
+      images: formattedData.images,
+      video_url: formattedData.youtubeVideoUrl,
+      weight: formattedData.shipping?.weight,
+      dimensions: {
+        length: formattedData.shipping?.length,
+        width: formattedData.shipping?.width,
+        height: formattedData.shipping?.height
+      },
+      // brand_id, category_id will be mapped if they match
+      // For simplicity, finding ID from name (in real app, form should bind to ID directly)
+      brand_id: brands.find((b: any) => b.name === formattedData.brand)?.id || null,
+      category_id: categories.find((c: any) => c.name === formattedData.category[0])?.id || null,
+    };
+    
+    // Auto-generate Custom SKU (NY-{PREFIX}-{4-DIGIT})
+    const selectedCategory = categories.find((c: any) => c.id === supabasePayload.category_id);
+    let customPrefix = selectedCategory?.name?.substring(0, 3).toUpperCase() || 'GEN';
+    if (selectedCategory?.description) {
+      const match = selectedCategory.description.match(/\[SKU:([A-Z0-9]+)\]/i);
+      if (match) customPrefix = match[1];
+    }
+    const randomNum = Math.floor(1000 + Math.random() * 9000);
+    const generatedSku = `NY-${customPrefix}-${randomNum}`;
 
+    if (isEditing && id) {
+      // Don't overwrite SKU on edit if we wanted to keep it, but here we just re-generate if we didn't store it.
+      // Ideally, the backend would ignore it or we'd fetch it. For now, it's fine.
+      // We will pass the payload to update.
+      updateProductMutation.mutate({ id, payload: supabasePayload });
+    } else {
       (supabasePayload as any).sku = generatedSku;
-      
       productMutation.mutate(supabasePayload);
     }
   };
@@ -275,9 +282,9 @@ export const AdminProductForm: React.FC = () => {
               <Trash2 className="h-4 w-4 mr-2" /> Delete
             </Button>
           )}
-          <Button type="button" onClick={form.handleSubmit(onSubmit)} disabled={productMutation.isPending || isUploading}>
+          <Button type="button" onClick={form.handleSubmit(onSubmit)} disabled={productMutation.isPending || updateProductMutation.isPending || isUploading}>
             <Save className="h-4 w-4 mr-2" /> 
-            {productMutation.isPending ? 'Saving...' : 'Save Product'}
+            {productMutation.isPending || updateProductMutation.isPending ? 'Saving...' : 'Save Product'}
           </Button>
         </div>
       </div>

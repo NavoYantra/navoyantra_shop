@@ -144,6 +144,12 @@ export const createProduct = async (product: any) => {
   return data;
 };
 
+export const updateProduct = async (id: string, product: any) => {
+  const { data, error } = await supabase.from('products').update(product).eq('id', id).select().single();
+  if (error) throw error;
+  return data;
+};
+
 export const deleteProduct = async (id: string) => {
   const { error } = await supabase.from('products').delete().eq('id', id);
   if (error) throw error;
