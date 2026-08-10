@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -8,7 +8,7 @@ import { Input } from '../../components/ui/Input';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 
 import { ArrowLeft, Save, Trash2, Plus, Image as ImageIcon, Video, Calendar, Upload } from 'lucide-react';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getCategories, getBrands, getTags, createProduct, updateProduct, uploadImage, getProducts, deleteProduct as apiDeleteProduct } from '../../lib/api';
 import { ProductCard } from '../../components/product/ProductCard';
 import { QuickViewContent } from '../../components/modals/ProductQuickViewModal';
@@ -101,9 +101,12 @@ export const AdminProductForm: React.FC = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [activePreviewTab, setActivePreviewTab] = useState<'tile' | 'quickview' | 'detail'>('tile');
 
+  const queryClient = useQueryClient();
+
   const productMutation = useMutation({
     mutationFn: createProduct,
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
       navigate('/admin/products');
     }
   });
@@ -111,6 +114,7 @@ export const AdminProductForm: React.FC = () => {
   const updateProductMutation = useMutation({
     mutationFn: ({ id, payload }: { id: string; payload: any }) => updateProduct(id, payload),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
       navigate('/admin/products');
     }
   });
@@ -157,6 +161,34 @@ export const AdminProductForm: React.FC = () => {
       shipping: { weight: 0, length: 0, width: 0, height: 0, shippingClass: 'Standard' }
     },
   });
+
+  useEffect(() => {
+    if (existingProduct) {
+      form.reset({
+        name: existingProduct.name,
+        tagline: existingProduct.tagline,
+        description: existingProduct.description,
+        price: existingProduct.price,
+        originalPrice: existingProduct.originalPrice,
+        shortDescription: existingProduct.shortDescription,
+        tileDescription: existingProduct.tileDescription,
+        features: existingProduct.features.map((f: any) => ({ value: f })),
+        youtubeVideoUrl: existingProduct.youtubeVideoUrl,
+        category: existingProduct.category,
+        tags: existingProduct.tags,
+        brand: existingProduct.brand,
+        isFeatured: existingProduct.isFeatured,
+        inStock: existingProduct.inStock,
+        stockCount: existingProduct.stockCount,
+        shipping: existingProduct.shipping,
+        images: existingProduct.images.map((img: any) => ({ url: img })),
+        publishStatus: existingProduct.publishStatus as 'Draft' | 'Published',
+        scheduledPublishDate: existingProduct.scheduledPublishDate,
+        hasVariants: existingProduct.hasVariants,
+        variants: existingProduct.variants
+      });
+    }
+  }, [existingProductRaw]);
 
   const { fields: imageFields, append: appendImage, remove: removeImage } = useFieldArray({ control: form.control, name: "images" });
   const { fields: featureFields, append: appendFeature, remove: removeFeature } = useFieldArray({ control: form.control, name: "features" });
