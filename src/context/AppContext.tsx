@@ -93,6 +93,11 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Page navigation state
   const [currentPage, setCurrentPageState] = useState<PageType>(() => {
+    const path = window.location.pathname.replace(/^\/+/, '');
+    const validPages: PageType[] = ['home', 'shop', 'lab-setup', 'blogs', 'product-detail', 'account'];
+    if (validPages.includes(path as PageType)) {
+      return path as PageType;
+    }
     const saved = sessionStorage.getItem('ny_current_page');
     return (saved as PageType) || 'home';
   });
@@ -103,6 +108,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const setCurrentPage = (page: PageType) => {
     setCurrentPageState(page);
     sessionStorage.setItem('ny_current_page', page);
+    window.history.pushState(null, '', `/${page === 'home' ? '' : page}`);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 

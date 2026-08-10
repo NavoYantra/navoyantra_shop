@@ -58,7 +58,8 @@ export const Header: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleNavClick = (page: PageType) => {
+  const handleNavClick = (page: PageType, e?: React.MouseEvent) => {
+    if (e) e.preventDefault();
     setCurrentPage(page);
     setIsMobileMenuOpen(false);
   };
@@ -142,15 +143,16 @@ export const Header: React.FC = () => {
             {/* Center: Desktop Nav Links (ONLY Home, Shop, Lab Setup, Blogs on single line) */}
             <div className="hidden lg:flex items-center justify-center space-x-2 flex-1 px-4">
               <div className="flex items-center space-x-2 whitespace-nowrap">
-                <button
-                  onClick={() => handleNavClick('home')}
+                <a
+                  href="/"
+                  onClick={(e) => handleNavClick('home', e)}
                   className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${currentPage === 'home'
                       ? 'bg-blue-50 text-blue-600 shadow-xs'
                       : 'text-slate-700 hover:bg-slate-100'
                     }`}
                 >
                   Home
-                </button>
+                </a>
 
                 {/* Shop Menu Wrapper with Hover trigger */}
                 <div
@@ -158,9 +160,10 @@ export const Header: React.FC = () => {
                   className="relative group"
                   onMouseEnter={() => setIsMegaMenuOpen(true)}
                 >
-                  <button
-                    onClick={() => {
-                      handleNavClick('shop');
+                  <a
+                    href="/shop"
+                    onClick={(e) => {
+                      handleNavClick('shop', e);
                       setIsMegaMenuOpen(false);
                     }}
                     className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all flex items-center space-x-1 ${currentPage === 'shop' || isMegaMenuOpen
@@ -170,7 +173,7 @@ export const Header: React.FC = () => {
                   >
                     <span>Shop</span>
                     <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isMegaMenuOpen ? 'rotate-180 text-blue-600' : 'text-slate-400 group-hover:text-slate-600'}`} />
-                  </button>
+                  </a>
 
                   {/* Mega Menu Dropdown */}
                   {isMegaMenuOpen && (
@@ -178,25 +181,27 @@ export const Header: React.FC = () => {
                   )}
                 </div>
 
-                <button
-                  onClick={() => handleNavClick('lab-setup')}
+                <a
+                  href="/lab-setup"
+                  onClick={(e) => handleNavClick('lab-setup', e)}
                   className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${currentPage === 'lab-setup'
                       ? 'bg-orange-50 text-orange-600 shadow-xs'
                       : 'text-slate-700 hover:bg-slate-100'
                     }`}
                 >
                   Lab Setup
-                </button>
+                </a>
 
-                <button
-                  onClick={() => handleNavClick('blogs')}
+                <a
+                  href="/blogs"
+                  onClick={(e) => handleNavClick('blogs', e)}
                   className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${currentPage === 'blogs'
                       ? 'bg-blue-50 text-blue-600 shadow-xs'
                       : 'text-slate-700 hover:bg-slate-100'
                     }`}
                 >
                   Blog/Tutorial
-                </button>
+                </a>
               </div>
             </div>
 
