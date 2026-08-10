@@ -177,8 +177,8 @@ export const AdminProductForm: React.FC = () => {
       slug: formattedData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
       short_description: formattedData.shortDescription,
       description: formattedData.description,
-      price: formattedData.price,
-      sale_price: formattedData.price, // assuming price is sale price
+      price: formattedData.originalPrice,
+      sale_price: formattedData.price,
       stock: formattedData.stockCount,
       status: formattedData.publishStatus === 'Published' ? 'published' : 'draft',
       featured: formattedData.isFeatured,
