@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { BLOG_POSTS } from '../data/blogs';
 import { BlogPost } from '../types';
 import { 
   Sparkles, Clock, ArrowRight, X, Calendar, ShieldCheck 
@@ -76,7 +75,7 @@ export const BlogsPage: React.FC = () => {
     setNewCommentText('');
   };
 
-  const allBlogs = [...dbBlogs, ...BLOG_POSTS];
+  const allBlogs = dbBlogs;
 
   const featuredPosts = allBlogs.filter(p => p.isFeatured && p.status === 'published');
   const publishedPosts = allBlogs.filter(p => p.status === 'published' || p.status === undefined);
