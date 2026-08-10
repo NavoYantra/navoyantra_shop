@@ -7,7 +7,7 @@ import { getNotifications, markNotificationRead } from '../../../lib/api';
 import { 
   LayoutDashboard, Package, Boxes, 
   Settings, Image as ImageIcon, Bell, Search,
-  ChevronDown, ChevronRight, LogOut, ShoppingCart, FileText
+  ChevronDown, ChevronRight, LogOut, ShoppingCart, FileText, BookOpen
 } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 
@@ -61,6 +61,14 @@ export const AdminLayout: React.FC = () => {
         { name: 'Reviews', path: '/admin/blogs/reviews' },
         { name: 'Categories', path: '/admin/blogs/categories' },
         { name: 'Tags', path: '/admin/blogs/tags' },
+      ]
+    },
+    { 
+      name: 'Tutorials', 
+      icon: BookOpen,
+      children: [
+        { name: 'All Tutorials', path: '/admin/tutorials' },
+        { name: 'Add New', path: '/admin/tutorials/new' },
       ]
     },
     { name: 'Media Library', path: '/admin/media', icon: ImageIcon },

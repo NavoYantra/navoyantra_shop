@@ -142,6 +142,27 @@ export interface LearningResource {
   description: string;
 }
 
+export interface TutorialPdf {
+  name: string;
+  url: string;
+}
+
+export interface Tutorial {
+  id: string;
+  title: string;
+  slug: string;
+  category: string;
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced' | string;
+  content: string;
+  video_url?: string;
+  images: string[];
+  pdfs: TutorialPdf[];
+  is_featured: boolean;
+  status: 'draft' | 'published';
+  published_date: string;
+  created_at?: string;
+}
+
 export interface FilterState {
   searchQuery: string;
   selectedCategories: CategoryType[];

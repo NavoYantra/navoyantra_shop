@@ -28,6 +28,7 @@ const ShopPage = lazy(() => import('./pages/ShopPage').then(module => ({ default
 const LabSetupPage = lazy(() => import('./pages/LabSetupPage').then(module => ({ default: module.LabSetupPage })));
 const BlogsPage = lazy(() => import('./pages/BlogsPage').then(module => ({ default: module.BlogsPage })));
 const ProductDetailPage = lazy(() => import('./pages/ProductDetailPage').then(module => ({ default: module.ProductDetailPage })));
+const TutorialDetailPage = lazy(() => import('./pages/TutorialDetailPage').then(module => ({ default: module.TutorialDetailPage })));
 const CustomerDashboard = lazy(() => import('./pages/CustomerDashboard').then(module => ({ default: module.CustomerDashboard })));
 const AdminApp = lazy(() => import('./AdminApp').then(module => ({ default: module.AdminApp })));
 
@@ -63,12 +64,19 @@ export function AppContent() {
       
       <main className="flex-1">
         <Suspense fallback={<LoadingSpinner />}>
-          {currentPage === 'home' && <HomePage />}
-          {currentPage === 'shop' && <ShopPage />}
-          {currentPage === 'lab-setup' && <LabSetupPage />}
-          {currentPage === 'blogs' && <BlogsPage />}
-          {currentPage === 'product-detail' && <ProductDetailPage />}
-          {currentPage === 'account' && <CustomerDashboard />}
+          <Routes>
+            <Route path="/tutorial/:id" element={<TutorialDetailPage />} />
+            <Route path="*" element={
+              <>
+                {currentPage === 'home' && <HomePage />}
+                {currentPage === 'shop' && <ShopPage />}
+                {currentPage === 'lab-setup' && <LabSetupPage />}
+                {currentPage === 'blogs' && <BlogsPage />}
+                {currentPage === 'product-detail' && <ProductDetailPage />}
+                {currentPage === 'account' && <CustomerDashboard />}
+              </>
+            } />
+          </Routes>
         </Suspense>
       </main>
 

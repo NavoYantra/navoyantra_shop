@@ -312,3 +312,44 @@ CREATE POLICY "Avatar images are publicly accessible" ON storage.objects FOR SEL
 CREATE POLICY "Users can upload their own avatars" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'avatars');
 CREATE POLICY "Users can update their own avatars" ON storage.objects FOR UPDATE TO authenticated USING (bucket_id = 'avatars');
 CREATE POLICY "Users can delete their own avatars" ON storage.objects FOR DELETE TO authenticated USING (bucket_id = 'avatars');
+
+-- ==========================================
+-- TUTORIALS TABLE
+-- ==========================================
+
+CREATE TABLE IF NOT EXISTS tutorials (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  title TEXT NOT NULL,
+  slug TEXT NOT NULL UNIQUE,
+  category TEXT,
+  difficulty TEXT DEFAULT 'Beginner',
+  content TEXT,
+  video_url TEXT,
+  images TEXT[] DEFAULT '{}',
+  pdfs JSONB DEFAULT '[]'::jsonb, -- Array of objects: [{name: "Manual", url: "https..."}]
+  is_featured BOOLEAN DEFAULT FALSE,
+  status TEXT DEFAULT 'draft', -- 'draft', 'published'
+  published_date TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Enable RLS
+ALTER TABLE tutorials ENABLE ROW LEVEL SECURITY;
+
+-- Allow public read access to published tutorials
+CREATE POLICY "Allow public select on tutorials" ON tutorials FOR SELECT USING (true);
+
+-- Allow authenticated users (Admins) to insert/update/delete tutorials
+CREATE POLICY "Allow authenticated insert on tutorials" ON tutorials FOR INSERT TO authenticated WITH CHECK (true);
+CREATE POLICY "Allow authenticated update on tutorials" ON tutorials FOR UPDATE TO authenticated USING (true);
+CREATE POLICY "Allow authenticated delete on tutorials" ON tutorials FOR DELETE TO authenticated USING (true);
+
+-- Create storage bucket for tutorial files (PDFs, Images)
+INSERT INTO storage.buckets (id, name, public) VALUES ('tutorials', 'tutorials', true) ON CONFLICT (id) DO NOTHING;
+
+-- Storage Policies for tutorials
+CREATE POLICY "Public Read tutorials" ON storage.objects FOR SELECT USING (bucket_id = 'tutorials');
+CREATE POLICY "Auth Insert tutorials" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'tutorials');
+CREATE POLICY "Auth Update tutorials" ON storage.objects FOR UPDATE TO authenticated USING (bucket_id = 'tutorials');
+CREATE POLICY "Auth Delete tutorials" ON storage.objects FOR DELETE TO authenticated USING (bucket_id = 'tutorials');
