@@ -83,8 +83,8 @@ export const AdminProductForm: React.FC = () => {
       price: existingProductRaw.sale_price || existingProductRaw.price,
       originalPrice: existingProductRaw.price,
       skuPrefix: existingProductRaw.sku ? existingProductRaw.sku.split('-')[1] : '',
-      shortDescription: existingProductRaw.short_description || '',
-      tileDescription: '',
+      shortDescription: existingProductRaw.dimensions?.quickViewDescription || '',
+      tileDescription: existingProductRaw.dimensions?.tileDescription || '',
       features: [],
       whatsInside: existingProductRaw.dimensions?.whatsInside || [],
       sampleProjects: existingProductRaw.dimensions?.sampleProjects || [],
@@ -230,7 +230,7 @@ export const AdminProductForm: React.FC = () => {
     const supabasePayload = {
       name: formattedData.name,
       slug: formattedData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
-      short_description: formattedData.shortDescription,
+      short_description: formattedData.tagline,
       description: formattedData.description,
       price: formattedData.originalPrice,
       sale_price: formattedData.price,
@@ -246,7 +246,9 @@ export const AdminProductForm: React.FC = () => {
         height: formattedData.shipping?.height,
         whatsInside: formattedData.whatsInside,
         sampleProjects: formattedData.sampleProjects,
-        technicalSpecs: formattedData.technicalSpecs
+        technicalSpecs: formattedData.technicalSpecs,
+        quickViewDescription: formattedData.shortDescription,
+        tileDescription: formattedData.tileDescription
       },
       // brand_id, category_id will be mapped if they match
       // For simplicity, finding ID from name (in real app, form should bind to ID directly)

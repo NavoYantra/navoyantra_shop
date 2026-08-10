@@ -69,15 +69,19 @@ export const QuickViewContent: React.FC<{ product: any; isPreview?: boolean }> =
       {/* Right Column: Title, Description, Included Box, & CTAs */}
       <div className="space-y-6">
         <div>
-          <div className="flex items-center space-x-2 text-xs text-amber-400 mb-1">
-            <div className="flex">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-4 h-4 fill-amber-400" />
-              ))}
+          {product.reviewCount > 0 ? (
+            <div className="flex items-center space-x-2 text-xs text-amber-400 mb-1">
+              <div className="flex">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="w-4 h-4 fill-amber-400" />
+                ))}
+              </div>
+              <span className="font-bold text-slate-900 ">{product.rating || 5}</span>
+              <span className="text-slate-400">({product.reviewCount || 0} customer reviews)</span>
             </div>
-            <span className="font-bold text-slate-900 ">{product.rating || 5}</span>
-            <span className="text-slate-400">({product.reviewCount || 0} customer reviews)</span>
-          </div>
+          ) : (
+            <div className="text-xs text-slate-400 italic mb-1">No reviews yet</div>
+          )}
 
           <h2 className="text-2xl font-extrabold font-heading text-slate-900 ">
             {product.name || 'Product Name'}
@@ -128,7 +132,7 @@ export const QuickViewContent: React.FC<{ product: any; isPreview?: boolean }> =
         </div>
 
         <p className="text-xs text-slate-600  leading-relaxed">
-          {product.description || 'Description'}
+          {product.shortDescription || product.description || 'Description'}
         </p>
 
         {/* Whats Inside Box */}

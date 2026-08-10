@@ -135,11 +135,15 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             <span className="px-2.5 py-0.5 rounded-md bg-slate-100  font-bold text-slate-700 ">
               {product.ageText}
             </span>
-            <div className="flex items-center space-x-1">
-              <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-              <span className="font-bold text-slate-900 ">{product.rating}</span>
-              <span className="text-slate-400">({product.reviewCount})</span>
-            </div>
+            {product.reviewCount > 0 ? (
+              <div className="flex items-center space-x-1">
+                <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+                <span className="font-bold text-slate-900 ">{product.rating}</span>
+                <span className="text-slate-400">({product.reviewCount})</span>
+              </div>
+            ) : (
+              <span className="text-slate-400 text-xs italic">No reviews</span>
+            )}
           </div>
 
           {/* Product Title */}

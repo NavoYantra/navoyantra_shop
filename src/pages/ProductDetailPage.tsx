@@ -69,18 +69,27 @@ export const ProductDetailHero: React.FC<{ product: any; isPreview?: boolean }> 
           </h1>
           
           <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-1">
-              <div className="flex text-amber-400">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className={`w-5 h-5 ${i < Math.floor(product.rating || 5) ? 'fill-amber-400' : 'fill-slate-200 text-slate-200'}`} />
-                ))}
-              </div>
-              <span className="font-bold text-slate-900 ml-1">{product.rating || 5}</span>
-            </div>
-            <span className="text-sm text-slate-500 hover:text-blue-600 cursor-pointer underline underline-offset-4 decoration-slate-300">
-              {product.reviewCount || 0} Reviews
-            </span>
-            <span className="text-sm text-slate-300">|</span>
+            {product.reviewCount > 0 ? (
+              <>
+                <div className="flex items-center space-x-1">
+                  <div className="flex text-amber-400">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className={`w-5 h-5 ${i < Math.floor(product.rating || 5) ? 'fill-amber-400' : 'fill-slate-200 text-slate-200'}`} />
+                    ))}
+                  </div>
+                  <span className="font-bold text-slate-900 ml-1">{product.rating || 5}</span>
+                </div>
+                <span className="text-sm text-slate-500 hover:text-blue-600 cursor-pointer underline underline-offset-4 decoration-slate-300" onClick={() => document.getElementById('reviews-section')?.scrollIntoView({ behavior: 'smooth' })}>
+                  {product.reviewCount} Reviews
+                </span>
+                <span className="text-sm text-slate-300">|</span>
+              </>
+            ) : (
+              <>
+                <span className="text-sm text-slate-400 italic">No reviews yet</span>
+                <span className="text-sm text-slate-300">|</span>
+              </>
+            )}
             <span className="text-sm font-semibold text-slate-600 flex items-center space-x-1">
               <Info className="w-4 h-4 text-slate-400" />
               <span>{product.ageText || 'Age Group'}</span>
