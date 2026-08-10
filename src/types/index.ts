@@ -1,4 +1,4 @@
-export type PageType = 'home' | 'shop' | 'lab-setup' | 'blogs' | 'product-detail' | 'admin' | 'account';
+export type PageType = 'home' | 'shop' | 'lab-setup' | 'blogs' | 'tutorials' | 'product-detail' | 'admin' | 'account';
 
 export type CategoryType = 
   | 'Robotics'

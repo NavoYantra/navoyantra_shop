@@ -3,7 +3,7 @@ import { useApp } from '../context/AppContext';
 import { 
   User, Package, Heart, MapPin, Settings, LogOut, 
   ChevronRight, Search, Filter, ShieldCheck, Truck, Star, Loader2,
-  ChevronDown, ChevronUp, CheckCircle2, Circle, XCircle, Camera
+  ChevronDown, ChevronUp, CheckCircle2, Circle, XCircle, Camera, Trash2
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { getOrdersByEmail, updateOrderStatus, uploadAvatar } from '../lib/api';
@@ -11,7 +11,7 @@ import { PRODUCTS } from '../data/products';
 import { ProductCard } from '../components/product/ProductCard';
 
 export const CustomerDashboard: React.FC = () => {
-  const { user, setUser, showToast, setCurrentPage, wishlist, storeProducts } = useApp();
+  const { user, setUser, showToast, setCurrentPage, wishlist, toggleWishlist, storeProducts } = useApp();
   const [activeTab, setActiveTab] = useState<'overview' | 'orders' | 'wishlist' | 'addresses' | 'settings'>('overview');
   const [orders, setOrders] = useState<any[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(true);
@@ -365,7 +365,18 @@ export const CustomerDashboard: React.FC = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {wishlist.map((wishlistItem: any) => {
                   const product = wishlistItem.product || wishlistItem;
-                  return <ProductCard key={product.id} product={product} />;
+                  return (
+                    <div key={product.id} className="relative group">
+                      <ProductCard product={product} />
+                      <button 
+                        onClick={() => toggleWishlist(product)}
+                        className="absolute -top-3 -right-3 w-10 h-10 bg-white border border-rose-200 text-rose-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-rose-500 hover:text-white hover:border-rose-500 shadow-xl z-40 transform hover:scale-110"
+                        title="Remove from Wishlist"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </div>
+                  );
                 })}
               </div>
             ) : (

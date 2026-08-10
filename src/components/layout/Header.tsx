@@ -201,7 +201,18 @@ export const Header: React.FC = () => {
                       : 'text-slate-700 hover:bg-slate-100'
                     }`}
                 >
-                  Blog/Tutorial
+                  Blogs
+                </a>
+
+                <a
+                  href="/tutorials"
+                  onClick={(e) => handleNavClick('tutorials', e)}
+                  className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${currentPage === 'tutorials'
+                      ? 'bg-blue-50 text-blue-600 shadow-xs'
+                      : 'text-slate-700 hover:bg-slate-100'
+                    }`}
+                >
+                  Tutorials
                 </a>
               </div>
             </div>
@@ -364,7 +375,14 @@ export const Header: React.FC = () => {
             className={`w-full text-left font-semibold py-2.5 px-3 rounded-xl ${currentPage === 'blogs' ? 'bg-blue-50 text-blue-600' : 'text-slate-700 hover:bg-slate-50'
               }`}
           >
-            Blog/Tutorial
+            Blogs
+          </button>
+          <button
+            onClick={() => handleNavClick('tutorials')}
+            className={`w-full text-left font-semibold py-2.5 px-3 rounded-xl ${currentPage === 'tutorials' ? 'bg-blue-50 text-blue-600' : 'text-slate-700 hover:bg-slate-50'
+              }`}
+          >
+            Tutorials
           </button>
 
           <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
