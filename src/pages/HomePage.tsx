@@ -4,8 +4,6 @@ import { FeaturedCategories } from '../components/home/FeaturedCategories';
 import { OffersSection } from '../components/home/OffersSection';
 import { NewArrivalsSection } from '../components/home/NewArrivalsSection';
 import { FeaturedProductsSection } from '../components/home/FeaturedProductsSection';
-import { ShopByAgeSection } from '../components/home/ShopByAgeSection';
-import { ShopByTechSection } from '../components/home/ShopByTechSection';
 import { BestSellersSection } from '../components/home/BestSellersSection';
 import { WhyChooseSection } from '../components/home/WhyChooseSection';
 import { InstitutionalSection } from '../components/home/InstitutionalSection';
@@ -19,8 +17,8 @@ export const HomePage: React.FC = () => {
   return (
     <div className="space-y-0">
       <SEO 
-        title="India's Best DIY Robotics Kits & Labsetup"
-        description="NavoYantra provides the best DIY robotic kits for kids, students, and engineers in India. Explore our labsetup solutions for schools, Atal Tinkering Labs (ATL), AI education, and IoT projects."
+        title="Robotics Kits, STEM Products & Lab Setup Solutions | NavoYantra"
+        description="Buy robotics kits, STEM kits, Arduino, IoT, AI and electronics components online. Explore complete robotics, AI, IoT and STEM lab setup solutions for schools and institutions."
         keywords="DIY robotic, Labsetup, Robotics for kids, Atal Tinkering Lab equipment, School Lab Setup, STEM learning, AI Kits, IoT projects"
       />
       <HeroSection />
@@ -28,8 +26,6 @@ export const HomePage: React.FC = () => {
       <NewArrivalsSection />
       <OffersSection />
       <FeaturedProductsSection />
-      <ShopByAgeSection />
-      <ShopByTechSection />
       <BestSellersSection />
       <WhyChooseSection />
       <InstitutionalSection />

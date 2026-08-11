@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { motion } from 'framer-motion';
 import { 
-  Sparkles, ArrowRight, CheckCircle2, Users, School, 
+  Sparkles, ArrowRight, School, 
   Cloud, Hexagon, Circle, Triangle
 } from 'lucide-react';
 
 export const HeroSection: React.FC = () => {
-  const { setIsQuoteModalOpen, setQuickViewProduct, storeProducts } = useApp();
+  const { setQuickViewProduct, storeProducts } = useApp();
   const [currentSlide, setCurrentSlide] = useState(0);
   const newArrivals = storeProducts.slice(0, 4);
 
@@ -56,18 +56,18 @@ export const HeroSection: React.FC = () => {
               <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-xs font-bold shadow-sm">
                 <span className="flex h-2.5 w-2.5 rounded-full bg-blue-500 animate-pulse" />
                 <Sparkles className="w-4 h-4 text-orange-500" />
-                <span>India's #1 EdTech & Robotics Platform</span>
+                <span>Build. Learn. Innovate.</span>
               </div>
 
               {/* Headline */}
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold font-heading text-slate-900 tracking-tight leading-[1.15]">
-                Build, Code & Innovate the <br className="hidden sm:inline" />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-emerald-500">Future of STEM</span>
+                Robotics Kits, STEM Products & <br className="hidden sm:inline" />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-emerald-500">Complete Lab Setup Solutions</span>
               </h1>
 
               {/* Subtitle */}
               <p className="text-base sm:text-lg text-slate-600 max-w-2xl leading-relaxed font-medium">
-                Empowering <strong>Kids (8-14 yrs)</strong>, <strong>School Students</strong>, <strong>College Engineers</strong>, and <strong>Atal Tinkering Labs</strong> with pre-soldered, safe, and curriculum-aligned STEM kits.
+                Explore robotics kits, STEM learning products, electronics components, IoT modules, AI kits, and complete technology lab setup solutions for students, makers, educators, schools, colleges, and institutions.
               </p>
 
               {/* Action Buttons */}
@@ -76,17 +76,17 @@ export const HeroSection: React.FC = () => {
                   href="#featured-kits"
                   className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-orange hover:opacity-90 text-white font-bold text-base shadow-xl shadow-orange-500/25 transition-all hover:-translate-y-1 flex items-center justify-center space-x-3"
                 >
-                  <span>Explore Kits</span>
+                  <span>Shop Products</span>
                   <ArrowRight className="w-5 h-5" />
                 </a>
 
-                <button
-                  onClick={() => setIsQuoteModalOpen(true)}
-                  className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-white text-slate-700 font-bold text-base border-2 border-slate-200 hover:border-blue-600 hover:text-blue-700 transition-all shadow-sm flex items-center justify-center space-x-2"
+                <a
+                  href="#institutional"
+                  className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-white text-slate-700 font-bold text-base border-2 border-slate-200 hover:border-blue-600 hover:text-blue-700 transition-all shadow-sm flex items-center justify-center space-x-2 cursor-pointer"
                 >
                   <School className="w-5 h-5" />
-                  <span>Request Institutional Quote</span>
-                </button>
+                  <span>Explore Lab Solutions</span>
+                </a>
               </div>
             </div>
           </div>
@@ -154,43 +154,26 @@ export const HeroSection: React.FC = () => {
 
           </div>
 
-          {/* Mini Stats Bento Boxes (Span 4 each -> 12 total) */}
-          <div className="lg:col-span-4 bg-blue-600 rounded-[2rem] p-6 shadow-xl shadow-blue-600/20 text-white relative overflow-hidden flex items-center space-x-4 transition-transform hover:-translate-y-1">
-             <div className="absolute -right-4 -top-4 text-blue-500 opacity-50">
-                <Circle size={100} fill="currentColor" strokeWidth={0} />
+          {/* Trust Strip (Span 12) */}
+          <div className="lg:col-span-12 bg-white rounded-2xl p-4 sm:p-6 shadow-lg shadow-slate-200/50 border border-slate-100 flex flex-wrap items-center justify-center gap-4 sm:gap-6 lg:gap-8 text-xs sm:text-sm font-bold text-slate-700">
+             <div className="flex items-center space-x-2">
+               <span className="text-lg">🚚</span>
+               <span>Pan-India Delivery</span>
              </div>
-             <div className="p-4 bg-white/10 rounded-2xl backdrop-blur-sm relative z-10">
-                <Users className="w-8 h-8 text-blue-100" />
+             <div className="hidden sm:block text-slate-300">|</div>
+             <div className="flex items-center space-x-2">
+               <span className="text-lg">🛠️</span>
+               <span>Practical Learning Solutions</span>
              </div>
-             <div className="relative z-10">
-                <div className="text-3xl font-black font-heading tracking-tight">50,000+</div>
-                <div className="text-blue-100 text-sm font-medium">Student Makers</div>
+             <div className="hidden lg:block text-slate-300">|</div>
+             <div className="flex items-center space-x-2">
+               <span className="text-lg">🏫</span>
+               <span>Institutional Solutions</span>
              </div>
-          </div>
-
-          <div className="lg:col-span-4 bg-emerald-500 rounded-[2rem] p-6 shadow-xl shadow-emerald-500/20 text-white relative overflow-hidden flex items-center space-x-4 transition-transform hover:-translate-y-1">
-             <div className="absolute -right-4 -bottom-4 text-emerald-400 opacity-50">
-                <Triangle size={100} fill="currentColor" strokeWidth={0} className="rotate-12" />
-             </div>
-             <div className="p-4 bg-white/10 rounded-2xl backdrop-blur-sm relative z-10">
-                <CheckCircle2 className="w-8 h-8 text-emerald-100" />
-             </div>
-             <div className="relative z-10">
-                <div className="text-3xl font-black font-heading tracking-tight">100% ATL</div>
-                <div className="text-emerald-100 text-sm font-medium">CBSE & ATL Aligned</div>
-             </div>
-          </div>
-
-          <div className="lg:col-span-4 bg-orange-500 rounded-[2rem] p-6 shadow-xl shadow-orange-500/20 text-white relative overflow-hidden flex items-center space-x-4 transition-transform hover:-translate-y-1">
-             <div className="absolute -left-4 -top-4 text-orange-400 opacity-50">
-                <Hexagon size={100} fill="currentColor" strokeWidth={0} />
-             </div>
-             <div className="p-4 bg-white/10 rounded-2xl backdrop-blur-sm relative z-10">
-                <School className="w-8 h-8 text-orange-100" />
-             </div>
-             <div className="relative z-10">
-                <div className="text-3xl font-black font-heading tracking-tight">500+</div>
-                <div className="text-orange-100 text-sm font-medium">Partner Schools</div>
+             <div className="hidden sm:block text-slate-300">|</div>
+             <div className="flex items-center space-x-2">
+               <span className="text-lg">🇮🇳</span>
+               <span>Indian Technology Brand</span>
              </div>
           </div>
 
