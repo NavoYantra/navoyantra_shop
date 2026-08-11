@@ -7,7 +7,7 @@ import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 
-import { ArrowLeft, Save, Trash2, Plus, Image as ImageIcon, Video, Calendar, Upload } from 'lucide-react';
+import { ArrowLeft, Save, Trash2, Plus, Image as ImageIcon, Video, Upload } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getCategories, getBrands, getTags, createProduct, updateProduct, uploadImage, getProducts, deleteProduct as apiDeleteProduct } from '../../lib/api';
 import { ProductCard } from '../../components/product/ProductCard';
@@ -86,7 +86,7 @@ export const AdminProductForm: React.FC = () => {
       skuPrefix: existingProductRaw.sku ? existingProductRaw.sku.split('-')[1] : '',
       shortDescription: existingProductRaw.dimensions?.quickViewDescription || '',
       tileDescription: existingProductRaw.dimensions?.tileDescription || '',
-      features: [],
+      features: existingProductRaw.dimensions?.features || [],
       whatsInside: existingProductRaw.dimensions?.whatsInside || [],
       sampleProjects: existingProductRaw.dimensions?.sampleProjects || [],
       technicalSpecs: existingProductRaw.dimensions?.technicalSpecs || [],
@@ -139,6 +139,8 @@ export const AdminProductForm: React.FC = () => {
       description: existingProduct.description,
       price: existingProduct.price,
       originalPrice: existingProduct.originalPrice,
+      skuPrefix: existingProduct.skuPrefix,
+      ageGroup: existingProduct.ageGroup,
       shortDescription: existingProduct.shortDescription,
       tileDescription: existingProduct.tileDescription,
       features: existingProduct.features.map((f: any) => ({ value: f })),
@@ -193,6 +195,9 @@ export const AdminProductForm: React.FC = () => {
         shortDescription: existingProduct.shortDescription,
         tileDescription: existingProduct.tileDescription,
         features: existingProduct.features.map((f: any) => ({ value: f })),
+        whatsInside: existingProduct.whatsInside?.map((x: string) => ({ value: x })) || [],
+        sampleProjects: existingProduct.sampleProjects?.map((x: string) => ({ value: x })) || [],
+        technicalSpecs: existingProduct.technicalSpecs?.map((x: any) => ({ key: x.key, value: x.value })) || [],
         youtubeVideoUrl: existingProduct.youtubeVideoUrl,
         category: existingProduct.category,
         tags: existingProduct.tags,
@@ -253,6 +258,7 @@ export const AdminProductForm: React.FC = () => {
         technicalSpecs: formattedData.technicalSpecs,
         quickViewDescription: formattedData.shortDescription,
         tileDescription: formattedData.tileDescription,
+        features: formattedData.features,
         ageGroup: formattedData.ageGroup,
         techStack: formattedData.tags
       },
