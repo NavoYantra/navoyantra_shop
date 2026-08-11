@@ -12,7 +12,8 @@ export const ProductDetailHero: React.FC<{ product: any; isPreview?: boolean }> 
     addToCart, 
     toggleWishlist, 
     isInWishlist,
-    setIsQuoteModalOpen
+    setIsQuoteModalOpen,
+    showToast
   } = useApp();
   const [activeImgIdx, setActiveImgIdx] = useState(0);
   const isWishlisted = isInWishlist(product.id);
@@ -59,7 +60,27 @@ export const ProductDetailHero: React.FC<{ product: any; isPreview?: boolean }> 
             <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-bold uppercase tracking-wider">
               {product.category || 'Category'}
             </span>
-            <button type="button" className="p-2 text-slate-400 hover:text-blue-600 transition-colors bg-slate-50 hover:bg-blue-50 rounded-full">
+            <button 
+              type="button" 
+              onClick={async () => {
+                const url = window.location.href;
+                if (navigator.share) {
+                  try {
+                    await navigator.share({
+                      title: product.name,
+                      text: `Check out ${product.name} on NavoYantra!`,
+                      url: url,
+                    });
+                  } catch (err) {
+                    console.error('Error sharing:', err);
+                  }
+                } else {
+                  navigator.clipboard.writeText(url);
+                  showToast('Link copied to clipboard', 'success');
+                }
+              }}
+              className="p-2 text-slate-400 hover:text-blue-600 transition-colors bg-slate-50 hover:bg-blue-50 rounded-full"
+            >
               <Share2 className="w-4 h-4" />
             </button>
           </div>

@@ -121,6 +121,24 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
+  // Handle browser back/forward buttons
+  useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.pathname.replace(/^\/+/, '');
+      const validPages: PageType[] = ['home', 'shop', 'lab-setup', 'blogs', 'product-detail', 'account', 'tutorials'];
+      if (validPages.includes(path as PageType)) {
+        setCurrentPageState(path as PageType);
+        sessionStorage.setItem('ny_current_page', path);
+      } else {
+        setCurrentPageState('home');
+        sessionStorage.setItem('ny_current_page', 'home');
+      }
+    };
+    
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
   // Enforce light theme
   const theme = 'light';
   const toggleTheme = () => {};

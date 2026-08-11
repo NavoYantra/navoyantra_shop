@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BlogPost } from '../types';
 import { 
-  Sparkles, Clock, ArrowRight, X, Calendar, ShieldCheck, Star
+  Sparkles, Clock, ArrowRight, X, Calendar, ShieldCheck, Star, Share2
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useApp } from '../context/AppContext';
@@ -15,7 +15,7 @@ export const BlogsPage: React.FC = () => {
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
   const [isAdminModalOpen] = useState(false);
   
-  const [postComments, setPostComments] = useState<Record<string, {name: string, text: string, date: string}[]>>({});
+
   const [newCommentName, setNewCommentName] = useState(user?.name || '');
   const [newCommentText, setNewCommentText] = useState('');
   const [newCommentRating, setNewCommentRating] = useState(5);
@@ -346,9 +346,35 @@ export const BlogsPage: React.FC = () => {
                       </span>
                     ))}
                   </div>
-              <button onClick={() => setSelectedPost(null)} className="p-2 rounded-xl text-slate-400 hover:bg-slate-800">
-                <X className="w-5 h-5" />
-              </button>
+              <div className="flex items-center space-x-2">
+                <button 
+                  type="button" 
+                  onClick={async () => {
+                    const url = window.location.href;
+                    if (navigator.share) {
+                      try {
+                        await navigator.share({
+                          title: selectedPost.title,
+                          text: `Check out this blog: ${selectedPost.title} on NavoYantra!`,
+                          url: url,
+                        });
+                      } catch (err) {
+                        console.error('Error sharing:', err);
+                      }
+                    } else {
+                      navigator.clipboard.writeText(url);
+                      showToast('Link copied to clipboard', 'success');
+                    }
+                  }}
+                  className="p-2 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
+                  title="Share Blog"
+                >
+                  <Share2 className="w-5 h-5" />
+                </button>
+                <button onClick={() => setSelectedPost(null)} className="p-2 rounded-xl text-slate-400 hover:bg-slate-800">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
             </div>
 
             <div className="p-8 max-h-[80vh] overflow-y-auto space-y-6">

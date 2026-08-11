@@ -5,7 +5,7 @@ import { Tutorial } from '../types';
 import { SEO } from '../components/SEO';
 import { useApp } from '../context/AppContext';
 import { 
-  BookOpen, Clock, Download, Video, Image as ImageIcon, FileText, ChevronRight, Star, MessageSquare
+  BookOpen, Clock, Download, Video, Image as ImageIcon, FileText, ChevronRight, Star, MessageSquare, Share2
 } from 'lucide-react';
 
 export const TutorialDetailPage: React.FC<{ previewTutorial?: Tutorial }> = ({ previewTutorial }) => {
@@ -179,6 +179,30 @@ export const TutorialDetailPage: React.FC<{ previewTutorial?: Tutorial }> = ({ p
             }`}>
               {tutorial.difficulty}
             </span>
+            <button 
+              type="button" 
+              onClick={async () => {
+                const url = window.location.href;
+                if (navigator.share) {
+                  try {
+                    await navigator.share({
+                      title: tutorial.title,
+                      text: `Check out this tutorial: ${tutorial.title} on NavoYantra!`,
+                      url: url,
+                    });
+                  } catch (err) {
+                    console.error('Error sharing:', err);
+                  }
+                } else {
+                  navigator.clipboard.writeText(url);
+                  showToast('Link copied to clipboard', 'success');
+                }
+              }}
+              className="p-1.5 text-white/70 hover:text-white transition-colors bg-white/10 hover:bg-white/20 rounded-full ml-2 flex items-center justify-center"
+              title="Share Tutorial"
+            >
+              <Share2 className="w-4 h-4" />
+            </button>
           </div>
           
           <h1 className="text-3xl sm:text-5xl font-extrabold font-heading leading-tight">
