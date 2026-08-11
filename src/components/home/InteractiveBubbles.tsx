@@ -24,7 +24,7 @@ export const InteractiveBubbles: React.FC = () => {
       // Create random positions using percentages to handle window resize better
       x: Math.random() * 100,
       y: Math.random() * 100,
-      size: Math.random() * 80 + 40,
+      size: Math.random() * 40 + 15,
       color: colors[Math.floor(Math.random() * colors.length)],
       tx: 0,
       ty: 0
@@ -87,7 +87,7 @@ export const InteractiveBubbles: React.FC = () => {
           id: Date.now() + Math.random(),
           x: percentX + offsetX,
           y: percentY + offsetY,
-          size: Math.random() * 70 + 30, 
+          size: Math.random() * 30 + 10, 
           color: colors[Math.floor(Math.random() * colors.length)],
           tx: (Math.random() - 0.5) * 200,
           ty: (Math.random() - 0.5) * 200
@@ -123,12 +123,12 @@ export const InteractiveBubbles: React.FC = () => {
           initial={{ scale: 0, opacity: 0 }}
           animate={{ 
             scale: 1, 
-            opacity: 0.4,
+            opacity: 0.7,
             x: bubble.tx,
             y: bubble.ty
           }}
           transition={{ type: "spring", stiffness: 40, damping: 25 }}
-          className={`absolute rounded-full blur-xl ${bubble.color}`}
+          className={`absolute rounded-full ${bubble.color}`}
           style={{
             width: bubble.size,
             height: bubble.size,
