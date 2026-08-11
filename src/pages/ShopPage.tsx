@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { ProductCard } from '../components/product/ProductCard';
 import { ProductFilterDrawer } from '../components/product/ProductFilterDrawer';
-import { CategoryType, AgeGroupType, TechStackType } from '../types';
 import { 
   ShoppingBag, Search, Filter, ArrowUpDown, X, Sparkles, SlidersHorizontal, Check 
 } from 'lucide-react';
@@ -11,6 +10,7 @@ import { SEO } from '../components/SEO';
 export const ShopPage: React.FC = () => {
   const { 
     filteredProducts, 
+    storeProducts,
     filters, 
     setFilters, 
     resetFilters 
@@ -18,25 +18,9 @@ export const ShopPage: React.FC = () => {
 
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
 
-  const categories: CategoryType[] = [
-    'Robotics',
-    'AI & Machine Learning',
-    'IoT & Smart Home',
-    'Embedded Systems',
-    'STEM Starter',
-    'Drones & Automation'
-  ];
-
-  const ageGroups: AgeGroupType[] = ['8-10', '11-13', '14-16', '17+'];
-
-  const techStacks: TechStackType[] = [
-    'Arduino',
-    'ESP32',
-    'Raspberry Pi',
-    'AI & Computer Vision',
-    'IoT Sensors',
-    'Micro:bit'
-  ];
+  const categories = Array.from(new Set(storeProducts.map(p => p.category).filter(Boolean)));
+  const ageGroups = Array.from(new Set(storeProducts.map(p => p.ageText).filter(Boolean)));
+  const techStacks = Array.from(new Set(storeProducts.flatMap(p => p.techStack || []).filter(Boolean)));
 
   const hasActiveFilters = 
     filters.selectedCategories.length > 0 || 

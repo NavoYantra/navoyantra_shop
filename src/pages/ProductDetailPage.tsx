@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { slugify } from '../lib/utils';
 import { TESTIMONIALS } from '../data/testimonials';
 import { ProductCard } from '../components/product/ProductCard';
 import { 
@@ -196,12 +198,13 @@ export const ProductDetailHero: React.FC<{ product: any; isPreview?: boolean }> 
 
 export const ProductDetailPage: React.FC = () => {
   const { 
-    activeProductId, 
     setCurrentPage, 
     storeProducts,
     user,
     showToast
   } = useApp();
+  const { slug } = useParams<{ slug: string }>();
+  const navigate = useNavigate();
 
   const [newReviewName, setNewReviewName] = useState(user?.name || '');
   const [newReviewTitle, setNewReviewTitle] = useState('');
@@ -226,16 +229,19 @@ export const ProductDetailPage: React.FC = () => {
   // Scroll to top when product changes
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [activeProductId]);
+  }, [slug]);
 
-  const product = storeProducts.find(p => p.id === activeProductId);
+  const product = storeProducts.find(p => slugify(p.name) === slug || p.id === slug);
 
   if (!product) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center space-y-4">
         <h2 className="text-2xl font-bold text-slate-800">Product not found.</h2>
         <button 
-          onClick={() => setCurrentPage('shop')}
+          onClick={() => {
+            setCurrentPage('shop');
+            navigate('/shop');
+          }}
           className="px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700"
         >
           Return to Shop

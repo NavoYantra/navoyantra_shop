@@ -1,33 +1,24 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { BlogPost } from '../types';
 import { 
-  Sparkles, Clock, ArrowRight, X, Calendar, ShieldCheck, Star, Share2
+  Sparkles, Clock, ArrowRight, X, Calendar, ShieldCheck
 } from 'lucide-react';
-import { supabase } from '../lib/supabase';
-import { useApp } from '../context/AppContext';
 import { SEO } from '../components/SEO';
+import { slugify } from '../lib/utils';
+import { supabase } from '../lib/supabase';
 
 export const BlogsPage: React.FC = () => {
-  const { showToast, user } = useApp();
-  const [dbReviews, setDbReviews] = useState<any[]>([]);
-  const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
+  const navigate = useNavigate();
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
   const [isAdminModalOpen] = useState(false);
   
 
-  const [newCommentName, setNewCommentName] = useState(user?.name || '');
-  const [newCommentText, setNewCommentText] = useState('');
-  const [newCommentRating, setNewCommentRating] = useState(5);
+
 
   useEffect(() => {
-    if (user?.name) {
-      setNewCommentName(user.name);
-    }
-  }, [user]);
-
-  useEffect(() => {
-    if (selectedPost || isSubmitModalOpen || isAdminModalOpen) {
+    if (isSubmitModalOpen || isAdminModalOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
@@ -35,17 +26,7 @@ export const BlogsPage: React.FC = () => {
     return () => {
       document.body.style.overflow = 'unset';
     };
-  }, [selectedPost, isSubmitModalOpen, isAdminModalOpen]);
-
-  useEffect(() => {
-    if (selectedPost) {
-      const fetchReviews = async () => {
-        const { data } = await supabase.from('blog_reviews').select('*').eq('blog_id', selectedPost.id).eq('status', 'approved').order('created_at', { ascending: false });
-        if (data) setDbReviews(data);
-      };
-      fetchReviews();
-    }
-  }, [selectedPost]);
+  }, [isSubmitModalOpen, isAdminModalOpen]);
 
   const [dbBlogs, setDbBlogs] = useState<BlogPost[]>([]);
   
@@ -84,28 +65,7 @@ export const BlogsPage: React.FC = () => {
     fetchBlogs();
   }, []);
 
-  const handleAddComment = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedPost || !newCommentName || !newCommentText) return;
-    
-    try {
-      const { error } = await supabase.from('blog_reviews').insert([{
-        blog_id: selectedPost.id,
-        author_name: newCommentName,
-        comment: newCommentText,
-        rating: newCommentRating,
-        status: 'pending'
-      }]);
-      
-      if (error) throw error;
-      showToast('Review submitted successfully and is pending approval!', 'success');
-      setNewCommentName(user?.name || '');
-      setNewCommentText('');
-      setNewCommentRating(5);
-    } catch (err: any) {
-      showToast(`Error submitting review: ${err.message}`, 'warning');
-    }
-  };
+
 
   const allBlogs = dbBlogs;
 
@@ -165,7 +125,7 @@ export const BlogsPage: React.FC = () => {
               {[...featuredPosts, ...featuredPosts].map((post, idx) => (
                 <div 
                   key={`${post.id}-${idx}`}
-                  onClick={() => setSelectedPost(post)}
+                  onClick={() => navigate('/blog/' + slugify(post.title))}
                   className="rounded-3xl bg-white border border-slate-200/80 shadow-xl overflow-hidden cursor-pointer hover:shadow-2xl hover:border-blue-500/50 transition-all duration-300 flex-none w-[85vw] sm:w-[600px] lg:w-[800px] grid grid-cols-1 sm:grid-cols-2 group/card"
                 >
                   <div className="relative aspect-16/10 sm:aspect-auto overflow-hidden bg-slate-900">
@@ -264,7 +224,7 @@ export const BlogsPage: React.FC = () => {
           {filteredPosts.map(post => (
             <div
               key={post.id}
-              onClick={() => setSelectedPost(post)}
+              onClick={() => navigate('/blog/' + slugify(post.title))}
               className="rounded-3xl bg-white border border-slate-200/80 shadow-lg hover:shadow-2xl hover:border-blue-500/50 transition-all duration-300 overflow-hidden cursor-pointer flex flex-col justify-between group"
             >
               <div>
@@ -334,165 +294,7 @@ export const BlogsPage: React.FC = () => {
 
       </div>
 
-      {/* Full Article Reading Modal */}
-      {selectedPost && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="w-full max-w-3xl bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden animate-in zoom-in-95 duration-200 my-8">
-            <div className="p-6 bg-slate-900 text-white flex items-center justify-between">
-                  <div className="flex flex-wrap gap-2">
-                    {(selectedPost.categories || []).map((cat: string) => (
-                      <span key={cat} className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-purple-100 text-purple-700 text-[11px] font-bold uppercase tracking-wider">
-                        {cat}
-                      </span>
-                    ))}
-                  </div>
-              <div className="flex items-center space-x-2">
-                <button 
-                  type="button" 
-                  onClick={async () => {
-                    const url = window.location.href;
-                    if (navigator.share) {
-                      try {
-                        await navigator.share({
-                          title: selectedPost.title,
-                          text: `Check out this blog: ${selectedPost.title} on NavoYantra!`,
-                          url: url,
-                        });
-                      } catch (err) {
-                        console.error('Error sharing:', err);
-                      }
-                    } else {
-                      navigator.clipboard.writeText(url);
-                      showToast('Link copied to clipboard', 'success');
-                    }
-                  }}
-                  className="p-2 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
-                  title="Share Blog"
-                >
-                  <Share2 className="w-5 h-5" />
-                </button>
-                <button onClick={() => setSelectedPost(null)} className="p-2 rounded-xl text-slate-400 hover:bg-slate-800">
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
 
-            <div className="p-8 max-h-[80vh] overflow-y-auto space-y-6">
-              <h1 className="text-3xl font-extrabold font-heading text-slate-900">
-                {selectedPost.title}
-              </h1>
-
-              <div className="flex items-center space-x-4 border-y border-slate-100 py-3 text-xs text-slate-500">
-                <div className="flex items-center space-x-2">
-                  {selectedPost.author.avatar ? (
-                    <img src={selectedPost.author.avatar} alt="Author" className="w-8 h-8 rounded-full object-cover" />
-                  ) : (
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-blue-700 bg-blue-100">
-                      {selectedPost.author.name ? selectedPost.author.name[0].toUpperCase() : 'A'}
-                    </div>
-                  )}
-                  <span className="font-bold text-slate-900">{selectedPost.author.name}</span>
-                </div>
-                <span>•</span>
-                <span>{selectedPost.publishedDate}</span>
-                <span>•</span>
-                <span>{selectedPost.readTime}</span>
-              </div>
-
-              <div className="aspect-16/9 rounded-2xl overflow-hidden">
-                <img src={selectedPost.coverImage} alt="Cover" className="w-full h-full object-cover" />
-              </div>
-
-              <div 
-                className="prose text-slate-700 text-sm leading-relaxed space-y-4"
-                dangerouslySetInnerHTML={{ __html: selectedPost.content }}
-              />
-
-              <div className="pt-8 mt-8 border-t border-slate-100">
-                <h3 className="text-xl font-bold text-slate-900 mb-6">Comments & Reviews</h3>
-                
-                <div className="space-y-6 mb-8">
-                  {dbReviews.length > 0 ? (
-                    dbReviews.map((review, idx) => (
-                      <div key={idx} className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                        <div className="flex justify-between items-start mb-2">
-                          <div>
-                            <span className="font-bold text-slate-900 text-sm mr-2">{review.author_name}</span>
-                            <span className="text-[10px] text-slate-400">{new Date(review.created_at).toLocaleDateString()}</span>
-                          </div>
-                          <div className="flex text-amber-500">
-                            {[...Array(review.rating)].map((_, i) => (
-                              <Star key={i} className="w-3 h-3 fill-current" />
-                            ))}
-                          </div>
-                        </div>
-                        <p className="text-sm text-slate-600">{review.comment}</p>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-sm text-slate-400 italic">No comments yet. Be the first to review!</p>
-                  )}
-                </div>
-
-                <form onSubmit={handleAddComment} className="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-4">
-                  <h4 className="text-sm font-bold text-slate-900">Leave a Comment</h4>
-                  <div>
-                    <input 
-                      type="text" 
-                      placeholder="Your Name" 
-                      required
-                      value={newCommentName}
-                      onChange={e => setNewCommentName(e.target.value)}
-                      className="w-full px-4 py-2 rounded-xl bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                    />
-                  </div>
-                  <div className="flex items-center space-x-2 mb-2">
-                    <span className="text-sm font-semibold text-slate-700">Rating:</span>
-                    <div className="flex">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <button
-                          key={star}
-                          type="button"
-                          onClick={() => setNewCommentRating(star)}
-                          className={`p-1 ${newCommentRating >= star ? 'text-amber-500' : 'text-slate-300'} hover:text-amber-400 transition-colors`}
-                        >
-                          <Star className="w-5 h-5 fill-current" />
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <textarea 
-                      placeholder="Write your review or comment..." 
-                      rows={3}
-                      required
-                      value={newCommentText}
-                      onChange={e => setNewCommentText(e.target.value)}
-                      className="w-full px-4 py-2 rounded-xl bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                    />
-                  </div>
-                  <button type="submit" className="px-6 py-2 bg-blue-600 text-white font-bold rounded-xl text-xs hover:bg-blue-700 transition-colors">
-                    Post Comment
-                  </button>
-                </form>
-              </div>
-
-              <div className="pt-6 border-t border-slate-100 flex items-center justify-between">
-                <div className="flex flex-wrap gap-1.5">
-                  {selectedPost.tags.map((t, i) => (
-                    <span key={i} className="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-semibold">
-                      #{t}
-                    </span>
-                  ))}
-                </div>
-                <button onClick={() => setSelectedPost(null)} className="px-5 py-2 rounded-xl bg-slate-900 text-white font-bold text-xs hover:bg-slate-800">
-                  Close Article
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Submit Blog Modal */}
       {isSubmitModalOpen && (

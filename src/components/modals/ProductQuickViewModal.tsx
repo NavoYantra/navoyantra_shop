@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { 
   X, Star, ShoppingBag, Heart, CheckCircle2, Box, Sparkles, School, ArrowRight
 } from 'lucide-react';
+import { slugify } from '../../lib/utils';
 
 export const QuickViewContent: React.FC<{ product: any; isPreview?: boolean }> = ({ product, isPreview }) => {
   const { 
@@ -10,10 +12,10 @@ export const QuickViewContent: React.FC<{ product: any; isPreview?: boolean }> =
     toggleWishlist, 
     isInWishlist,
     setIsQuoteModalOpen,
-    setCurrentPage,
-    setActiveProductId,
     setQuickViewProduct
   } = useApp();
+  
+  const navigate = useNavigate();
 
   const [activeImgIdx, setActiveImgIdx] = useState(0);
   const isWishlisted = isInWishlist(product.id);
@@ -86,9 +88,8 @@ export const QuickViewContent: React.FC<{ product: any; isPreview?: boolean }> =
             type="button"
             onClick={() => {
               if (isPreview) return;
-              setActiveProductId(product.id);
-              setCurrentPage('product-detail');
               setQuickViewProduct(null);
+              navigate('/product/' + slugify(product.name));
             }}
             className="mt-2 text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center space-x-1 group"
           >

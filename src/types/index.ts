@@ -1,24 +1,8 @@
 export type PageType = 'home' | 'shop' | 'lab-setup' | 'blogs' | 'tutorials' | 'product-detail' | 'admin' | 'account';
 
-export type CategoryType = 
-  | 'Robotics'
-  | 'AI & Machine Learning'
-  | 'IoT & Smart Home'
-  | 'Embedded Systems'
-  | 'STEM Starter'
-  | 'Drones & Automation'
-  | '3D Printing & Fabrication';
-
-export type AgeGroupType = '8-10' | '11-13' | '14-16' | '17+';
-
-export type TechStackType = 
-  | 'Arduino' 
-  | 'ESP32' 
-  | 'Raspberry Pi' 
-  | 'AI & Computer Vision' 
-  | 'IoT Sensors' 
-  | 'Micro:bit' 
-  | 'ROS & Motors';
+export type CategoryType = string;
+export type AgeGroupType = string;
+export type TechStackType = string;
 
 export interface ProductSpec {
   microcontroller?: string;

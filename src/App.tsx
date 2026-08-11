@@ -29,6 +29,7 @@ const LabSetupPage = lazy(() => import('./pages/LabSetupPage').then(module => ({
 const BlogsPage = lazy(() => import('./pages/BlogsPage').then(module => ({ default: module.BlogsPage })));
 const TutorialsPage = lazy(() => import('./pages/TutorialsPage').then(module => ({ default: module.TutorialsPage })));
 const ProductDetailPage = lazy(() => import('./pages/ProductDetailPage').then(module => ({ default: module.ProductDetailPage })));
+const BlogDetailPage = lazy(() => import('./pages/BlogDetailPage').then(module => ({ default: module.BlogDetailPage })));
 const TutorialDetailPage = lazy(() => import('./pages/TutorialDetailPage').then(module => ({ default: module.TutorialDetailPage })));
 const CustomerDashboard = lazy(() => import('./pages/CustomerDashboard').then(module => ({ default: module.CustomerDashboard })));
 const AdminApp = lazy(() => import('./AdminApp').then(module => ({ default: module.AdminApp })));
@@ -67,6 +68,8 @@ export function AppContent() {
         <Suspense fallback={<LoadingSpinner />}>
           <Routes>
             <Route path="/tutorial/:id" element={<TutorialDetailPage />} />
+            <Route path="/product/:slug" element={<ProductDetailPage />} />
+            <Route path="/blog/:slug" element={<BlogDetailPage />} />
             <Route path="*" element={
               <>
                 {currentPage === 'home' && <HomePage />}
@@ -74,7 +77,6 @@ export function AppContent() {
                 {currentPage === 'lab-setup' && <LabSetupPage />}
                 {currentPage === 'blogs' && <BlogsPage />}
                 {currentPage === 'tutorials' && <TutorialsPage />}
-                {currentPage === 'product-detail' && <ProductDetailPage />}
                 {currentPage === 'account' && <CustomerDashboard />}
               </>
             } />

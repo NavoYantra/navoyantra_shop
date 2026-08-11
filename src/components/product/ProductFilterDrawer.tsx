@@ -9,31 +9,13 @@ interface FilterDrawerProps {
 }
 
 export const ProductFilterDrawer: React.FC<FilterDrawerProps> = ({ isOpen, onClose }) => {
-  const { filters, setFilters, resetFilters } = useApp();
+  const { filters, setFilters, resetFilters, storeProducts } = useApp();
 
   if (!isOpen) return null;
 
-  const categories: CategoryType[] = [
-    'Robotics',
-    'AI & Machine Learning',
-    'IoT & Smart Home',
-    'Embedded Systems',
-    'STEM Starter',
-    'Drones & Automation',
-    '3D Printing & Fabrication'
-  ];
-
-  const ageGroups: AgeGroupType[] = ['8-10', '11-13', '14-16', '17+'];
-
-  const techStacks: TechStackType[] = [
-    'Arduino',
-    'ESP32',
-    'Raspberry Pi',
-    'AI & Computer Vision',
-    'IoT Sensors',
-    'Micro:bit',
-    'ROS & Motors'
-  ];
+  const categories = Array.from(new Set(storeProducts.map(p => p.category).filter(Boolean)));
+  const ageGroups = Array.from(new Set(storeProducts.map(p => p.ageText).filter(Boolean)));
+  const techStacks = Array.from(new Set(storeProducts.flatMap(p => p.techStack || []).filter(Boolean)));
 
   const handleCategoryToggle = (cat: CategoryType) => {
     setFilters(prev => {

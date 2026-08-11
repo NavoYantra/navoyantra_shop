@@ -20,7 +20,7 @@ export const BLOG_POSTS: BlogPost[] = [
 
       <p>At NavoYantra Technology, our vision lab kits bridge the gap between classroom theory and real-world AI applications, giving Indian school students a massive head start in global innovation.</p>
     `,
-    category: 'AI & Innovation',
+    categories: ['AI & Innovation'],
     author: {
       name: 'Dr. Ananya Roy',
       role: 'Head of STEM Research, NavoYantra',
@@ -50,7 +50,7 @@ export const BLOG_POSTS: BlogPost[] = [
       <h3>3. Teacher Enablement & Workshops</h3>
       <p>Equipment alone is insufficient without trained educators. Continuous teacher certification workshops ensure teachers are confident leading Scratch, C++, and Python hands-on projects.</p>
     `,
-    category: 'School Administration',
+    categories: ['School Administration'],
     author: {
       name: 'Prof. Vikramaditya Naik',
       role: 'Senior Atal Lab Consultant',
@@ -79,7 +79,7 @@ export const BLOG_POSTS: BlogPost[] = [
         <li><strong>Flying Saucer Propeller Launcher:</strong> Explores motor thrust dynamics and aerodynamic lift.</li>
       </ol>
     `,
-    category: 'Kids STEM',
+    categories: ['Kids STEM'],
     author: {
       name: 'Priya Sundaram',
       role: 'STEM Curriculum Developer',
@@ -105,7 +105,7 @@ export const BLOG_POSTS: BlogPost[] = [
       <h3>ESP32: The Wireless & IoT Powerhouse</h3>
       <p>Operating at 240MHz dual-core with built-in 802.11 b/g/n Wi-Fi and Bluetooth BLE, the ESP32 is vastly more powerful. It is ideal for cloud dashboards, smart home relays, and camera streaming.</p>
     `,
-    category: 'Hardware Guide',
+    categories: ['Hardware Guide'],
     author: {
       name: 'Aarav Sharma',
       role: 'Robotics Lead Maker',
@@ -124,7 +124,7 @@ export const BLOG_POSTS: BlogPost[] = [
     title: 'How I Built My First Quadcopter Under ₹5000',
     excerpt: 'A student maker from Bangalore shares their journey of selecting motors, balancing props, and configuring the flight controller on a budget.',
     content: '<p>Building a drone is easier than you think...</p>',
-    category: 'Community Projects',
+    categories: ['Community Projects'],
     author: {
       name: 'Karthik N.',
       role: 'Community Maker',
@@ -142,7 +142,7 @@ export const BLOG_POSTS: BlogPost[] = [
     title: 'My Smart IoT Weather Station Project',
     excerpt: 'Using the NavoYantra ESP32 kit to monitor soil moisture and temperature in my school garden.',
     content: '<p>This is my project submission...</p>',
-    category: 'Community Projects',
+    categories: ['Community Projects'],
     author: {
       name: 'Sneha P.',
       role: 'Student at DPS',

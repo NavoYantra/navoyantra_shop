@@ -392,9 +392,10 @@ export const AdminTutorialForm: React.FC = () => {
             <TutorialDetailPage 
               previewTutorial={{
                 ...form.getValues(),
+                images: form.getValues().images.map(img => img.url),
                 id: id || 'preview',
                 published_date: new Date().toISOString()
-              }} 
+              } as unknown as any} 
             />
           </div>
         </div>

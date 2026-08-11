@@ -1,9 +1,11 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Product } from '../../types';
 import { useApp } from '../../context/AppContext';
 import {
   Star, ShoppingBag, Heart, ArrowRightLeft, Eye
 } from 'lucide-react';
+import { slugify } from '../../lib/utils';
 
 interface ProductCardProps {
   product: Product;
@@ -16,14 +18,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     isInWishlist,
     toggleCompare,
     isInCompare,
-    setQuickViewProduct,
-    setCurrentPage,
-    setActiveProductId
+    setQuickViewProduct
   } = useApp();
+  
+  const navigate = useNavigate();
 
   const handleProductClick = () => {
-    setActiveProductId(product.id);
-    setCurrentPage('product-detail');
+    navigate('/product/' + slugify(product.name));
   };
 
   const isWishlisted = isInWishlist(product.id);
