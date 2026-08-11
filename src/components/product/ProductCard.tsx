@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Product } from '../../types';
 import { useApp } from '../../context/AppContext';
 import {
@@ -21,11 +21,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     setQuickViewProduct
   } = useApp();
   
-  const navigate = useNavigate();
 
-  const handleProductClick = () => {
-    navigate('/product/' + slugify(product.name));
-  };
 
   const isWishlisted = isInWishlist(product.id);
   const isCompared = isInCompare(product.id);
