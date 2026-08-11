@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { BlogPost } from '../types';
 import { 
   Sparkles, Clock, ArrowRight, X, Calendar, ShieldCheck
@@ -9,7 +9,6 @@ import { slugify } from '../lib/utils';
 import { supabase } from '../lib/supabase';
 
 export const BlogsPage: React.FC = () => {
-  const navigate = useNavigate();
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
   const [isAdminModalOpen] = useState(false);
@@ -122,13 +121,14 @@ export const BlogsPage: React.FC = () => {
         {featuredPosts.length > 0 && (
           <div className="relative w-full overflow-hidden flex space-x-6 py-4">
             <div className="flex space-x-6 animate-marquee hover:pause-animation min-w-full group">
-              {[...featuredPosts, ...featuredPosts].map((post, idx) => (
-                <div 
-                  key={`${post.id}-${idx}`}
-                  onClick={() => navigate('/blog/' + slugify(post.title))}
-                  className="rounded-3xl bg-white border border-slate-200/80 shadow-xl overflow-hidden cursor-pointer hover:shadow-2xl hover:border-blue-500/50 transition-all duration-300 flex-none w-[85vw] sm:w-[600px] lg:w-[800px] grid grid-cols-1 sm:grid-cols-2 group/card"
-                >
-                  <div className="relative aspect-16/10 sm:aspect-auto overflow-hidden bg-slate-900">
+              {featuredPosts.map((post: BlogPost, index: number) => (
+                <Link
+                  key={post.id}
+                  to={'/blog/' + slugify(post.title)}
+                  className={`relative group/card cursor-pointer rounded-3xl overflow-hidden shadow-lg border border-slate-200/80 bg-white transition-all hover:shadow-2xl hover:border-blue-500/50 flex flex-col w-[85vw] sm:w-[600px] lg:w-[800px] ${
+                    index === 0 ? '' : ''
+                  }`}
+                >  <div className="relative aspect-16/10 sm:aspect-auto overflow-hidden bg-slate-900">
                     <img
                       src={post.coverImage}
                       alt={post.title}
@@ -189,7 +189,7 @@ export const BlogsPage: React.FC = () => {
                       </span>
                     </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </div>
@@ -222,10 +222,10 @@ export const BlogsPage: React.FC = () => {
         {/* Articles Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredPosts.map(post => (
-            <div
+            <Link
               key={post.id}
-              onClick={() => navigate('/blog/' + slugify(post.title))}
-              className="rounded-3xl bg-white border border-slate-200/80 shadow-lg hover:shadow-2xl hover:border-blue-500/50 transition-all duration-300 overflow-hidden cursor-pointer flex flex-col justify-between group"
+              to={'/blog/' + slugify(post.title)}
+              className="rounded-3xl bg-white border border-slate-200/80 shadow-lg hover:shadow-2xl hover:border-blue-500/50 transition-all duration-300 overflow-hidden cursor-pointer flex flex-col justify-between group block"
             >
               <div>
                 <div className="aspect-16/10 overflow-hidden relative bg-slate-900">
@@ -288,7 +288,7 @@ export const BlogsPage: React.FC = () => {
                   <ArrowRight className="w-3.5 h-3.5" />
                 </span>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 

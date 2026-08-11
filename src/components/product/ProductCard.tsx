@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Product } from '../../types';
 import { useApp } from '../../context/AppContext';
 import {
@@ -36,9 +36,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       {/* Top Image Container */}
       <div className="relative aspect-4/3 overflow-hidden bg-slate-100 group">
         {/* Clickable Overlay for Navigation */}
-        <div
-          className="absolute inset-0 z-10 cursor-pointer"
-          onClick={handleProductClick}
+        <Link
+          to={`/product/${slugify(product.name)}`}
+          className="absolute inset-0 z-10"
         />
 
         <img
@@ -145,12 +145,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           </div>
 
           {/* Product Title */}
-          <h3
-            onClick={handleProductClick}
-            className="text-base font-bold font-heading text-slate-900 hover:text-blue-600 transition-colors line-clamp-1 cursor-pointer"
+          <Link
+            to={`/product/${slugify(product.name)}`}
+            className="text-base font-bold font-heading text-slate-900 hover:text-blue-600 transition-colors line-clamp-1 cursor-pointer block"
           >
             {product.name}
-          </h3>
+          </Link>
 
           {/* Tagline */}
           <p className="text-xs text-slate-500  line-clamp-2 leading-relaxed">

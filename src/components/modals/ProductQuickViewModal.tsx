@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { 
   X, Star, ShoppingBag, Heart, CheckCircle2, Box, Sparkles, School, ArrowRight
@@ -14,8 +14,6 @@ export const QuickViewContent: React.FC<{ product: any; isPreview?: boolean }> =
     setIsQuoteModalOpen,
     setQuickViewProduct
   } = useApp();
-  
-  const navigate = useNavigate();
 
   const [activeImgIdx, setActiveImgIdx] = useState(0);
   const isWishlisted = isInWishlist(product.id);
@@ -74,9 +72,13 @@ export const QuickViewContent: React.FC<{ product: any; isPreview?: boolean }> =
             <div className="text-xs text-slate-400 italic mb-1">No reviews yet</div>
           )}
 
-          <h2 className="text-2xl font-extrabold font-heading text-slate-900 ">
+          <Link 
+            to={`/product/${slugify(product.name)}`}
+            onClick={() => setQuickViewProduct(null)}
+            className="text-2xl font-extrabold font-heading text-slate-900 hover:text-blue-600 transition-colors block"
+          >
             {product.name || 'Product Name'}
-          </h2>
+          </Link>
           <p className="text-xs text-blue-600 font-semibold mt-0.5 line-clamp-2">
             {product.tagline || 'Tagline'}
           </p>
@@ -84,18 +86,14 @@ export const QuickViewContent: React.FC<{ product: any; isPreview?: boolean }> =
             SKU: {product.sku || ((product.id && product.id.length > 20) ? `NY-${product.id.slice(0, 8).toUpperCase()}` : product.id)}
           </p>
           
-          <button 
-            type="button"
-            onClick={() => {
-              if (isPreview) return;
-              setQuickViewProduct(null);
-              navigate('/product/' + slugify(product.name));
-            }}
-            className="mt-2 text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center space-x-1 group"
+          <Link 
+            to={`/product/${slugify(product.name)}`}
+            onClick={() => setQuickViewProduct(null)}
+            className="mt-2 text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center space-x-1 group inline-flex"
           >
             <span>View Full Details</span>
             <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-          </button>
+          </Link>
         </div>
 
         {/* Pricing Box */}
