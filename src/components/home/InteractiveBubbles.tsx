@@ -63,6 +63,24 @@ export const InteractiveBubbles: React.FC = () => {
         // Slowly return to original pos
         return { ...bubble, tx: bubble.tx * 0.9, ty: bubble.ty * 0.9 };
       }));
+
+      // Occasionally spawn a bubble on mouse move to increase density locally
+      if (Math.random() < 0.1) {
+        setBubbles(prev => {
+          if (prev.length > 100) return prev; // cap density
+          
+          const newBubble = {
+            id: Date.now() + Math.random(),
+            x: (x / rect.width) * 100 + (Math.random() - 0.5) * 5,
+            y: (y / rect.height) * 100 + (Math.random() - 0.5) * 5,
+            size: Math.random() * 15 + 5,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            tx: (Math.random() - 0.5) * 50,
+            ty: (Math.random() - 0.5) * 50
+          };
+          return [...prev, newBubble];
+        });
+      }
     };
 
     const handleClick = (e: MouseEvent) => {
@@ -149,7 +167,7 @@ export const InteractiveBubbles: React.FC = () => {
                 x: bubble.tx,
                 y: bubble.ty
               }}
-              transition={{ type: "spring", stiffness: 40, damping: 25 }}
+              transition={{ type: "spring", mass: 2, stiffness: 30, damping: 30 }}
               className={`rounded-full ${bubble.color} mix-blend-screen`}
               style={{
                 width: bubble.size,
