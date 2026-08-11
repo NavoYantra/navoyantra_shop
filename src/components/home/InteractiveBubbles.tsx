@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 
 interface Bubble {
@@ -12,6 +12,7 @@ interface Bubble {
 }
 
 export const InteractiveBubbles: React.FC = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
   const [bubbles, setBubbles] = useState<Bubble[]>([]);
 
   const colors = ['bg-blue-500', 'bg-orange-500'];
@@ -31,77 +32,90 @@ export const InteractiveBubbles: React.FC = () => {
     setBubbles(initialBubbles);
   }, []);
 
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    const { clientX, clientY } = e;
-    
-    // Get container bounds
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = clientX - rect.left;
-    const y = clientY - rect.top;
-
-    setBubbles(prev => prev.map(bubble => {
-      // Bubble pos in pixels
-      const bx = (bubble.x / 100) * rect.width;
-      const by = (bubble.y / 100) * rect.height;
-
-      const dx = bx - x;
-      const dy = by - y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!containerRef.current) return;
+      const { clientX, clientY } = e;
       
-      if (dist < 200) {
-        // Repel effect
-        const force = (200 - dist) / 200;
+      const rect = containerRef.current.getBoundingClientRect();
+      // Check if mouse is near or inside the hero section
+      if (clientY > rect.bottom + 100 || clientY < rect.top - 100) return;
+
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
+
+      setBubbles(prev => prev.map(bubble => {
+        const bx = (bubble.x / 100) * rect.width;
+        const by = (bubble.y / 100) * rect.height;
+
+        const dx = bx - x;
+        const dy = by - y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        
+        if (dist < 250) {
+          const force = (250 - dist) / 250;
+          return {
+            ...bubble,
+            tx: (dx / dist) * force * 120, 
+            ty: (dy / dist) * force * 120
+          };
+        }
+        // Slowly return to original pos
+        return { ...bubble, tx: bubble.tx * 0.9, ty: bubble.ty * 0.9 };
+      }));
+    };
+
+    const handleClick = (e: MouseEvent) => {
+      if (!containerRef.current) return;
+      const { clientX, clientY } = e;
+      
+      const rect = containerRef.current.getBoundingClientRect();
+      // Only spawn if clicked inside hero section
+      if (clientY > rect.bottom || clientY < rect.top) return;
+
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
+
+      const percentX = (x / rect.width) * 100;
+      const percentY = (y / rect.height) * 100;
+
+      const newBubbles = Array.from({ length: 4 }).map(() => {
+        const offsetX = (Math.random() - 0.5) * 8;
+        const offsetY = (Math.random() - 0.5) * 8;
+        
         return {
-          ...bubble,
-          tx: (dx / dist) * force * 100, // Move away max 100px
-          ty: (dy / dist) * force * 100
+          id: Date.now() + Math.random(),
+          x: percentX + offsetX,
+          y: percentY + offsetY,
+          size: Math.random() * 70 + 30, 
+          color: colors[Math.floor(Math.random() * colors.length)],
+          tx: (Math.random() - 0.5) * 200,
+          ty: (Math.random() - 0.5) * 200
         };
-      }
-      return { ...bubble, tx: 0, ty: 0 };
-    }));
-  }, []);
+      });
 
-  const handleClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    const { clientX, clientY } = e;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = clientX - rect.left;
-    const y = clientY - rect.top;
+      setBubbles(prev => {
+        const updated = [...prev, ...newBubbles];
+        if (updated.length > 30) {
+          return updated.slice(updated.length - 30);
+        }
+        return updated;
+      });
+    };
 
-    // Convert pixel coordinates to percentages
-    const percentX = (x / rect.width) * 100;
-    const percentY = (y / rect.height) * 100;
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('click', handleClick);
 
-    const newBubbles = Array.from({ length: 5 }).map(() => {
-      // Small random offset
-      const offsetX = (Math.random() - 0.5) * 5;
-      const offsetY = (Math.random() - 0.5) * 5;
-      
-      return {
-        id: Date.now() + Math.random(),
-        x: percentX + offsetX,
-        y: percentY + offsetY,
-        size: Math.random() * 60 + 20, 
-        color: colors[Math.floor(Math.random() * colors.length)],
-        tx: (Math.random() - 0.5) * 150,
-        ty: (Math.random() - 0.5) * 150
-      };
-    });
-
-    setBubbles(prev => {
-      const updated = [...prev, ...newBubbles];
-      // Keep max 35 bubbles
-      if (updated.length > 35) {
-        return updated.slice(updated.length - 35);
-      }
-      return updated;
-    });
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('click', handleClick);
+    };
   }, []);
 
   return (
     <div 
-      className="absolute inset-0 z-0 overflow-hidden" 
-      onMouseMove={handleMouseMove} 
-      onClick={handleClick}
+      ref={containerRef}
+      className="absolute inset-0 z-0 overflow-hidden pointer-events-none" 
     >
       {bubbles.map(bubble => (
         <motion.div
@@ -109,12 +123,12 @@ export const InteractiveBubbles: React.FC = () => {
           initial={{ scale: 0, opacity: 0 }}
           animate={{ 
             scale: 1, 
-            opacity: 0.25,
+            opacity: 0.4,
             x: bubble.tx,
             y: bubble.ty
           }}
-          transition={{ type: "spring", stiffness: 50, damping: 20 }}
-          className={`absolute rounded-full blur-2xl ${bubble.color}`}
+          transition={{ type: "spring", stiffness: 40, damping: 25 }}
+          className={`absolute rounded-full blur-xl ${bubble.color}`}
           style={{
             width: bubble.size,
             height: bubble.size,
