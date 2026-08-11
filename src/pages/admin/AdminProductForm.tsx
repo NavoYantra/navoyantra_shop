@@ -300,6 +300,8 @@ export const AdminProductForm: React.FC = () => {
     sku: existingProductRaw?.sku || 'preview-id',
     name: formValues.name || 'Product Name',
     tagline: formValues.tagline || 'Tagline',
+    shortDescription: formValues.shortDescription || '',
+    tileDescription: formValues.tileDescription || '',
     description: formValues.description || 'Description goes here.',
     price: formValues.price || 0,
     originalPrice: formValues.originalPrice || 0,

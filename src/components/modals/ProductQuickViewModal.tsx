@@ -132,7 +132,7 @@ export const QuickViewContent: React.FC<{ product: any; isPreview?: boolean }> =
         </div>
 
         <p className="text-xs text-slate-600  leading-relaxed">
-          {product.shortDescription || product.description || 'Description'}
+          {product.shortDescription || product.tileDescription || product.description || 'Description'}
         </p>
 
         {/* Whats Inside Box */}

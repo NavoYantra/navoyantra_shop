@@ -133,7 +133,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           {/* Metadata Row: Age & Rating */}
           <div className="flex items-center justify-between text-xs">
             <span className="px-2.5 py-0.5 rounded-md bg-slate-100  font-bold text-slate-700 ">
-              {product.ageText}
+              Age: {product.ageText}
             </span>
             {product.reviewCount > 0 ? (
               <div className="flex items-center space-x-1">
@@ -156,7 +156,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
           {/* Tagline */}
           <p className="text-xs text-slate-500  line-clamp-2 leading-relaxed">
-            {product.tagline}
+            {product.tileDescription || product.tagline}
           </p>
 
           {/* Tech Stack Pills */}

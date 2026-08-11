@@ -315,6 +315,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       name: p.name,
       tagline: p.short_description || '',
       shortDescription: p.dimensions?.quickViewDescription || '',
+      tileDescription: p.dimensions?.tileDescription || '',
       description: p.description || '',
       price: p.sale_price || p.price,
       originalPrice: p.price,
