@@ -55,17 +55,17 @@ export const FeaturedCategories: React.FC = () => {
   const getBentoClasses = (index: number) => {
     switch (index) {
       case 0:
-        return 'lg:col-span-2 lg:row-span-2';
-      case 1:
         return 'lg:col-span-2 lg:row-span-1';
+      case 1:
+        return 'lg:col-span-1 lg:row-span-1';
       case 2:
         return 'lg:col-span-1 lg:row-span-1';
       case 3:
-        return 'lg:col-span-1 lg:row-span-1';
+        return 'lg:col-span-2 lg:row-span-1';
       case 4:
         return 'lg:col-span-2 lg:row-span-1';
       case 5:
-        return 'lg:col-span-2 lg:row-span-1';
+        return 'lg:col-span-1 lg:row-span-1';
       default:
         return 'lg:col-span-1 lg:row-span-1';
     }
@@ -96,7 +96,7 @@ export const FeaturedCategories: React.FC = () => {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
         >
           {CATEGORIES.map((category, index) => (
             <motion.div
@@ -104,7 +104,7 @@ export const FeaturedCategories: React.FC = () => {
               variants={itemVariants}
               whileHover={{ scale: 1.02 }}
               onClick={() => handleCategoryClick(category.id)}
-              className={`group relative rounded-3xl overflow-hidden border border-slate-200/70 bg-slate-50/60 p-6 hover:shadow-2xl hover:border-blue-500/50 transition-all duration-300 cursor-pointer flex flex-col justify-between ${getBentoClasses(index)}`}
+              className={`group relative rounded-3xl overflow-hidden border border-slate-200 bg-slate-50 p-6 hover:shadow-2xl hover:border-blue-500/50 transition-all duration-300 cursor-pointer flex flex-col justify-between ${getBentoClasses(index)}`}
             >
               {/* Background Glow on Hover */}
               <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500 pointer-events-none" />
