@@ -228,7 +228,7 @@ export const ProductQuickViewModal: React.FC = () => {
             <span className="px-2.5 py-0.5 rounded-full bg-blue-100  text-blue-600  text-xs font-bold uppercase">
               {product.category}
             </span>
-            <span className="text-xs font-semibold text-slate-400">• {product.ageText}</span>
+            <span className="text-xs font-semibold text-slate-400">• Age {product.ageText}</span>
           </div>
           <button
             onClick={() => setQuickViewProduct(null)}

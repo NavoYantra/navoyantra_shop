@@ -115,7 +115,7 @@ export const ProductDetailHero: React.FC<{ product: any; isPreview?: boolean }> 
             )}
             <span className="text-sm font-semibold text-slate-600 flex items-center space-x-1">
               <Info className="w-4 h-4 text-slate-400" />
-              <span>{product.ageText || 'Age Group'}</span>
+              <span>Age {product.ageText || 'Group'}</span>
             </span>
           </div>
           <div className="text-sm font-semibold font-mono text-slate-500 mt-2">
