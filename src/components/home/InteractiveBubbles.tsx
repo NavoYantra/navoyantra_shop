@@ -19,12 +19,12 @@ export const InteractiveBubbles: React.FC = () => {
 
   // Initialize some random bubbles
   useEffect(() => {
-    const initialBubbles: Bubble[] = Array.from({ length: 15 }).map((_, i) => ({
+    const initialBubbles: Bubble[] = Array.from({ length: 40 }).map((_, i) => ({
       id: Date.now() + i,
       // Create random positions using percentages to handle window resize better
       x: Math.random() * 100,
       y: Math.random() * 100,
-      size: Math.random() * 40 + 15,
+      size: Math.random() * 20 + 5,
       color: colors[Math.floor(Math.random() * colors.length)],
       tx: 0,
       ty: 0
@@ -79,7 +79,7 @@ export const InteractiveBubbles: React.FC = () => {
       const percentX = (x / rect.width) * 100;
       const percentY = (y / rect.height) * 100;
 
-      const newBubbles = Array.from({ length: 4 }).map(() => {
+      const newBubbles = Array.from({ length: 5 }).map(() => {
         const offsetX = (Math.random() - 0.5) * 8;
         const offsetY = (Math.random() - 0.5) * 8;
         
@@ -87,7 +87,7 @@ export const InteractiveBubbles: React.FC = () => {
           id: Date.now() + Math.random(),
           x: percentX + offsetX,
           y: percentY + offsetY,
-          size: Math.random() * 30 + 10, 
+          size: Math.random() * 15 + 5, 
           color: colors[Math.floor(Math.random() * colors.length)],
           tx: (Math.random() - 0.5) * 200,
           ty: (Math.random() - 0.5) * 200
@@ -96,8 +96,8 @@ export const InteractiveBubbles: React.FC = () => {
 
       setBubbles(prev => {
         const updated = [...prev, ...newBubbles];
-        if (updated.length > 30) {
-          return updated.slice(updated.length - 30);
+        if (updated.length > 80) {
+          return updated.slice(updated.length - 80);
         }
         return updated;
       });
@@ -117,27 +117,49 @@ export const InteractiveBubbles: React.FC = () => {
       ref={containerRef}
       className="absolute inset-0 z-0 overflow-hidden pointer-events-none" 
     >
-      {bubbles.map(bubble => (
-        <motion.div
-          key={bubble.id}
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ 
-            scale: 1, 
-            opacity: 0.7,
-            x: bubble.tx,
-            y: bubble.ty
-          }}
-          transition={{ type: "spring", stiffness: 40, damping: 25 }}
-          className={`absolute rounded-full ${bubble.color}`}
-          style={{
-            width: bubble.size,
-            height: bubble.size,
-            left: `${bubble.x}%`,
-            top: `${bubble.y}%`,
-            transform: 'translate(-50%, -50%)' // center the bubble on its coordinate
-          }}
-        />
-      ))}
+      {bubbles.map(bubble => {
+        // Generate random drift values for the free movement animation
+        const driftX = (Math.random() - 0.5) * 100;
+        const driftY = (Math.random() - 0.5) * 100;
+        const duration = Math.random() * 10 + 10;
+
+        return (
+          <motion.div
+            key={bubble.id}
+            className="absolute"
+            style={{
+              left: `${bubble.x}%`,
+              top: `${bubble.y}%`,
+            }}
+            animate={{
+              x: [0, driftX, 0],
+              y: [0, driftY, 0],
+            }}
+            transition={{
+              duration: duration,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          >
+            <motion.div
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ 
+                scale: 1, 
+                opacity: 0.4,
+                x: bubble.tx,
+                y: bubble.ty
+              }}
+              transition={{ type: "spring", stiffness: 40, damping: 25 }}
+              className={`rounded-full ${bubble.color} mix-blend-screen`}
+              style={{
+                width: bubble.size,
+                height: bubble.size,
+                transform: 'translate(-50%, -50%)' // center the bubble on its coordinate
+              }}
+            />
+          </motion.div>
+        );
+      })}
     </div>
   );
 };
