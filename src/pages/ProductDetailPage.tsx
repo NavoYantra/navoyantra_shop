@@ -3,7 +3,7 @@ import { useApp } from '../context/AppContext';
 import { TESTIMONIALS } from '../data/testimonials';
 import { ProductCard } from '../components/product/ProductCard';
 import { 
-  Star, ShoppingBag, Heart, ShieldCheck, CheckCircle2, Cpu, Box, Sparkles, School, ChevronRight, Share2, Info
+  Star, ShoppingBag, Heart, CheckCircle2, Cpu, Box, Sparkles, School, ChevronRight, Share2, Info
 } from 'lucide-react';
 import { SEO } from '../components/SEO';
 
@@ -95,7 +95,7 @@ export const ProductDetailHero: React.FC<{ product: any; isPreview?: boolean }> 
               <span>{product.ageText || 'Age Group'}</span>
             </span>
           </div>
-          <div className="text-xs font-mono text-slate-500 mt-2">
+          <div className="text-sm font-semibold font-mono text-slate-500 mt-2">
             SKU: {product.sku || ((product.id && product.id.length > 20) ? `NY-${product.id.slice(0, 8).toUpperCase()}` : product.id)}
           </div>
         </div>
@@ -167,22 +167,7 @@ export const ProductDetailHero: React.FC<{ product: any; isPreview?: boolean }> 
           </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="p-4 rounded-xl border border-slate-100 bg-slate-50 flex items-start space-x-3">
-            <ShieldCheck className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
-            <div>
-              <h5 className="text-sm font-bold text-slate-900">Official Warranty</h5>
-              <p className="text-xs text-slate-500 mt-1">{product.specs?.warranty || '1 Year Replacement'}</p>
-            </div>
-          </div>
-          <div className="p-4 rounded-xl border border-slate-100 bg-slate-50 flex items-start space-x-3">
-            <Cpu className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
-            <div>
-              <h5 className="text-sm font-bold text-slate-900">Tech Stack</h5>
-              <p className="text-xs text-slate-500 mt-1">{product.techStack?.join(', ') || 'N/A'}</p>
-            </div>
-          </div>
-        </div>
+
       </div>
     </div>
   );
@@ -239,7 +224,7 @@ export const ProductDetailPage: React.FC = () => {
   }
 
   const relatedProducts = storeProducts.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4);
-  const productReviews = TESTIMONIALS.filter(t => t.productName?.includes(product.name) || Math.random() > 0.6).slice(0, 3);
+  const productReviews = TESTIMONIALS.filter(t => t.productName && product.name && t.productName.includes(product.name)).slice(0, 3);
 
   return (
     <div className="bg-[#F6F7F9] min-h-screen pb-20">

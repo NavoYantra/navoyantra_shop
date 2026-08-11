@@ -1,8 +1,8 @@
 import React from 'react';
 import { Product } from '../../types';
 import { useApp } from '../../context/AppContext';
-import { 
-  Star, ShoppingBag, Heart, ArrowRightLeft, Eye 
+import {
+  Star, ShoppingBag, Heart, ArrowRightLeft, Eye
 } from 'lucide-react';
 
 interface ProductCardProps {
@@ -10,12 +10,12 @@ interface ProductCardProps {
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
-  const { 
-    addToCart, 
-    toggleWishlist, 
-    isInWishlist, 
-    toggleCompare, 
-    isInCompare, 
+  const {
+    addToCart,
+    toggleWishlist,
+    isInWishlist,
+    toggleCompare,
+    isInCompare,
     setQuickViewProduct,
     setCurrentPage,
     setActiveProductId
@@ -31,11 +31,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   return (
     <div className="group rounded-3xl bg-white  border border-slate-200/80  shadow-lg hover:shadow-2xl hover:border-blue-500/40 transition-all duration-300 flex flex-col justify-between overflow-hidden relative">
-      
+
       {/* Top Image Container */}
       <div className="relative aspect-4/3 overflow-hidden bg-slate-100 group">
         {/* Clickable Overlay for Navigation */}
-        <div 
+        <div
           className="absolute inset-0 z-10 cursor-pointer"
           onClick={handleProductClick}
         />
@@ -55,13 +55,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           {product.badges.map((badge, idx) => (
             <span
               key={idx}
-              className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider shadow-md backdrop-blur-md ${
-                badge === 'Bestseller'
-                  ? 'bg-orange-500 text-white'
-                  : badge === 'School Approved' || badge === 'CBSE Aligned'
+              className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider shadow-md backdrop-blur-md ${badge === 'Bestseller'
+                ? 'bg-orange-500 text-white'
+                : badge === 'School Approved' || badge === 'CBSE Aligned'
                   ? 'bg-blue-600 text-white'
                   : 'bg-emerald-500 text-white'
-              }`}
+                }`}
             >
               {badge}
             </span>
@@ -80,10 +79,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         {/* Quick Action Floating Bar (On Hover) */}
         <div className="absolute bottom-3 left-3 right-3 flex items-center justify-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30">
           <button
-            onClick={(e) => { 
-              e.preventDefault(); 
-              e.stopPropagation(); 
-              setQuickViewProduct(product); 
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setQuickViewProduct(product);
             }}
             className="p-2.5 rounded-2xl bg-white/90 text-slate-800 hover:bg-blue-600 hover:text-white transition-colors shadow-lg backdrop-blur-md flex items-center space-x-1 text-xs font-bold px-3 relative z-30"
             title="Quick Specs & Details"
@@ -93,32 +92,30 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           </button>
 
           <button
-            onClick={(e) => { 
-              e.preventDefault(); 
-              e.stopPropagation(); 
-              toggleCompare(product); 
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              toggleCompare(product);
             }}
-            className={`p-2.5 rounded-2xl transition-colors shadow-lg backdrop-blur-md relative z-30 ${
-              isCompared 
-                ? 'bg-indigo-600 text-white' 
-                : 'bg-white/90  text-slate-800  hover:bg-indigo-600 hover:text-white'
-            }`}
+            className={`p-2.5 rounded-2xl transition-colors shadow-lg backdrop-blur-md relative z-30 ${isCompared
+              ? 'bg-indigo-600 text-white'
+              : 'bg-white/90  text-slate-800  hover:bg-indigo-600 hover:text-white'
+              }`}
             title={isCompared ? 'Remove from Compare' : 'Add to Compare'}
           >
             <ArrowRightLeft className="w-4 h-4" />
           </button>
 
           <button
-            onClick={(e) => { 
-              e.preventDefault(); 
-              e.stopPropagation(); 
-              toggleWishlist(product); 
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              toggleWishlist(product);
             }}
-            className={`p-2.5 rounded-2xl transition-colors shadow-lg backdrop-blur-md relative z-30 ${
-              isWishlisted 
-                ? 'bg-rose-500 text-white' 
-                : 'bg-white/90  text-slate-800  hover:bg-rose-500 hover:text-white'
-            }`}
+            className={`p-2.5 rounded-2xl transition-colors shadow-lg backdrop-blur-md relative z-30 ${isWishlisted
+              ? 'bg-rose-500 text-white'
+              : 'bg-white/90  text-slate-800  hover:bg-rose-500 hover:text-white'
+              }`}
             title={isWishlisted ? 'Remove from Wishlist' : 'Save to Wishlist'}
           >
             <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-white' : ''}`} />
@@ -128,7 +125,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
       {/* Product Content Body */}
       <div className="p-5 flex-1 flex flex-col justify-between space-y-3">
-        
+
         <div className="space-y-2">
           {/* Metadata Row: Age & Rating */}
           <div className="flex items-center justify-between text-xs">
@@ -147,7 +144,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           </div>
 
           {/* Product Title */}
-          <h3 
+          <h3
             onClick={handleProductClick}
             className="text-base font-bold font-heading text-slate-900 hover:text-blue-600 transition-colors line-clamp-1 cursor-pointer"
           >

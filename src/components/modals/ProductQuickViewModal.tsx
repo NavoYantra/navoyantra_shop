@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { 
-  X, Star, ShoppingBag, Heart, ShieldCheck, CheckCircle2, Cpu, Box, Sparkles, School, ArrowRight
+  X, Star, ShoppingBag, Heart, CheckCircle2, Box, Sparkles, School, ArrowRight
 } from 'lucide-react';
 
 export const QuickViewContent: React.FC<{ product: any; isPreview?: boolean }> = ({ product, isPreview }) => {
@@ -53,17 +53,6 @@ export const QuickViewContent: React.FC<{ product: any; isPreview?: boolean }> =
           </div>
         )}
 
-        {/* Spec pills */}
-        <div className="p-4 rounded-2xl bg-slate-50  border border-slate-100  space-y-2">
-          <div className="flex items-center space-x-2 text-xs font-bold text-slate-700 ">
-            <Cpu className="w-4 h-4 text-blue-600" />
-            <span>Microcontroller: {product.specs?.microcontroller || 'N/A'}</span>
-          </div>
-          <div className="flex items-center space-x-2 text-xs font-bold text-slate-700 ">
-            <ShieldCheck className="w-4 h-4 text-emerald-500" />
-            <span>Warranty: {product.specs?.warranty || 'N/A'}</span>
-          </div>
-        </div>
       </div>
 
       {/* Right Column: Title, Description, Included Box, & CTAs */}
@@ -86,10 +75,10 @@ export const QuickViewContent: React.FC<{ product: any; isPreview?: boolean }> =
           <h2 className="text-2xl font-extrabold font-heading text-slate-900 ">
             {product.name || 'Product Name'}
           </h2>
-          <p className="text-xs text-blue-600 font-semibold mt-0.5">
+          <p className="text-xs text-blue-600 font-semibold mt-0.5 line-clamp-2">
             {product.tagline || 'Tagline'}
           </p>
-          <p className="text-[10px] text-slate-500 font-mono mt-1">
+          <p className="text-sm font-semibold text-slate-500 font-mono mt-1">
             SKU: {product.sku || ((product.id && product.id.length > 20) ? `NY-${product.id.slice(0, 8).toUpperCase()}` : product.id)}
           </p>
           
