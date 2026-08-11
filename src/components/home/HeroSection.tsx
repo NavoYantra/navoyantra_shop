@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 
 export const HeroSection: React.FC = () => {
-  const { setQuickViewProduct, storeProducts } = useApp();
+  const { setQuickViewProduct, storeProducts, setCurrentPage } = useApp();
   const [currentSlide, setCurrentSlide] = useState(0);
   const newArrivals = storeProducts.slice(0, 4);
 
@@ -72,21 +72,27 @@ export const HeroSection: React.FC = () => {
 
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row items-center gap-4 pt-2">
-                <a
-                  href="#featured-kits"
+                <button
+                  onClick={() => {
+                    setCurrentPage('shop');
+                    window.scrollTo(0, 0);
+                  }}
                   className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-orange hover:opacity-90 text-white font-bold text-base shadow-xl shadow-orange-500/25 transition-all hover:-translate-y-1 flex items-center justify-center space-x-3"
                 >
                   <span>Shop Products</span>
                   <ArrowRight className="w-5 h-5" />
-                </a>
+                </button>
 
-                <a
-                  href="#institutional"
+                <button
+                  onClick={() => {
+                    setCurrentPage('lab-setup');
+                    window.scrollTo(0, 0);
+                  }}
                   className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-white text-slate-700 font-bold text-base border-2 border-slate-200 hover:border-blue-600 hover:text-blue-700 transition-all shadow-sm flex items-center justify-center space-x-2 cursor-pointer"
                 >
                   <School className="w-5 h-5" />
                   <span>Explore Lab Solutions</span>
-                </a>
+                </button>
               </div>
             </div>
           </div>
