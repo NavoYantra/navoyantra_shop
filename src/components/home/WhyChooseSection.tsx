@@ -1,6 +1,6 @@
 import React from 'react';
 import { 
-  ShieldCheck, Award, Video, Headphones, Zap, CheckCircle2, Sparkles 
+  ShieldCheck, Award, Video, Headphones, Zap, CheckCircle2, Sparkles, Hexagon, Circle, Cloud
 } from 'lucide-react';
 
 export const WhyChooseSection: React.FC = () => {
@@ -38,8 +38,20 @@ export const WhyChooseSection: React.FC = () => {
   ];
 
   return (
-    <section id="why-choose" className="py-20 bg-white  border-t border-slate-100 ">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="why-choose" className="py-20 bg-slate-50 border-t border-slate-100 relative overflow-hidden">
+      
+      {/* Background Geometric Shapes */}
+      <div className="absolute top-0 right-0 opacity-5 text-blue-600 pointer-events-none translate-x-1/3 -translate-y-1/3">
+        <Hexagon size={500} strokeWidth={1} />
+      </div>
+      <div className="absolute bottom-0 left-0 opacity-5 text-orange-500 pointer-events-none -translate-x-1/4 translate-y-1/4">
+        <Circle size={400} strokeWidth={2} />
+      </div>
+      <div className="absolute top-1/2 left-4 opacity-5 text-emerald-500 pointer-events-none -translate-y-1/2">
+        <Cloud size={200} strokeWidth={1} />
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
           <span className="text-xs font-extrabold text-blue-600  uppercase tracking-widest flex items-center justify-center space-x-1">
@@ -58,7 +70,7 @@ export const WhyChooseSection: React.FC = () => {
           {pillars.map((pillar, idx) => (
             <div
               key={idx}
-              className="p-8 rounded-3xl bg-slate-50  border border-slate-200/80  hover:border-blue-500/50 hover:shadow-xl transition-all duration-300 group space-y-4"
+              className="p-8 rounded-[2rem] bg-white border border-slate-200 hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group space-y-4 shadow-sm"
             >
               <div className={`w-16 h-16 rounded-2xl ${pillar.bg} flex items-center justify-center group-hover:scale-110 transition-transform`}>
                 {pillar.icon}
@@ -77,8 +89,13 @@ export const WhyChooseSection: React.FC = () => {
           ))}
 
           {/* Bonus Highlight Box */}
-          <div className="p-8 rounded-3xl bg-gradient-to-br from-blue-600 via-blue-700 to-slate-900 text-white shadow-xl flex flex-col justify-between space-y-6">
-            <div className="space-y-3">
+          <div className="p-8 rounded-[2rem] bg-gradient-to-br from-blue-600 via-blue-700 to-slate-900 text-white shadow-xl shadow-blue-900/20 flex flex-col justify-between space-y-6 relative overflow-hidden">
+            {/* Background shape */}
+            <div className="absolute -right-10 -bottom-10 opacity-10 text-white pointer-events-none">
+              <Circle size={250} strokeWidth={0} fill="currentColor" />
+            </div>
+            
+            <div className="space-y-3 relative z-10">
               <span className="px-3 py-1 rounded-full bg-white/20 text-white text-xs font-bold uppercase tracking-wider">
                 50,000+ Young Makers
               </span>
