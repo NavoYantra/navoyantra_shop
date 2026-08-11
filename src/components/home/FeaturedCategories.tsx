@@ -104,10 +104,10 @@ export const FeaturedCategories: React.FC = () => {
               variants={itemVariants}
               whileHover={{ scale: 1.02 }}
               onClick={() => handleCategoryClick(category.id)}
-              className={`group relative rounded-3xl overflow-hidden border border-slate-200 bg-slate-50 p-6 hover:shadow-2xl hover:border-blue-500/50 transition-all duration-300 cursor-pointer flex flex-col justify-between ${getBentoClasses(index)}`}
+              className={`group relative rounded-3xl overflow-hidden border border-slate-200 bg-slate-100 p-6 hover:shadow-2xl hover:border-blue-500/50 transition-all duration-300 cursor-pointer flex flex-col justify-between ${getBentoClasses(index)}`}
             >
-              {/* Background Glow on Hover */}
-              <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500 pointer-events-none" />
+              {/* Corner Blue & Orange Gradient Accent */}
+              <div className="absolute -top-4 -right-4 w-20 h-20 bg-gradient-to-br from-blue-500/30 to-orange-500/30 rounded-full blur-xl group-hover:scale-[2] group-hover:opacity-70 transition-all duration-500 pointer-events-none" />
 
               <div>
                 <div className="flex items-center justify-between mb-4">
