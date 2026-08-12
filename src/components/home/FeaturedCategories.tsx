@@ -2,10 +2,35 @@ import React from 'react';
 import { CATEGORIES } from '../../data/categories';
 import { useApp } from '../../context/AppContext';
 import { CategoryType } from '../../types';
-import { motion } from 'framer-motion';
+import { animate, useInView, motion } from 'framer-motion';
 import { 
   Bot, BrainCircuit, Wifi, Cpu, Zap, Plane, ArrowRight 
 } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+
+const AnimatedCounter = ({ value }: { value: number }) => {
+  const nodeRef = useRef<HTMLSpanElement>(null);
+  const isInView = useInView(nodeRef, { once: true, margin: "-50px" });
+  const [prevValue, setPrevValue] = useState(0);
+
+  useEffect(() => {
+    if (isInView && value >= 0) {
+      const controls = animate(prevValue, value, {
+        duration: 1.5,
+        ease: "easeOut",
+        onUpdate(v) {
+          if (nodeRef.current) {
+            nodeRef.current.textContent = Math.floor(v).toString();
+          }
+        },
+      });
+      setPrevValue(value);
+      return () => controls.stop();
+    }
+  }, [isInView, value, prevValue]);
+
+  return <span ref={nodeRef}>0</span>;
+};
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -27,7 +52,15 @@ const itemVariants = {
 };
 
 export const FeaturedCategories: React.FC = () => {
-  const { setFilters, setCurrentPage } = useApp();
+  const { setFilters, setCurrentPage, storeProducts } = useApp();
+
+  const getProductCount = (categoryId: string, fallbackCount: number) => {
+    if (storeProducts && storeProducts.length > 0) {
+      const count = storeProducts.filter(p => p.category === categoryId).length;
+      return count > 0 ? count : fallbackCount;
+    }
+    return fallbackCount;
+  };
 
   const getIcon = (iconName: string) => {
     switch (iconName) {
@@ -134,7 +167,7 @@ export const FeaturedCategories: React.FC = () => {
 
               <div className="mt-6 pt-4 border-t border-slate-200/60 flex items-center justify-between text-xs">
                 <span className="font-semibold text-slate-500">
-                  {category.itemCount}+ Hardware Kits
+                  <AnimatedCounter value={getProductCount(category.id, category.itemCount)} />+ Hardware Kits
                 </span>
                 <span className="font-bold text-blue-600 flex items-center space-x-1 group-hover:translate-x-1 transition-transform">
                   <span>Explore</span>
