@@ -292,7 +292,7 @@ export const ProductDetailPage: React.FC = () => {
               rating: r.rating,
               title: r.comment.split('\n\n')[0] || 'Review',
               content: r.comment.split('\n\n')[1] || r.comment,
-              avatar: 'https://via.placeholder.com/150'
+              avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(r.user_name || 'User')}&background=random`
             })));
           }
         } catch (e) {
