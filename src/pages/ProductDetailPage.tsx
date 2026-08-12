@@ -214,6 +214,44 @@ export const ProductDetailPage: React.FC = () => {
 
   const [dbReviews, setDbReviews] = useState<any[]>([]);
 
+  // Edit State
+  const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
+  const [editReviewTitle, setEditReviewTitle] = useState('');
+  const [editReviewText, setEditReviewText] = useState('');
+  const [editReviewRating, setEditReviewRating] = useState(5);
+
+  const startEditing = (review: any) => {
+    setEditingReviewId(review.id);
+    setEditReviewTitle(review.title);
+    setEditReviewText(review.content);
+    setEditReviewRating(review.rating);
+  };
+
+  const handleUpdateReview = async (e: React.FormEvent, id: string) => {
+    e.preventDefault();
+    try {
+      const { error } = await supabase.from('reviews').update({
+        rating: editReviewRating,
+        comment: `${editReviewTitle}\n\n${editReviewText}`,
+        status: 'pending'
+      }).eq('id', id);
+      
+      if (error) throw error;
+      
+      showToast('Review updated successfully! It will appear after moderation.', 'success');
+      setEditingReviewId(null);
+      setDbReviews(prev => prev.map(r => {
+        if (r.id === id) {
+          return { ...r, rating: editReviewRating, title: editReviewTitle, content: editReviewText, status: 'pending' };
+        }
+        return r;
+      }));
+    } catch (err: any) {
+      console.error('Error updating review:', err);
+      showToast(`Failed to update review: ${err.message}`, 'warning');
+    }
+  };
+
   useEffect(() => {
     if (user?.name) {
       setNewReviewName(user.name);
@@ -231,14 +269,24 @@ export const ProductDetailPage: React.FC = () => {
     if (product) {
       const fetchReviews = async () => {
         try {
-          const { data, error } = await supabase
+          let query = supabase
             .from('reviews')
             .select('*')
             .eq('product_id', product.id)
-            .eq('status', 'approved')
             .order('created_at', { ascending: false });
+          
+          if (user?.name) {
+            query = query.or(`status.eq.approved,user_name.eq."${user.name}"`);
+          } else {
+            query = query.eq('status', 'approved');
+          }
+            
+          const { data, error } = await query;
+          
           if (!error && data) {
             setDbReviews(data.map(r => ({
+              id: r.id,
+              status: r.status,
               author: r.user_name,
               role: 'Customer',
               rating: r.rating,
@@ -253,7 +301,7 @@ export const ProductDetailPage: React.FC = () => {
       };
       fetchReviews();
     }
-  }, [product]);
+  }, [product, user?.name]);
 
   const handleAddReview = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -393,18 +441,64 @@ export const ProductDetailPage: React.FC = () => {
               <div className="space-y-6 mb-8">
                 {productReviews.length > 0 ? productReviews.map((rev, i) => (
                   <div key={i} className="border-b border-slate-50 pb-6 last:border-0 last:pb-0">
-                    <div className="flex items-center space-x-3 mb-3">
-                      <img src={rev.avatar} alt={rev.author} className="w-10 h-10 rounded-full object-cover" />
-                      <div>
-                        <h5 className="text-sm font-bold text-slate-900">{rev.author}</h5>
-                        <p className="text-xs text-slate-500">{rev.role}</p>
-                      </div>
-                    </div>
-                    <div className="flex text-amber-400 mb-2">
-                      {[...Array(rev.rating)].map((_, j) => <Star key={j} className="w-3 h-3 fill-amber-400" />)}
-                    </div>
-                    <h6 className="text-sm font-bold text-slate-800 mb-1">"{rev.title}"</h6>
-                    <p className="text-sm text-slate-600 leading-relaxed">"{rev.content}"</p>
+                    {editingReviewId === rev.id ? (
+                      <form onSubmit={(e) => handleUpdateReview(e, rev.id)} className="space-y-4">
+                        <input 
+                          type="text" 
+                          required
+                          value={editReviewTitle}
+                          onChange={e => setEditReviewTitle(e.target.value)}
+                          className="w-full px-4 py-2 rounded-xl bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                        />
+                        <div className="flex">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <button
+                              key={star}
+                              type="button"
+                              onClick={() => setEditReviewRating(star)}
+                              className={`p-1 ${editReviewRating >= star ? 'text-amber-500' : 'text-slate-300'} hover:text-amber-400 transition-colors`}
+                            >
+                              <Star className="w-4 h-4 fill-current" />
+                            </button>
+                          ))}
+                        </div>
+                        <textarea 
+                          required
+                          value={editReviewText}
+                          onChange={e => setEditReviewText(e.target.value)}
+                          className="w-full px-4 py-2 rounded-xl bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm h-24 resize-none"
+                        ></textarea>
+                        <div className="flex space-x-2">
+                          <button type="submit" className="px-4 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-semibold">Save</button>
+                          <button type="button" onClick={() => setEditingReviewId(null)} className="px-4 py-1.5 bg-slate-200 text-slate-700 rounded-lg text-sm font-semibold">Cancel</button>
+                        </div>
+                      </form>
+                    ) : (
+                      <>
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center space-x-3">
+                            <img src={rev.avatar} alt={rev.author} className="w-10 h-10 rounded-full object-cover" />
+                            <div>
+                              <h5 className="text-sm font-bold text-slate-900">{rev.author}</h5>
+                              <div className="flex items-center space-x-2">
+                                <p className="text-xs text-slate-500">{rev.role}</p>
+                                {rev.status === 'pending' && (
+                                  <span className="text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-semibold">Pending Approval</span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          {rev.id && rev.author === user?.name && (
+                            <button onClick={() => startEditing(rev)} className="text-xs text-blue-600 font-semibold hover:underline">Edit</button>
+                          )}
+                        </div>
+                        <div className="flex text-amber-400 mb-2">
+                          {[...Array(rev.rating)].map((_, j) => <Star key={j} className="w-3 h-3 fill-amber-400" />)}
+                        </div>
+                        <h6 className="text-sm font-bold text-slate-800 mb-1">"{rev.title}"</h6>
+                        <p className="text-sm text-slate-600 leading-relaxed">"{rev.content}"</p>
+                      </>
+                    )}
                   </div>
                 )) : (
                   <p className="text-sm text-slate-500 italic">No reviews yet for this product. Be the first to review!</p>
