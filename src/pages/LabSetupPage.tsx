@@ -383,7 +383,7 @@ export const LabSetupPage: React.FC = () => {
                 Fill out the quick inquiry form to receive our official lab equipment prospectus, CBSE curriculum matrix, and custom price estimate within 24 hours.
               </p>
               <div className="pt-2 text-xs text-slate-400 space-y-1">
-                <p>📞 Telephonic Consultation: +91 (080) 4567-8900</p>
+                <p>📞 Telephonic Consultation: +91 8796599974</p>
                 <p>✉ B2B Email: labsetup@navoyantra.com</p>
               </div>
             </div>
