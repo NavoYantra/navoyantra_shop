@@ -482,9 +482,6 @@ export const ProductDetailPage: React.FC = () => {
                               <h5 className="text-sm font-bold text-slate-900">{rev.author}</h5>
                               <div className="flex items-center space-x-2">
                                 <p className="text-xs text-slate-500">{rev.role}</p>
-                                {rev.status === 'pending' && (
-                                  <span className="text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-semibold">Pending Approval</span>
-                                )}
                               </div>
                             </div>
                           </div>
