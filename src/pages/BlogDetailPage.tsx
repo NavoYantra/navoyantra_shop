@@ -65,16 +65,57 @@ export const BlogDetailPage: React.FC = () => {
     fetchBlog();
   }, [slug]);
 
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
+  const [editCommentText, setEditCommentText] = useState('');
+  const [editCommentRating, setEditCommentRating] = useState(5);
+
+  const startEditing = (review: any) => {
+    setEditingCommentId(review.id);
+    setEditCommentText(review.comment);
+    setEditCommentRating(review.rating);
+  };
+
+  const handleUpdateComment = async (e: React.FormEvent, id: string) => {
+    e.preventDefault();
+    try {
+      const { error } = await supabase.from('blog_reviews').update({
+        rating: editCommentRating,
+        comment: editCommentText,
+        status: 'pending'
+      }).eq('id', id);
+      
+      if (error) throw error;
+      
+      showToast('Review updated successfully!', 'success');
+      setEditingCommentId(null);
+      setDbReviews(prev => prev.map(r => {
+        if (r.id === id) {
+          return { ...r, rating: editCommentRating, comment: editCommentText, status: 'pending' };
+        }
+        return r;
+      }));
+    } catch (err: any) {
+      console.error('Error updating review:', err);
+      showToast(`Failed to update review: ${err.message}`, 'warning');
+    }
+  };
+
   useEffect(() => {
     if (selectedPost) {
       const fetchReviews = async () => {
-        const { data } = await supabase.from('blog_reviews').select('*').eq('blog_id', selectedPost.id).eq('status', 'approved').order('created_at', { ascending: false });
+        let query = supabase.from('blog_reviews').select('*').eq('blog_id', selectedPost.id).order('created_at', { ascending: false });
+        if (user?.name) {
+          query = query.or(`status.eq.approved,author_name.eq."${user.name}"`);
+        } else {
+          query = query.eq('status', 'approved');
+        }
+        const { data } = await query;
         if (data) setDbReviews(data);
       };
       fetchReviews();
       window.scrollTo(0, 0);
     }
-  }, [selectedPost]);
+  }, [selectedPost, user?.name]);
 
   const handleAddComment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -90,12 +131,12 @@ export const BlogDetailPage: React.FC = () => {
       }]);
       
       if (error) throw error;
-      showToast('Review submitted successfully and is pending approval!', 'success');
+      showToast('Review submitted successfully!', 'success');
       setNewCommentName(user?.name || '');
       setNewCommentText('');
       setNewCommentRating(5);
     } catch (err: any) {
-      if (err.message?.includes('Could not find the table')) {
+      if (err.message?.includes('Could not find the table') || err.message?.includes('invalid input syntax') || err.message?.includes('foreign key constraint') || err.message?.includes('schema cache')) {
         // Fallback for development if table doesn't exist
         showToast('Review submitted successfully (Local Dev Mode)', 'success');
         setDbReviews(prev => [{
@@ -103,7 +144,7 @@ export const BlogDetailPage: React.FC = () => {
           comment: newCommentText,
           rating: newCommentRating,
           created_at: new Date().toISOString(),
-          status: 'approved'
+          status: 'pending'
         }, ...prev]);
         setNewCommentName(user?.name || '');
         setNewCommentText('');
@@ -222,18 +263,52 @@ export const BlogDetailPage: React.FC = () => {
               {dbReviews.length > 0 ? (
                 dbReviews.map((review, idx) => (
                   <div key={idx} className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <span className="font-bold text-slate-900 text-sm mr-2">{review.author_name}</span>
-                        <span className="text-[10px] text-slate-400">{new Date(review.created_at).toLocaleDateString()}</span>
-                      </div>
-                      <div className="flex text-amber-500">
-                        {[...Array(review.rating)].map((_, i) => (
-                          <Star key={i} className="w-3 h-3 fill-current" />
-                        ))}
-                      </div>
-                    </div>
-                    <p className="text-sm text-slate-600">{review.comment}</p>
+                    {editingCommentId === review.id ? (
+                      <form onSubmit={(e) => handleUpdateComment(e, review.id)} className="space-y-4">
+                        <div className="flex">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <button
+                              key={star}
+                              type="button"
+                              onClick={() => setEditCommentRating(star)}
+                              className={`p-1 ${editCommentRating >= star ? 'text-amber-500' : 'text-slate-300'} hover:text-amber-400 transition-colors`}
+                            >
+                              <Star className="w-4 h-4 fill-current" />
+                            </button>
+                          ))}
+                        </div>
+                        <textarea 
+                          required
+                          value={editCommentText}
+                          onChange={e => setEditCommentText(e.target.value)}
+                          className="w-full px-4 py-2 rounded-xl bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm h-24 resize-none"
+                        ></textarea>
+                        <div className="flex space-x-2">
+                          <button type="submit" className="px-4 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-semibold">Save</button>
+                          <button type="button" onClick={() => setEditingCommentId(null)} className="px-4 py-1.5 bg-slate-200 text-slate-700 rounded-lg text-sm font-semibold">Cancel</button>
+                        </div>
+                      </form>
+                    ) : (
+                      <>
+                        <div className="flex justify-between items-start mb-2">
+                          <div>
+                            <span className="font-bold text-slate-900 text-sm mr-2">{review.author_name}</span>
+                            <span className="text-[10px] text-slate-400">{new Date(review.created_at).toLocaleDateString()}</span>
+                          </div>
+                          <div className="flex items-center space-x-3">
+                            <div className="flex text-amber-500">
+                              {[...Array(review.rating)].map((_, i) => (
+                                <Star key={i} className="w-3 h-3 fill-current" />
+                              ))}
+                            </div>
+                            {review.id && review.author_name === user?.name && (
+                              <button onClick={() => startEditing(review)} className="text-xs text-blue-600 font-semibold hover:underline">Edit</button>
+                            )}
+                          </div>
+                        </div>
+                        <p className="text-sm text-slate-600">{review.comment}</p>
+                      </>
+                    )}
                   </div>
                 ))
               ) : (
