@@ -21,7 +21,7 @@ export const AdminReviews: React.FC = () => {
 
   const reviews = rawReviews.map((r: any) => ({
     id: r.id,
-    author: r.author_name,
+    author: r.user_name || r.author_name || 'Anonymous',
     product: r.products?.name || 'Unknown Product',
     rating: r.rating,
     comment: r.comment,
