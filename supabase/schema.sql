@@ -353,3 +353,31 @@ CREATE POLICY "Public Read tutorials" ON storage.objects FOR SELECT USING (bucke
 CREATE POLICY "Auth Insert tutorials" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'tutorials');
 CREATE POLICY "Auth Update tutorials" ON storage.objects FOR UPDATE TO authenticated USING (bucket_id = 'tutorials');
 CREATE POLICY "Auth Delete tutorials" ON storage.objects FOR DELETE TO authenticated USING (bucket_id = 'tutorials');
+
+-- ==========================================
+-- TUTORIAL REVIEWS TABLE
+-- ==========================================
+
+CREATE TABLE IF NOT EXISTS tutorial_reviews (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  tutorial_id UUID REFERENCES tutorials(id) ON DELETE CASCADE,
+  author_name TEXT NOT NULL,
+  rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
+  comment TEXT,
+  status TEXT DEFAULT 'pending', -- 'pending', 'approved', 'declined'
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Enable RLS
+ALTER TABLE tutorial_reviews ENABLE ROW LEVEL SECURITY;
+
+-- Allow ANYONE (including guests) to place a tutorial review (Insert)
+CREATE POLICY "Allow public insert on tutorial_reviews" ON tutorial_reviews FOR INSERT WITH CHECK (true);
+
+-- Allow public read access to approved tutorial reviews
+CREATE POLICY "Allow public select on tutorial_reviews" ON tutorial_reviews FOR SELECT USING (status = 'approved');
+
+-- Allow ONLY authenticated users (Admins) to read/update all tutorial reviews
+CREATE POLICY "Allow authenticated select on all tutorial_reviews" ON tutorial_reviews FOR SELECT TO authenticated USING (true);
+CREATE POLICY "Allow authenticated update on tutorial_reviews" ON tutorial_reviews FOR UPDATE TO authenticated USING (true);
+CREATE POLICY "Allow authenticated delete on tutorial_reviews" ON tutorial_reviews FOR DELETE TO authenticated USING (true);
