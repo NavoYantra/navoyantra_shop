@@ -35,6 +35,7 @@ export const AdminProductList: React.FC = () => {
     return rawProducts.map((p: any) => ({
       id: p.id,
       name: p.name,
+      sku: p.sku,
       tagline: p.short_description || '',
       description: p.description || '',
       price: p.sale_price || p.price,
