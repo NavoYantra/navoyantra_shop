@@ -202,7 +202,7 @@ export const getOrders = async () => {
 export const getOrdersByEmail = async (email: string) => {
   const { data, error } = await supabase.from('orders').select(`
     *,
-    order_items (*)
+    order_items (*, products (id, name, sku))
   `).eq('customer_email', email).order('created_at', { ascending: false });
   
   if (error) throw error;
@@ -212,7 +212,7 @@ export const getOrdersByEmail = async (email: string) => {
 export const getOrderById = async (id: string) => {
   const { data, error } = await supabase.from('orders').select(`
     *,
-    order_items (*)
+    order_items (*, products (id, name, sku))
   `).eq('id', id).single();
   
   if (error) throw error;
