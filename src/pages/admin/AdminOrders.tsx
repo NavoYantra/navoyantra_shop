@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
-import { getOrders, updateOrderStatus, getOrderById, getProducts } from '../../lib/api';
+import { getOrders, updateOrderStatus, getOrderById, getProducts, deleteOrder } from '../../lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../components/ui/Table';
 import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
-import { Eye, Printer, Truck, CheckCircle2, Clock, XCircle, Search, Download, Package } from 'lucide-react';
+import { Eye, Printer, Truck, CheckCircle2, Clock, XCircle, Search, Download, Package, Trash2 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import Barcode from 'react-barcode';
 import { PRODUCTS } from '../../data/products';
@@ -68,6 +68,19 @@ export const AdminOrders: React.FC = () => {
     },
     onError: (err: any) => {
       alert(`Error updating order: ${err.message}`);
+      console.error(err);
+    }
+  });
+
+  const deleteOrderMutation = useMutation({
+    mutationFn: deleteOrder,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      if (selectedOrder) setSelectedOrder(null);
+      alert('Order deleted successfully');
+    },
+    onError: (err: any) => {
+      alert(`Error deleting order: ${err.message}`);
       console.error(err);
     }
   });
@@ -178,14 +191,29 @@ export const AdminOrders: React.FC = () => {
                         <TableCell>{getStatusBadge(order.status)}</TableCell>
                         <TableCell className="text-right font-semibold">₹{order.total_amount}</TableCell>
                         <TableCell className="text-center">
-                          <Button 
-                            variant="ghost" 
-                            size="sm"
-                            className="text-blue-600"
-                            onClick={() => setSelectedOrder(order)}
-                          >
-                            <Eye className="w-4 h-4 mr-1" /> View
-                          </Button>
+                          <div className="flex justify-center items-center space-x-2">
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              className="text-blue-600"
+                              onClick={() => setSelectedOrder(order)}
+                            >
+                              <Eye className="w-4 h-4 mr-1" /> View
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                              onClick={() => {
+                                if (window.confirm(`Are you sure you want to delete order ${order.tracking_id}? This action cannot be undone.`)) {
+                                  deleteOrderMutation.mutate(order.id);
+                                }
+                              }}
+                              disabled={deleteOrderMutation.isPending}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))
@@ -208,9 +236,18 @@ export const AdminOrders: React.FC = () => {
                       <p className="text-sm text-slate-500 font-mono">{selectedOrder.tracking_id}</p>
                     </div>
                   </div>
-                  <Button variant="outline" size="sm" onClick={handlePrintSummary}>
-                    <Printer className="w-4 h-4 mr-2" /> Print Summary
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" onClick={handlePrintSummary}>
+                      <Printer className="w-4 h-4 mr-2" /> Print
+                    </Button>
+                    <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200" onClick={() => {
+                      if (window.confirm(`Are you sure you want to delete order ${selectedOrder.tracking_id}? This action cannot be undone.`)) {
+                        deleteOrderMutation.mutate(selectedOrder.id);
+                      }
+                    }} disabled={deleteOrderMutation.isPending}>
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent className="p-4 space-y-6">

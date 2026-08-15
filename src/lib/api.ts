@@ -259,6 +259,15 @@ export const createOrder = async (orderData: any, items: any[]) => {
   return order;
 };
 
+export const deleteOrder = async (id: string) => {
+  // Delete order items first to handle potential foreign key constraints
+  const { error: itemsError } = await supabase.from('order_items').delete().eq('order_id', id);
+  if (itemsError) throw itemsError;
+
+  const { error } = await supabase.from('orders').delete().eq('id', id);
+  if (error) throw error;
+};
+
 // --- Notifications ---
 export const getNotifications = async () => {
   const { data, error } = await supabase.from('notifications').select('*').order('created_at', { ascending: false }).limit(20);
