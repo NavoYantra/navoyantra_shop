@@ -21,6 +21,7 @@ export const AdminOrders: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
 
+
   const downloadSVG = (containerId: string, filename: string) => {
     const container = document.getElementById(containerId);
     const svg = container?.tagName === 'svg' ? container : container?.querySelector('svg');
@@ -44,11 +45,15 @@ export const AdminOrders: React.FC = () => {
   };
 
   // Fetch full order details when an order is selected
-  const { data: fetchedOrderDetails } = useQuery({
+  const { data: fetchedOrderDetails, error: orderDetailsError } = useQuery({
     queryKey: ['order', selectedOrder?.id],
     queryFn: () => getOrderById(selectedOrder.id),
     enabled: !!selectedOrder
   });
+  if (orderDetailsError) {
+    console.error("Failed to load order details:", orderDetailsError);
+  }
+
   
   const orderDetails = fetchedOrderDetails;
 
@@ -252,7 +257,19 @@ export const AdminOrders: React.FC = () => {
                         })}
                       </div>
                     ) : (
-                      <div className="p-4 text-center text-sm text-slate-500">No items found for this order.</div>
+                      <div className="p-4 text-center text-sm text-slate-500">
+                        {orderDetailsError ? `Error loading items: ${orderDetailsError.message}` : "No items found for this order."}
+                        <pre className="mt-4 text-left text-xs bg-slate-100 p-2 overflow-auto">
+                          {JSON.stringify({
+                            orderId: selectedOrder?.id,
+                            orderTracking: selectedOrder?.tracking_id,
+                            fetchedOrder: orderDetails,
+                            fetchedItems: orderDetails?.order_items,
+                            hasItemsArray: Array.isArray(orderDetails?.order_items),
+                            itemsLength: orderDetails?.order_items?.length
+                          }, null, 2)}
+                        </pre>
+                      </div>
                     )}
                   </div>
                 </div>

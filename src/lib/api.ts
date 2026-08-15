@@ -200,23 +200,30 @@ export const getOrders = async () => {
 };
 
 export const getOrdersByEmail = async (email: string) => {
-  const { data, error } = await supabase.from('orders').select(`
-    *,
-    order_items (*, products (id, name, sku))
-  `).eq('customer_email', email).order('created_at', { ascending: false });
-  
+  const { data: orders, error } = await supabase.from('orders').select('*').eq('customer_email', email).order('created_at', { ascending: false });
   if (error) throw error;
-  return data;
+
+  const orderIds = orders.map((o: any) => o.id);
+  const { data: items, error: itemsError } = await supabase.from('order_items').select('*').in('order_id', orderIds);
+  if (itemsError) throw itemsError;
+
+  return orders.map((order: any) => ({
+    ...order,
+    order_items: items?.filter((item: any) => item.order_id === order.id) || []
+  }));
 };
 
 export const getOrderById = async (id: string) => {
-  const { data, error } = await supabase.from('orders').select(`
-    *,
-    order_items (*, products (id, name, sku))
-  `).eq('id', id).single();
-  
+  const { data: order, error } = await supabase.from('orders').select('*').eq('id', id).single();
   if (error) throw error;
-  return data;
+
+  const { data: items, error: itemsError } = await supabase.from('order_items').select('*').eq('order_id', order.id);
+  if (itemsError) throw itemsError;
+
+  return {
+    ...order,
+    order_items: items || []
+  };
 };
 
 export const updateOrderStatus = async (id: string, status: string, tracking_id?: string, invoice_url?: string) => {
