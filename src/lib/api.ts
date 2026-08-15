@@ -194,13 +194,13 @@ export const deleteAdminUser = async (id: string) => {
 
 // --- Orders ---
 export const getOrders = async () => {
-  const { data, error } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
+  const { data, error } = await supabase.from('orders').select('*').neq('status', 'archived').order('created_at', { ascending: false });
   if (error) throw error;
   return data;
 };
 
 export const getOrdersByEmail = async (email: string) => {
-  const { data: orders, error } = await supabase.from('orders').select('*').eq('customer_email', email).order('created_at', { ascending: false });
+  const { data: orders, error } = await supabase.from('orders').select('*').eq('customer_email', email).neq('status', 'archived').order('created_at', { ascending: false });
   if (error) throw error;
 
   const orderIds = orders.map((o: any) => o.id);
@@ -260,12 +260,10 @@ export const createOrder = async (orderData: any, items: any[]) => {
 };
 
 export const deleteOrder = async (id: string) => {
-  // Delete order items first to handle potential foreign key constraints
-  const { error: itemsError } = await supabase.from('order_items').delete().eq('order_id', id);
-  if (itemsError) throw itemsError;
-
-  const { error } = await supabase.from('orders').delete().eq('id', id);
+  // Soft delete: Update status to 'archived' since Supabase RLS might block hard DELETEs for the frontend
+  const { data, error } = await supabase.from('orders').update({ status: 'archived' }).eq('id', id).select().single();
   if (error) throw error;
+  return data;
 };
 
 // --- Notifications ---

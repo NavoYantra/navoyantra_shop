@@ -5,12 +5,10 @@ const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 async function run() {
-  const { data, error } = await supabase.from('order_items').insert([{
-    order_id: '27a3584b-d0a9-40f4-b68a-39a02b1706ce',
-    product_id: 'ny-bot-v4',
-    quantity: 1,
-    price_at_time: 2800
-  }]);
-  console.log("Insert result:", { data, error });
+  const orderId = '27a3584b-d0a9-40f4-b68a-39a02b1706ce'; // From screenshot
+
+  const { data, error } = await supabase.from('orders').update({ status: 'archived' }).eq('id', orderId).select();
+  console.log("Updated order:", data);
+  if (error) console.error("error:", error);
 }
 run();

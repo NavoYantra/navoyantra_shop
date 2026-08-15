@@ -42,18 +42,17 @@ var supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFz
 var supabase = (0, supabase_js_1.createClient)(supabaseUrl, supabaseAnonKey);
 function run() {
     return __awaiter(this, void 0, void 0, function () {
-        var _a, data, error;
+        var orderId, _a, data, error;
         return __generator(this, function (_b) {
             switch (_b.label) {
-                case 0: return [4 /*yield*/, supabase.from('order_items').insert([{
-                            order_id: '27a3584b-d0a9-40f4-b68a-39a02b1706ce',
-                            product_id: 'ny-bot-v4',
-                            quantity: 1,
-                            price_at_time: 2800
-                        }])];
+                case 0:
+                    orderId = '27a3584b-d0a9-40f4-b68a-39a02b1706ce';
+                    return [4 /*yield*/, supabase.from('orders').update({ status: 'archived' }).eq('id', orderId).select()];
                 case 1:
                     _a = _b.sent(), data = _a.data, error = _a.error;
-                    console.log("Insert result:", { data: data, error: error });
+                    console.log("Updated order:", data);
+                    if (error)
+                        console.error("error:", error);
                     return [2 /*return*/];
             }
         });
