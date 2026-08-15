@@ -204,7 +204,7 @@ export const getOrdersByEmail = async (email: string) => {
   if (error) throw error;
 
   const orderIds = orders.map((o: any) => o.id);
-  const { data: items, error: itemsError } = await supabase.from('order_items').select('*').in('order_id', orderIds);
+  const { data: items, error: itemsError } = await supabase.from('order_items').select('*, products (id, name, sku)').in('order_id', orderIds);
   if (itemsError) throw itemsError;
 
   return orders.map((order: any) => ({
@@ -217,7 +217,7 @@ export const getOrderById = async (id: string) => {
   const { data: order, error } = await supabase.from('orders').select('*').eq('id', id).single();
   if (error) throw error;
 
-  const { data: items, error: itemsError } = await supabase.from('order_items').select('*').eq('order_id', order.id);
+  const { data: items, error: itemsError } = await supabase.from('order_items').select('*, products (id, name, sku)').eq('order_id', order.id);
   if (itemsError) throw itemsError;
 
   return {
