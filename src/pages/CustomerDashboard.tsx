@@ -63,11 +63,17 @@ export const CustomerDashboard: React.FC = () => {
           items: o.order_items.map((item: any) => {
             const productStatic = PRODUCTS.find(p => p.id === item.product_id);
             const productDb = storeProducts.find(p => p.id === item.product_id);
-            const productName = productDb ? productDb.name : (productStatic ? productStatic.name : (item.products?.name || 'Unknown Product'));
+            let productName = productDb ? productDb.name : (productStatic ? productStatic.name : (item.products?.name || 'Unknown Product'));
             
             let productSku = item.products?.sku || item.product_id;
             if (productDb) productSku = productDb.sku || productDb.id;
             else if (productStatic) productSku = productStatic.sku || productStatic.id;
+
+            // Fallback for the deleted product (RoboLearn Kit)
+            if (productName === 'Unknown Product' && item.product_id && item.product_id.startsWith('fe8f8c84')) {
+              productName = 'NavoYantra RoboLearn Kit – DIY STEM Robotics & Electronics Learning Kit';
+              productSku = 'NY-RLK-5870';
+            }
             
             // Format UUIDs to look like proper SKUs (NY-XXXXXXXX)
             if (productSku && productSku.length > 20) {

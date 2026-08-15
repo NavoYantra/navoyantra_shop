@@ -45,13 +45,15 @@ function run() {
         var _a, data, error;
         return __generator(this, function (_b) {
             switch (_b.label) {
-                case 0: return [4 /*yield*/, supabase.from('order_items').select('*, products(id, name, sku)').limit(1)];
+                case 0: return [4 /*yield*/, supabase.from('order_items').insert([{
+                            order_id: '27a3584b-d0a9-40f4-b68a-39a02b1706ce',
+                            product_id: 'ny-bot-v4',
+                            quantity: 1,
+                            price_at_time: 2800
+                        }])];
                 case 1:
                     _a = _b.sent(), data = _a.data, error = _a.error;
-                    if (error)
-                        console.error("Error:", error.message);
-                    else
-                        console.log("Success:", JSON.stringify(data, null, 2));
+                    console.log("Insert result:", { data: data, error: error });
                     return [2 /*return*/];
             }
         });

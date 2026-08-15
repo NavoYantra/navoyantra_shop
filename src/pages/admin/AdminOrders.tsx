@@ -224,12 +224,18 @@ export const AdminOrders: React.FC = () => {
                         {orderDetails.order_items.map((item: any, idx: number) => {
                           const productStatic = PRODUCTS.find(p => p.id === item.product_id);
                           const productDb = dbProducts.find((p: any) => p.id === item.product_id);
-                          const productName = productDb ? productDb.name : (productStatic ? productStatic.name : (item.products?.name || 'Unknown Product'));
+                          let productName = productDb ? productDb.name : (productStatic ? productStatic.name : (item.products?.name || 'Unknown Product'));
                           const productImages = productDb ? productDb.images : (productStatic ? productStatic.images : []);
                           
                           let productSku = item.products?.sku || item.product_id;
                           if (productDb) productSku = productDb.sku || productDb.id;
                           else if (productStatic) productSku = productStatic.sku || productStatic.id;
+
+                          // Fallback for the deleted product (RoboLearn Kit)
+                          if (productName === 'Unknown Product' && item.product_id && item.product_id.startsWith('fe8f8c84')) {
+                            productName = 'NavoYantra RoboLearn Kit – DIY STEM Robotics & Electronics Learning Kit';
+                            productSku = 'NY-RLK-5870';
+                          }
                           
                           if (productSku && productSku.length > 20) {
                             productSku = `NY-${productSku.slice(0, 8).toUpperCase()}`;
@@ -409,11 +415,17 @@ export const AdminOrders: React.FC = () => {
                         {orderDetails?.order_items ? orderDetails.order_items.map((item: any, index: number) => {
                           const productStatic = PRODUCTS.find(p => p.id === item.product_id);
                           const productDb = dbProducts.find((p: any) => p.id === item.product_id);
-                          const productName = productDb ? productDb.name : (productStatic ? productStatic.name : (item.products?.name || 'Unknown Product'));
+                          let productName = productDb ? productDb.name : (productStatic ? productStatic.name : (item.products?.name || 'Unknown Product'));
                           
                           let productSku = item.products?.sku || item.product_id;
                           if (productDb) productSku = productDb.sku || productDb.id;
                           else if (productStatic) productSku = productStatic.sku || productStatic.id;
+
+                          // Fallback for the deleted product (RoboLearn Kit)
+                          if (productName === 'Unknown Product' && item.product_id && item.product_id.startsWith('fe8f8c84')) {
+                            productName = 'NavoYantra RoboLearn Kit – DIY STEM Robotics & Electronics Learning Kit';
+                            productSku = 'NY-RLK-5870';
+                          }
                           
                           if (productSku && productSku.length > 20) {
                             productSku = `NY-${productSku.slice(0, 8).toUpperCase()}`;
