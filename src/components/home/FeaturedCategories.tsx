@@ -7,6 +7,8 @@ import {
   Bot, BrainCircuit, Wifi, Cpu, Zap, Plane, ArrowRight 
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { getCategories } from '../../lib/api';
 
 const AnimatedCounter = ({ value }: { value: number }) => {
   const nodeRef = useRef<HTMLSpanElement>(null);
@@ -53,6 +55,29 @@ const itemVariants = {
 
 export const FeaturedCategories: React.FC = () => {
   const { setFilters, setCurrentPage, storeProducts } = useApp();
+
+  const { data: dbCategories = [] } = useQuery({
+    queryKey: ['categories'],
+    queryFn: getCategories
+  });
+
+  const categoriesToDisplay = dbCategories.length > 0 
+    ? dbCategories.slice(0, 6).map((cat: any, index: number) => {
+        const icons = ['Bot', 'BrainCircuit', 'Wifi', 'Cpu', 'Zap', 'Plane'];
+        const subtitles = ['Build Autonomous Bots', 'Machine Learning for Kids & Students', 'Cloud Connected Sensors', 'Arduino & ESP32 Labs', 'Safe Hands-On Kits for Ages 8+', 'Quadcopter & Flight Dynamics'];
+        const badges = ['Popular', 'Hot', null, null, 'Kids Favorite', null];
+        
+        return {
+          id: cat.name,
+          title: cat.name,
+          subtitle: subtitles[index % subtitles.length],
+          description: cat.description ? cat.description.replace(/\[SKU:.*?\]/g, '') : `Explore our premium selection of ${cat.name} kits and products.`,
+          iconName: icons[index % icons.length],
+          itemCount: 10,
+          badge: badges[index % badges.length]
+        };
+      })
+    : CATEGORIES;
 
   const getProductCount = (categoryId: string, fallbackCount: number) => {
     if (storeProducts && storeProducts.length > 0) {
@@ -131,7 +156,7 @@ export const FeaturedCategories: React.FC = () => {
           viewport={{ once: true, margin: "-50px" }}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
         >
-          {CATEGORIES.map((category, index) => (
+          {categoriesToDisplay.map((category, index) => (
             <motion.div
               key={category.id}
               variants={itemVariants}
