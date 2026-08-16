@@ -63,8 +63,11 @@ export const FeaturedCategories: React.FC = () => {
 
   const categoriesToDisplay = React.useMemo(() => {
     if (!dbCategories || dbCategories.length === 0) return [];
+    
+    // Filter out the "Electronics & Components" category so it doesn't show in the domains section
+    const filteredCategories = dbCategories.filter((c: any) => c.name !== 'Electronics & Components');
 
-    return dbCategories.slice(0, 6).map((cat: any, index: number) => {
+    return filteredCategories.slice(0, 6).map((cat: any, index: number) => {
       const icons = ['Bot', 'BrainCircuit', 'Wifi', 'Cpu', 'Zap', 'Plane'];
       const subtitles = ['Build Autonomous Bots', 'Machine Learning for Kids & Students', 'Cloud Connected Sensors', 'Arduino & ESP32 Labs', 'Safe Hands-On Kits for Ages 8+', 'Quadcopter & Flight Dynamics'];
       const badges = ['Popular', 'Hot', null, null, 'Kids Favorite', null];
