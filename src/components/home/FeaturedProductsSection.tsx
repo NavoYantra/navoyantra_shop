@@ -20,10 +20,10 @@ export const FeaturedProductsSection: React.FC = () => {
         <div className="flex flex-col md:items-center justify-center mb-12 text-center">
           <span className="text-xs font-extrabold text-blue-600 uppercase tracking-widest flex items-center justify-center space-x-1 mb-2">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>TOP SELLING KITS</span>
+            <span>TRENDING KITS</span>
           </span>
           <h2 className="text-3xl sm:text-5xl font-extrabold font-heading text-slate-900 tracking-tight">
-            Featured Products
+            Top Selling Products of the Month
           </h2>
           <p className="text-sm text-slate-600 mt-4 max-w-2xl mx-auto">
             Our most popular and highly rated STEM kits, carefully selected for maximum learning impact.

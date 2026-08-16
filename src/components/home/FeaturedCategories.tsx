@@ -1,5 +1,5 @@
 import React from 'react';
-import { CATEGORIES } from '../../data/categories';
+
 import { useApp } from '../../context/AppContext';
 import { CategoryType } from '../../types';
 import { animate, useInView, motion } from 'framer-motion';
@@ -62,9 +62,9 @@ export const FeaturedCategories: React.FC = () => {
   });
 
   const categoriesToDisplay = React.useMemo(() => {
-    if (!dbCategories || dbCategories.length === 0) return CATEGORIES;
+    if (!dbCategories || dbCategories.length === 0) return [];
 
-    const dynamicCats = dbCategories.slice(0, 6).map((cat: any, index: number) => {
+    return dbCategories.slice(0, 6).map((cat: any, index: number) => {
       const icons = ['Bot', 'BrainCircuit', 'Wifi', 'Cpu', 'Zap', 'Plane'];
       const subtitles = ['Build Autonomous Bots', 'Machine Learning for Kids & Students', 'Cloud Connected Sensors', 'Arduino & ESP32 Labs', 'Safe Hands-On Kits for Ages 8+', 'Quadcopter & Flight Dynamics'];
       const badges = ['Popular', 'Hot', null, null, 'Kids Favorite', null];
@@ -79,13 +79,6 @@ export const FeaturedCategories: React.FC = () => {
         badge: badges[index % badges.length]
       };
     });
-
-    if (dynamicCats.length >= 6) {
-      return dynamicCats;
-    }
-
-    const paddingCats = CATEGORIES.filter(c => !dynamicCats.some(dc => dc.id === c.id)).slice(0, 6 - dynamicCats.length);
-    return [...dynamicCats, ...paddingCats];
   }, [dbCategories]);
 
   const getProductCount = (categoryId: string, fallbackCount: number) => {

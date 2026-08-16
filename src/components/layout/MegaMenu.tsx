@@ -3,7 +3,7 @@ import { useApp } from '../../context/AppContext';
 import { CategoryType, AgeGroupType } from '../../types';
 import { 
   Layers, GraduationCap, Cpu, Star, ChevronRight, 
-  Bot, BrainCircuit, Wifi, Zap, Sparkles, ShoppingBag, ArrowRight, Plane
+  Bot, BrainCircuit, Wifi, Zap, Sparkles, ArrowRight, Plane
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { getCategories, getBrands } from '../../lib/api';
@@ -15,7 +15,7 @@ interface MegaMenuProps {
 type TabType = 'categories' | 'age' | 'brands';
 
 export const MegaMenu: React.FC<MegaMenuProps> = ({ onClose }) => {
-  const { setFilters, setCurrentPage, storeProducts } = useApp();
+  const { setFilters, setCurrentPage, storeProducts, setActiveProductId } = useApp();
   const [activeTab, setActiveTab] = useState<TabType>('categories');
 
   const { data: dbCategories = [] } = useQuery({
@@ -39,13 +39,7 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ onClose }) => {
           desc: cat.description ? cat.description.replace(/\[SKU:.*?\]/g, '').substring(0, 40) + '...' : subtitles[index % subtitles.length]
         };
       })
-    : [
-        { label: 'Robotics', icon: <Bot className="w-5 h-5" />, desc: 'AI Rovers, Robotic Arms' },
-        { label: 'AI & Machine Learning', icon: <BrainCircuit className="w-5 h-5" />, desc: 'Vision sensors, TensorFlow' },
-        { label: 'IoT & Smart Home', icon: <Wifi className="w-5 h-5" />, desc: 'Blynk cloud, Climate logging' },
-        { label: 'Embedded Systems', icon: <Cpu className="w-5 h-5" />, desc: 'Arduino Uno, ESP32 boards' },
-        { label: 'STEM Starter', icon: <Zap className="w-5 h-5" />, desc: 'Magnetic blocks, circuits' },
-      ];
+    : [];
 
   const dynamicAgeGroups = React.useMemo(() => {
     const uniqueAges = Array.from(new Set(storeProducts.map(p => p.ageText).filter(Boolean)));
@@ -64,6 +58,14 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ onClose }) => {
       { label: '14-16', title: 'Teens 14-16 Yrs', desc: 'Arduino C++, IoT, & Drone kits' },
       { label: '17+', title: 'College & Pro (17+)', desc: 'Raspberry Pi, ROS, Python AI frameworks' },
     ];
+  }, [storeProducts]);
+
+  const topSellingProducts = React.useMemo(() => {
+    let featured = storeProducts.filter(p => p.featured || p.isFeatured).slice(0, 5);
+    if (featured.length === 0) {
+      featured = [...storeProducts].slice(0, 5); // Fallback
+    }
+    return featured;
   }, [storeProducts]);
 
 
@@ -197,39 +199,54 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ onClose }) => {
 
         </div>
 
-        {/* 3rd Sidebar: Promotional/Featured Card */}
-        <div className="w-1/3 bg-slate-900 text-white p-6 relative overflow-hidden flex flex-col justify-between">
-          <div className="absolute -bottom-10 -right-10 opacity-20 pointer-events-none">
-            <ShoppingBag className="w-48 h-48" />
+        {/* 3rd Sidebar: Top Selling Products */}
+        <div className="w-1/3 bg-slate-50 p-6 relative overflow-y-auto custom-scrollbar border-l border-slate-100">
+          <div className="flex items-center justify-between mb-4">
+            <h4 className="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Top Selling of the Month</h4>
+            <Sparkles className="w-4 h-4 text-orange-500" />
           </div>
-
-          <div className="relative z-10 space-y-4">
-            <div className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30 text-[10px] font-bold uppercase tracking-wider">
-              <Sparkles className="w-3 h-3" />
-              <span>Trending Now</span>
-            </div>
-
-            <h3 className="text-2xl font-extrabold font-heading leading-tight">
-              NavoBot Pro V4
-              <br/>
-              <span className="text-blue-400">AI Vision Rover</span>
-            </h3>
-
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Equipped with ESP32-CAM and ROS support. The ultimate robotics kit for students 14+ to learn autonomous navigation.
-            </p>
+          
+          <div className="space-y-4">
+            {topSellingProducts.map((product) => (
+              <div 
+                key={product.id} 
+                className="flex items-center space-x-3 group cursor-pointer"
+                onClick={() => {
+                  setActiveProductId(product.id);
+                  setCurrentPage('product-detail');
+                  onClose();
+                }}
+              >
+                <div className="w-12 h-12 rounded-xl bg-white border border-slate-200 overflow-hidden shrink-0">
+                  <img 
+                    src={product.images[0] || product.image_url || 'https://via.placeholder.com/150'} 
+                    alt={product.name}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h5 className="text-xs font-bold text-slate-900 truncate group-hover:text-blue-600 transition-colors">
+                    {product.name}
+                  </h5>
+                  <p className="text-[10px] text-slate-500 truncate">
+                    ₹{product.price.toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
-
-          <div className="relative z-10 pt-6 mt-auto">
+          
+          <div className="mt-6 pt-4 border-t border-slate-200">
             <button
               onClick={() => {
+                setFilters(prev => ({ ...prev, sortBy: 'rating' }));
                 setCurrentPage('shop');
                 onClose();
               }}
-              className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-lg transition-colors flex items-center justify-center space-x-2"
+              className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-blue-600 text-white font-bold text-xs transition-colors flex items-center justify-center space-x-2"
             >
-              <span>Explore Kit</span>
-              <ArrowRight className="w-4 h-4" />
+              <span>View All Best Sellers</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
