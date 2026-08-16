@@ -4,7 +4,6 @@ import { FeaturedCategories } from '../components/home/FeaturedCategories';
 import { OffersSection } from '../components/home/OffersSection';
 import { NewArrivalsSection } from '../components/home/NewArrivalsSection';
 import { FeaturedProductsSection } from '../components/home/FeaturedProductsSection';
-import { BestSellersSection } from '../components/home/BestSellersSection';
 import { WhyChooseSection } from '../components/home/WhyChooseSection';
 import { InstitutionalSection } from '../components/home/InstitutionalSection';
 import { LearningResourcesSection } from '../components/home/LearningResourcesSection';
@@ -26,7 +25,6 @@ export const HomePage: React.FC = () => {
       <NewArrivalsSection />
       <OffersSection />
       <FeaturedProductsSection />
-      <BestSellersSection />
       <WhyChooseSection />
       <InstitutionalSection />
       <LearningResourcesSection />
