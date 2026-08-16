@@ -1,6 +1,7 @@
 import React from 'react';
 import { HeroSection } from '../components/home/HeroSection';
 import { FeaturedCategories } from '../components/home/FeaturedCategories';
+import { ComponentsSection } from '../components/home/ComponentsSection';
 import { OffersSection } from '../components/home/OffersSection';
 import { NewArrivalsSection } from '../components/home/NewArrivalsSection';
 import { FeaturedProductsSection } from '../components/home/FeaturedProductsSection';
@@ -23,6 +24,7 @@ export const HomePage: React.FC = () => {
       <HeroSection />
       <FeaturedCategories />
       <NewArrivalsSection />
+      <ComponentsSection />
       <OffersSection />
       <FeaturedProductsSection />
       <WhyChooseSection />
