@@ -61,23 +61,32 @@ export const FeaturedCategories: React.FC = () => {
     queryFn: getCategories
   });
 
-  const categoriesToDisplay = dbCategories.length > 0 
-    ? dbCategories.slice(0, 6).map((cat: any, index: number) => {
-        const icons = ['Bot', 'BrainCircuit', 'Wifi', 'Cpu', 'Zap', 'Plane'];
-        const subtitles = ['Build Autonomous Bots', 'Machine Learning for Kids & Students', 'Cloud Connected Sensors', 'Arduino & ESP32 Labs', 'Safe Hands-On Kits for Ages 8+', 'Quadcopter & Flight Dynamics'];
-        const badges = ['Popular', 'Hot', null, null, 'Kids Favorite', null];
-        
-        return {
-          id: cat.name,
-          title: cat.name,
-          subtitle: subtitles[index % subtitles.length],
-          description: cat.description ? cat.description.replace(/\[SKU:.*?\]/g, '') : `Explore our premium selection of ${cat.name} kits and products.`,
-          iconName: icons[index % icons.length],
-          itemCount: 10,
-          badge: badges[index % badges.length]
-        };
-      })
-    : CATEGORIES;
+  const categoriesToDisplay = React.useMemo(() => {
+    if (!dbCategories || dbCategories.length === 0) return CATEGORIES;
+
+    const dynamicCats = dbCategories.slice(0, 6).map((cat: any, index: number) => {
+      const icons = ['Bot', 'BrainCircuit', 'Wifi', 'Cpu', 'Zap', 'Plane'];
+      const subtitles = ['Build Autonomous Bots', 'Machine Learning for Kids & Students', 'Cloud Connected Sensors', 'Arduino & ESP32 Labs', 'Safe Hands-On Kits for Ages 8+', 'Quadcopter & Flight Dynamics'];
+      const badges = ['Popular', 'Hot', null, null, 'Kids Favorite', null];
+      
+      return {
+        id: cat.name,
+        title: cat.name,
+        subtitle: subtitles[index % subtitles.length],
+        description: cat.description ? cat.description.replace(/\[SKU:.*?\]/g, '') : `Explore our premium selection of ${cat.name} kits and products.`,
+        iconName: icons[index % icons.length],
+        itemCount: 10,
+        badge: badges[index % badges.length]
+      };
+    });
+
+    if (dynamicCats.length >= 6) {
+      return dynamicCats;
+    }
+
+    const paddingCats = CATEGORIES.filter(c => !dynamicCats.some(dc => dc.id === c.id)).slice(0, 6 - dynamicCats.length);
+    return [...dynamicCats, ...paddingCats];
+  }, [dbCategories]);
 
   const getProductCount = (categoryId: string, fallbackCount: number) => {
     if (storeProducts && storeProducts.length > 0) {
