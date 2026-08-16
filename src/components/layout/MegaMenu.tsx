@@ -3,26 +3,49 @@ import { useApp } from '../../context/AppContext';
 import { CategoryType, AgeGroupType, TechStackType } from '../../types';
 import { 
   Layers, GraduationCap, Cpu, Star, ChevronRight, 
-  Bot, BrainCircuit, Wifi, Zap, Sparkles, ShoppingBag, ArrowRight
+  Bot, BrainCircuit, Wifi, Zap, Sparkles, ShoppingBag, ArrowRight, Plane
 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { getCategories, getBrands } from '../../lib/api';
 
 interface MegaMenuProps {
   onClose: () => void;
 }
 
-type TabType = 'categories' | 'age' | 'tech' | 'ourBrands' | 'otherBrands';
+type TabType = 'categories' | 'age' | 'brands';
 
 export const MegaMenu: React.FC<MegaMenuProps> = ({ onClose }) => {
   const { setFilters, setCurrentPage } = useApp();
   const [activeTab, setActiveTab] = useState<TabType>('categories');
 
-  const categories: { label: CategoryType; icon: React.ReactNode; desc: string }[] = [
-    { label: 'Robotics', icon: <Bot className="w-5 h-5" />, desc: 'AI Rovers, Robotic Arms' },
-    { label: 'AI & Machine Learning', icon: <BrainCircuit className="w-5 h-5" />, desc: 'Vision sensors, TensorFlow' },
-    { label: 'IoT & Smart Home', icon: <Wifi className="w-5 h-5" />, desc: 'Blynk cloud, Climate logging' },
-    { label: 'Embedded Systems', icon: <Cpu className="w-5 h-5" />, desc: 'Arduino Uno, ESP32 boards' },
-    { label: 'STEM Starter', icon: <Zap className="w-5 h-5" />, desc: 'Magnetic blocks, circuits' },
-  ];
+  const { data: dbCategories = [] } = useQuery({
+    queryKey: ['categories'],
+    queryFn: getCategories
+  });
+
+  const { data: dbBrands = [] } = useQuery({
+    queryKey: ['brands'],
+    queryFn: getBrands
+  });
+
+  const categories = dbCategories.length > 0
+    ? dbCategories.map((cat: any, index: number) => {
+        const icons = [<Bot className="w-5 h-5" key={1}/>, <BrainCircuit className="w-5 h-5" key={2}/>, <Wifi className="w-5 h-5" key={3}/>, <Cpu className="w-5 h-5" key={4}/>, <Zap className="w-5 h-5" key={5}/>, <Plane className="w-5 h-5" key={6}/>];
+        const subtitles = ['Build Autonomous Bots', 'Machine Learning for Kids & Students', 'Cloud Connected Sensors', 'Arduino & ESP32 Labs', 'Safe Hands-On Kits for Ages 8+', 'Quadcopter & Flight Dynamics'];
+        
+        return {
+          label: cat.name,
+          icon: icons[index % icons.length],
+          desc: cat.description ? cat.description.replace(/\[SKU:.*?\]/g, '').substring(0, 40) + '...' : subtitles[index % subtitles.length]
+        };
+      })
+    : [
+        { label: 'Robotics', icon: <Bot className="w-5 h-5" />, desc: 'AI Rovers, Robotic Arms' },
+        { label: 'AI & Machine Learning', icon: <BrainCircuit className="w-5 h-5" />, desc: 'Vision sensors, TensorFlow' },
+        { label: 'IoT & Smart Home', icon: <Wifi className="w-5 h-5" />, desc: 'Blynk cloud, Climate logging' },
+        { label: 'Embedded Systems', icon: <Cpu className="w-5 h-5" />, desc: 'Arduino Uno, ESP32 boards' },
+        { label: 'STEM Starter', icon: <Zap className="w-5 h-5" />, desc: 'Magnetic blocks, circuits' },
+      ];
 
   const ageGroups: { label: AgeGroupType; title: string; desc: string }[] = [
     { label: '8-10', title: 'Kids 8-10 Yrs', desc: 'Magnetic snap blocks & basic circuits' },
@@ -31,17 +54,7 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ onClose }) => {
     { label: '17+', title: 'College & Pro (17+)', desc: 'Raspberry Pi, ROS, Python AI frameworks' },
   ];
 
-  const techStacks: TechStackType[] = [
-    'Arduino', 'ESP32', 'Raspberry Pi', 'AI & Computer Vision', 'IoT Sensors', 'Micro:bit', 'ROS & Motors'
-  ];
 
-  const ourBrands = [
-    'NavoBot Official', 'NavoAI Vision', 'NavoIoT Smart', 'NavoPrint 3D'
-  ];
-
-  const otherBrands = [
-    'Arduino Official', 'Raspberry Pi Foundation', 'Espressif Systems', 'Adafruit', 'SparkFun'
-  ];
 
   const handleCategorySelect = (cat: CategoryType) => {
     setFilters(prev => ({ ...prev, selectedCategories: [cat], selectedAgeGroups: [], selectedTechStacks: [] }));
@@ -55,11 +68,7 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ onClose }) => {
     onClose();
   };
 
-  const handleTechSelect = (tech: TechStackType) => {
-    setFilters(prev => ({ ...prev, selectedCategories: [], selectedAgeGroups: [], selectedTechStacks: [tech] }));
-    setCurrentPage('shop');
-    onClose();
-  };
+
 
   return (
     <div 
@@ -97,42 +106,16 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ onClose }) => {
           </button>
 
           <button
-            onMouseEnter={() => setActiveTab('tech')}
+            onMouseEnter={() => setActiveTab('brands')}
             className={`w-full flex items-center justify-between p-3 rounded-xl transition-all ${
-              activeTab === 'tech' ? 'bg-white shadow-sm border border-slate-200 text-indigo-600 font-bold' : 'text-slate-600 hover:bg-slate-100 font-semibold'
+              activeTab === 'brands' ? 'bg-white shadow-sm border border-slate-200 text-slate-900 font-bold' : 'text-slate-600 hover:bg-slate-100 font-semibold'
             }`}
           >
             <div className="flex items-center space-x-3">
-              <Cpu className={`w-4 h-4 ${activeTab === 'tech' ? 'text-indigo-600' : 'text-slate-400'}`} />
-              <span className="text-sm">Tech Platform</span>
+              <Star className={`w-4 h-4 ${activeTab === 'brands' ? 'text-slate-900' : 'text-slate-400'}`} />
+              <span className="text-sm">Brands</span>
             </div>
-            <ChevronRight className={`w-4 h-4 ${activeTab === 'tech' ? 'text-indigo-600 opacity-100' : 'opacity-0'}`} />
-          </button>
-
-          <button
-            onMouseEnter={() => setActiveTab('ourBrands')}
-            className={`w-full flex items-center justify-between p-3 rounded-xl transition-all ${
-              activeTab === 'ourBrands' ? 'bg-white shadow-sm border border-slate-200 text-slate-900 font-bold' : 'text-slate-600 hover:bg-slate-100 font-semibold'
-            }`}
-          >
-            <div className="flex items-center space-x-3">
-              <Star className={`w-4 h-4 ${activeTab === 'ourBrands' ? 'text-slate-900' : 'text-slate-400'}`} />
-              <span className="text-sm">Our Brands</span>
-            </div>
-            <ChevronRight className={`w-4 h-4 ${activeTab === 'ourBrands' ? 'text-slate-900 opacity-100' : 'opacity-0'}`} />
-          </button>
-
-          <button
-            onMouseEnter={() => setActiveTab('otherBrands')}
-            className={`w-full flex items-center justify-between p-3 rounded-xl transition-all ${
-              activeTab === 'otherBrands' ? 'bg-white shadow-sm border border-slate-200 text-slate-900 font-bold' : 'text-slate-600 hover:bg-slate-100 font-semibold'
-            }`}
-          >
-            <div className="flex items-center space-x-3">
-              <Star className={`w-4 h-4 ${activeTab === 'otherBrands' ? 'text-slate-900' : 'text-slate-400'}`} />
-              <span className="text-sm">Other Brands</span>
-            </div>
-            <ChevronRight className={`w-4 h-4 ${activeTab === 'otherBrands' ? 'text-slate-900 opacity-100' : 'opacity-0'}`} />
+            <ChevronRight className={`w-4 h-4 ${activeTab === 'brands' ? 'text-slate-900 opacity-100' : 'opacity-0'}`} />
           </button>
         </div>
 
@@ -179,25 +162,10 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ onClose }) => {
             </div>
           )}
 
-          {activeTab === 'tech' && (
+          {activeTab === 'brands' && (
             <div className="space-y-1.5 animate-in fade-in slide-in-from-left-2">
-              <h4 className="text-xs font-extrabold text-slate-400 uppercase tracking-wider mb-3 px-2">Select Platform</h4>
-              {techStacks.map((tech, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => handleTechSelect(tech)}
-                  className="w-full text-left p-2.5 rounded-xl hover:bg-indigo-50 text-sm font-bold text-slate-700 hover:text-indigo-600 transition-colors"
-                >
-                  {tech}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {activeTab === 'ourBrands' && (
-            <div className="space-y-1.5 animate-in fade-in slide-in-from-left-2">
-              <h4 className="text-xs font-extrabold text-slate-400 uppercase tracking-wider mb-3 px-2">NavoYantra Brands</h4>
-              {ourBrands.map((brand, idx) => (
+              <h4 className="text-xs font-extrabold text-slate-400 uppercase tracking-wider mb-3 px-2">Select Brand</h4>
+              {dbBrands.length > 0 ? dbBrands.map((brand: any, idx: number) => (
                 <button
                   key={idx}
                   onClick={() => {
@@ -207,28 +175,11 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ onClose }) => {
                   className="w-full text-left p-2.5 rounded-xl hover:bg-slate-100 text-sm font-bold text-slate-800 transition-colors flex items-center space-x-2"
                 >
                   <div className="w-1.5 h-1.5 rounded-full bg-blue-600"></div>
-                  <span>{brand}</span>
+                  <span>{brand.name}</span>
                 </button>
-              ))}
-            </div>
-          )}
-
-          {activeTab === 'otherBrands' && (
-            <div className="space-y-1.5 animate-in fade-in slide-in-from-left-2">
-              <h4 className="text-xs font-extrabold text-slate-400 uppercase tracking-wider mb-3 px-2">Global Brands</h4>
-              {otherBrands.map((brand, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => {
-                    setCurrentPage('shop');
-                    onClose();
-                  }}
-                  className="w-full text-left p-2.5 rounded-xl hover:bg-slate-100 text-sm font-bold text-slate-800 transition-colors flex items-center space-x-2"
-                >
-                  <div className="w-1.5 h-1.5 rounded-full bg-slate-900"></div>
-                  <span>{brand}</span>
-                </button>
-              ))}
+              )) : (
+                <p className="text-xs text-slate-500 px-2">No brands available yet.</p>
+              )}
             </div>
           )}
 
