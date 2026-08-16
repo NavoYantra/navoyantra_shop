@@ -5,7 +5,7 @@ import { AppProvider, useApp } from './context/AppContext';
 import { ArrowUp } from 'lucide-react';
 import { ErrorBoundary } from 'react-error-boundary';
 
-function ErrorFallback({error}: {error: any}) {
+function ErrorFallback({ error }: { error: any }) {
   return (
     <div role="alert" className="p-8 text-red-500 bg-red-50 min-h-screen">
       <h2 className="text-2xl font-bold">Something went wrong:</h2>
@@ -65,7 +65,7 @@ export function AppContent() {
     <div className="min-h-screen flex flex-col bg-[#F6F7F9] text-slate-900 transition-colors duration-200 relative overflow-hidden">
       <BackgroundShapes />
       <Header />
-      
+
       <main className="flex-1">
         <Suspense fallback={<LoadingSpinner />}>
           <Routes>

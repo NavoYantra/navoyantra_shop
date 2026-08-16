@@ -5,7 +5,7 @@ import { Cpu, ArrowRight } from 'lucide-react';
 
 export const ComponentsSection: React.FC = () => {
   const { storeProducts, setCurrentPage, setFilters } = useApp();
-  
+
   // Only get products in the "Electronics & Components" category
   const components = storeProducts.filter(p => p.category === 'Electronics & Components');
 
@@ -34,7 +34,7 @@ export const ComponentsSection: React.FC = () => {
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
-        
+
         {components.length > 8 && (
           <div className="flex justify-center mt-10">
             <button
