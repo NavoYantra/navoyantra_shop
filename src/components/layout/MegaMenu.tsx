@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { CategoryType, AgeGroupType, TechStackType } from '../../types';
+import { CategoryType, AgeGroupType } from '../../types';
 import { 
   Layers, GraduationCap, Cpu, Star, ChevronRight, 
   Bot, BrainCircuit, Wifi, Zap, Sparkles, ShoppingBag, ArrowRight, Plane
@@ -15,7 +15,7 @@ interface MegaMenuProps {
 type TabType = 'categories' | 'age' | 'brands';
 
 export const MegaMenu: React.FC<MegaMenuProps> = ({ onClose }) => {
-  const { setFilters, setCurrentPage } = useApp();
+  const { setFilters, setCurrentPage, storeProducts } = useApp();
   const [activeTab, setActiveTab] = useState<TabType>('categories');
 
   const { data: dbCategories = [] } = useQuery({
@@ -47,12 +47,24 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ onClose }) => {
         { label: 'STEM Starter', icon: <Zap className="w-5 h-5" />, desc: 'Magnetic blocks, circuits' },
       ];
 
-  const ageGroups: { label: AgeGroupType; title: string; desc: string }[] = [
-    { label: '8-10', title: 'Kids 8-10 Yrs', desc: 'Magnetic snap blocks & basic circuits' },
-    { label: '11-13', title: 'Pre-Teens 11-13 Yrs', desc: 'Scratch block coding & beginner rovers' },
-    { label: '14-16', title: 'Teens 14-16 Yrs', desc: 'Arduino C++, IoT, & Drone kits' },
-    { label: '17+', title: 'College & Pro (17+)', desc: 'Raspberry Pi, ROS, Python AI frameworks' },
-  ];
+  const dynamicAgeGroups = React.useMemo(() => {
+    const uniqueAges = Array.from(new Set(storeProducts.map(p => p.ageText).filter(Boolean)));
+    
+    if (uniqueAges.length > 0) {
+      return uniqueAges.map(age => ({
+        label: age,
+        title: `${age}`,
+        desc: `Explore STEM kits for ${age}`
+      }));
+    }
+    
+    return [
+      { label: '8-10', title: 'Kids 8-10 Yrs', desc: 'Magnetic snap blocks & basic circuits' },
+      { label: '11-13', title: 'Pre-Teens 11-13 Yrs', desc: 'Scratch block coding & beginner rovers' },
+      { label: '14-16', title: 'Teens 14-16 Yrs', desc: 'Arduino C++, IoT, & Drone kits' },
+      { label: '17+', title: 'College & Pro (17+)', desc: 'Raspberry Pi, ROS, Python AI frameworks' },
+    ];
+  }, [storeProducts]);
 
 
 
@@ -146,7 +158,7 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ onClose }) => {
           {activeTab === 'age' && (
             <div className="space-y-2 animate-in fade-in slide-in-from-left-2">
               <h4 className="text-xs font-extrabold text-slate-400 uppercase tracking-wider mb-3 px-2">Select Age Group</h4>
-              {ageGroups.map((age, idx) => (
+              {dynamicAgeGroups.map((age, idx) => (
                 <button
                   key={idx}
                   onClick={() => handleAgeSelect(age.label)}
