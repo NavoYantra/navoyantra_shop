@@ -410,20 +410,22 @@ export const ProductDetailPage: React.FC = () => {
                 </p>
               </div>
 
-              <div className="pt-6 border-t border-slate-100">
-                <h4 className="text-lg font-bold text-slate-900 mb-4 flex items-center space-x-2">
-                  <Sparkles className="w-5 h-5 text-orange-500" />
-                  <span>Projects You Can Build</span>
-                </h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {product.sampleProjects.map((proj, i) => (
-                    <div key={i} className="flex items-center space-x-2 p-3 rounded-lg bg-orange-50/50 border border-orange-100/50">
-                      <div className="w-1.5 h-1.5 rounded-full bg-orange-500 shrink-0" />
-                      <span className="text-sm font-medium text-slate-700">{proj}</span>
-                    </div>
-                  ))}
+              {product.sampleProjects && product.sampleProjects.some(p => p.trim() !== '') && (
+                <div className="pt-6 border-t border-slate-100">
+                  <h4 className="text-lg font-bold text-slate-900 mb-4 flex items-center space-x-2">
+                    <Sparkles className="w-5 h-5 text-orange-500" />
+                    <span>Projects You Can Build</span>
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {product.sampleProjects.filter(p => p.trim() !== '').map((proj, i) => (
+                      <div key={i} className="flex items-center space-x-2 p-3 rounded-lg bg-orange-50/50 border border-orange-100/50">
+                        <div className="w-1.5 h-1.5 rounded-full bg-orange-500 shrink-0" />
+                        <span className="text-sm font-medium text-slate-700">{proj}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* Reviews Section */}
@@ -560,41 +562,45 @@ export const ProductDetailPage: React.FC = () => {
 
           {/* Sidebar Column (Specs & In The Box) */}
           <div className="space-y-8">
-            <div className="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-slate-200">
-              <h3 className="text-lg font-extrabold font-heading text-slate-900 mb-6 flex items-center space-x-2">
-                <Box className="w-5 h-5 text-blue-600" />
-                <span>What's In The Box</span>
-              </h3>
-              <ul className="space-y-3">
-                {product.whatsInside.map((item, i) => (
-                  <li key={i} className="flex items-start space-x-3">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-                    <span className="text-sm text-slate-700 font-medium">{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            {product.whatsInside && product.whatsInside.some(item => item.trim() !== '') && (
+              <div className="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-slate-200">
+                <h3 className="text-lg font-extrabold font-heading text-slate-900 mb-6 flex items-center space-x-2">
+                  <Box className="w-5 h-5 text-blue-600" />
+                  <span>What's In The Box</span>
+                </h3>
+                <ul className="space-y-3">
+                  {product.whatsInside.filter(item => item.trim() !== '').map((item, i) => (
+                    <li key={i} className="flex items-start space-x-3">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                      <span className="text-sm text-slate-700 font-medium">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
-            <div className="bg-slate-900 p-6 sm:p-8 rounded-3xl shadow-lg border border-slate-800 text-white relative overflow-hidden">
-              <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none">
-                <Cpu className="w-32 h-32" />
+            {product.specs && Object.values(product.specs).some(v => v !== null && v !== undefined && v !== '' && (!Array.isArray(v) || v.length > 0)) && (
+              <div className="bg-slate-900 p-6 sm:p-8 rounded-3xl shadow-lg border border-slate-800 text-white relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none">
+                  <Cpu className="w-32 h-32" />
+                </div>
+                <h3 className="text-lg font-extrabold font-heading mb-6">Technical Specs</h3>
+                <div className="space-y-4 text-sm relative z-10">
+                  {Object.entries(product.specs).map(([key, value]) => {
+                    if (value === null || value === undefined || value === '' || (Array.isArray(value) && value.length === 0)) return null;
+                    const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                    return (
+                      <div key={key} className="flex justify-between items-center py-2 border-b border-slate-800 last:border-0">
+                        <span className="text-slate-400 font-medium">{label}</span>
+                        <span className="font-bold text-right ml-4">
+                          {Array.isArray(value) ? value.length : value}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-              <h3 className="text-lg font-extrabold font-heading mb-6">Technical Specs</h3>
-              <div className="space-y-4 text-sm relative z-10">
-                {Object.entries(product.specs).map(([key, value]) => {
-                  if (!value) return null;
-                  const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
-                  return (
-                    <div key={key} className="flex justify-between items-center py-2 border-b border-slate-800 last:border-0">
-                      <span className="text-slate-400 font-medium">{label}</span>
-                      <span className="font-bold text-right ml-4">
-                        {Array.isArray(value) ? value.length : value}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+            )}
           </div>
 
         </div>
