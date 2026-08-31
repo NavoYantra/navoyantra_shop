@@ -3,7 +3,7 @@ import { SEO } from '../components/SEO';
 import { 
   MessageSquare, PenTool, Wrench, HardDrive, GraduationCap, 
   ChevronLeft, ChevronRight, Zap, CheckCircle2, Target, Cpu, 
-  Settings, Wifi, Move3d, ShieldCheck
+  Settings, Wifi, Move3d, ShieldCheck, FileText
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
