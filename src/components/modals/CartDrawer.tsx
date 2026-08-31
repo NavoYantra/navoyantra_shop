@@ -11,9 +11,11 @@ export const CartDrawer: React.FC = () => {
     cart, 
     removeFromCart, 
     updateQuantity, 
-        cartTotal,
+    cartTotal,
     setIsCheckoutModalOpen,
-    showToast
+    showToast,
+    user,
+    setIsAuthModalOpen
   } = useApp();
 
   const [promoCode, setPromoCode] = useState('');
@@ -199,7 +201,12 @@ export const CartDrawer: React.FC = () => {
             <button
               onClick={() => {
                 setIsCartOpen(false);
-                setIsCheckoutModalOpen(true);
+                if (user?.isLoggedIn) {
+                  setIsCheckoutModalOpen(true);
+                } else {
+                  setIsAuthModalOpen(true);
+                  showToast('Please log in to proceed to checkout', 'info');
+                }
               }}
               className="w-full py-4 rounded-2xl bg-gradient-orange hover:opacity-95 text-white font-bold text-sm shadow-xl shadow-orange-500/25 flex items-center justify-center space-x-2 transition-transform hover:scale-[1.02]"
             >

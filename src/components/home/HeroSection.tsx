@@ -85,10 +85,10 @@ export const HeroSection: React.FC = () => {
              
             {/* Top Header */}
             <div className="flex items-center justify-between mb-4 px-4 pt-2 z-10 relative">
-              <h3 className="text-white font-bold flex items-center space-x-2">
+              <h2 className="text-white font-bold flex items-center space-x-2">
                 <Sparkles className="w-5 h-5 text-orange-500" />
                 <span className="text-white font-black text-lg tracking-tight">Top Selling</span>
-              </h3>
+              </h2>
               <div className="flex space-x-2">
                 {newArrivals.map((_, idx) => (
                   <button
@@ -116,6 +116,8 @@ export const HeroSection: React.FC = () => {
                     <img
                       src={product.images[0]}
                       alt={product.name}
+                      width={400}
+                      height={400}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent" />
