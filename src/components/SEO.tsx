@@ -7,6 +7,7 @@ interface SEOProps {
   keywords?: string;
   image?: string;
   url?: string;
+  schema?: Record<string, any> | Record<string, any>[];
 }
 
 export const SEO: React.FC<SEOProps> = ({ 
@@ -14,7 +15,8 @@ export const SEO: React.FC<SEOProps> = ({
   description, 
   keywords,
   image = '/favicon.png', // Fallback to logo
-  url = 'https://navoyantra.com' // Fallback domain
+  url = 'https://navoyantra.com', // Fallback domain
+  schema
 }) => {
   const defaultTitle = "NavoYantra | Best DIY Robotics Kits, STEM Education & Labsetup in India";
   const defaultDescription = "Shop premium DIY Robotic Kits, AI, IoT projects, and STEM education tools at NavoYantra. We provide complete Atal Tinkering Lab (ATL) and School Lab Setup solutions in India. Top quality robotics for kids and engineering students.";
@@ -44,6 +46,13 @@ export const SEO: React.FC<SEOProps> = ({
       <meta name="twitter:title" content={seoTitle} />
       <meta name="twitter:description" content={seoDescription} />
       <meta name="twitter:image" content={image} />
+
+      {/* Structured Data (JSON-LD) */}
+      {schema && (
+        <script type="application/ld+json">
+          {JSON.stringify(schema)}
+        </script>
+      )}
     </Helmet>
   );
 };

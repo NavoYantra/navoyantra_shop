@@ -20,6 +20,32 @@ export const HomePage: React.FC = () => {
         title="Robotics Kits, STEM Products & Lab Setup Solutions | NavoYantra"
         description="Buy robotics kits, STEM kits, Arduino, IoT, AI and electronics components online. Explore complete robotics, AI, IoT and STEM lab setup solutions for schools and institutions."
         keywords="DIY robotic, Labsetup, Robotics for kids, Atal Tinkering Lab equipment, School Lab Setup, STEM learning, AI Kits, IoT projects"
+        schema={[
+          {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": "NavoYantra",
+            "url": "https://navoyantra.com",
+            "logo": "https://navoyantra.com/favicon.png",
+            "description": "Best DIY Robotics Kits, STEM Education & Labsetup in India",
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "telephone": "+91-9999999999", // Ensure client updates actual phone
+              "contactType": "customer service"
+            }
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "url": "https://navoyantra.com",
+            "name": "NavoYantra Shop",
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": "https://navoyantra.com/shop?q={search_term_string}",
+              "query-input": "required name=search_term_string"
+            }
+          }
+        ]}
       />
       <HeroSection />
       <FeaturedCategories />
