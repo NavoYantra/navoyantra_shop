@@ -69,15 +69,24 @@ export const SpecialOffersCarousel: React.FC = () => {
   }, []);
 
   return (
-    <ScrollReveal direction="up" className="w-full mx-auto relative px-5 md:px-10 lg:px-16 mb-24">
-      <div className="text-center mb-10">
-        <h2 className="text-3xl md:text-4xl font-bold font-heading text-slate-900">Special Offers & Promotions</h2>
-        <p className="text-slate-500 mt-4 text-lg">Take advantage of our exclusive deals to kickstart your journey.</p>
-      </div>
+    <section className="w-full bg-slate-950 py-24 relative overflow-hidden border-y border-slate-800/50">
+      {/* Decorative dark background elements */}
+      <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-blue-900/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/3"></div>
+      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-purple-900/10 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/3"></div>
 
-      <div className="relative overflow-hidden rounded-[2.5rem] shadow-2xl bg-white group min-h-[500px] flex items-center border border-slate-100 max-w-7xl mx-auto">
-        <div 
-          className="w-full absolute inset-0 flex transition-transform duration-700 ease-out"
+      <ScrollReveal direction="up" className="w-full mx-auto relative px-4 sm:px-6 lg:px-8 max-w-[90rem]">
+        <div className="text-center mb-12 relative z-10">
+          <h2 className="text-3xl md:text-5xl font-extrabold font-heading text-white tracking-tight">
+            Special Offers & Promotions
+          </h2>
+          <p className="text-slate-400 mt-4 text-lg max-w-2xl mx-auto">
+            Take advantage of our exclusive deals to kickstart your journey.
+          </p>
+        </div>
+
+        <div className="relative overflow-hidden rounded-[2.5rem] shadow-2xl shadow-black/50 bg-slate-900 group min-h-[500px] flex items-center border border-slate-800 mx-auto">
+          <div 
+            className="w-full absolute inset-0 flex transition-transform duration-700 ease-out"
           style={{ transform: `translateX(-${currentOfferSlide * 100}%)` }}
         >
           {offers.map((offer, index) => (
@@ -148,6 +157,7 @@ export const SpecialOffersCarousel: React.FC = () => {
           ))}
         </div>
       </div>
-    </ScrollReveal>
+      </ScrollReveal>
+    </section>
   );
 };
