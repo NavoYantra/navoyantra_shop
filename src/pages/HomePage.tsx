@@ -12,6 +12,8 @@ import { TestimonialsSection } from '../components/home/TestimonialsSection';
 import { PartnersSection } from '../components/home/PartnersSection';
 import { NewsletterSection } from '../components/home/NewsletterSection';
 import { SEO } from '../components/SEO';
+import { ScrollReveal } from '../components/animations/ScrollReveal';
+import { SpecialOffersCarousel } from '../components/common/SpecialOffersCarousel';
 
 export const HomePage: React.FC = () => {
   return (
@@ -47,18 +49,19 @@ export const HomePage: React.FC = () => {
           }
         ]}
       />
-      <HeroSection />
-      <FeaturedCategories />
-      <NewArrivalsSection />
-      <ComponentsSection />
-      <OffersSection />
-      <FeaturedProductsSection />
-      <WhyChooseSection />
-      <InstitutionalSection />
-      <LearningResourcesSection />
-      <TestimonialsSection />
-      <PartnersSection />
-      <NewsletterSection />
+      <ScrollReveal><HeroSection /></ScrollReveal>
+      <ScrollReveal delay={0.2}><FeaturedCategories /></ScrollReveal>
+      <ScrollReveal direction="left"><NewArrivalsSection /></ScrollReveal>
+      <ScrollReveal direction="right"><ComponentsSection /></ScrollReveal>
+      <ScrollReveal><OffersSection /></ScrollReveal>
+      <ScrollReveal><FeaturedProductsSection /></ScrollReveal>
+      <ScrollReveal direction="up"><WhyChooseSection /></ScrollReveal>
+      <SpecialOffersCarousel />
+      <ScrollReveal><InstitutionalSection /></ScrollReveal>
+      <ScrollReveal><LearningResourcesSection /></ScrollReveal>
+      <ScrollReveal><TestimonialsSection /></ScrollReveal>
+      <ScrollReveal direction="none"><PartnersSection /></ScrollReveal>
+      <ScrollReveal direction="up"><NewsletterSection /></ScrollReveal>
     </div>
   );
 };

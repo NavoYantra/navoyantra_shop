@@ -22,6 +22,8 @@ import { BackgroundShapes } from './components/layout/BackgroundShapes';
 
 import { Suspense, lazy } from 'react';
 import { LoadingSpinner } from './components/common/LoadingSpinner';
+import { AnimatePresence } from 'framer-motion';
+import { PageTransition } from './components/animations/PageTransition';
 
 // Pages (Lazy Loaded)
 const HomePage = lazy(() => import('./pages/HomePage').then(module => ({ default: module.HomePage })));
@@ -68,21 +70,23 @@ export function AppContent() {
 
       <main className="flex-1">
         <Suspense fallback={<LoadingSpinner />}>
-          <Routes>
-            <Route path="/tutorial/:id" element={<TutorialDetailPage />} />
-            <Route path="/product/:slug" element={<ProductDetailPage />} />
-            <Route path="/blog/:slug" element={<BlogDetailPage />} />
-            <Route path="*" element={
-              <>
-                {currentPage === 'home' && <HomePage />}
-                {currentPage === 'shop' && <ShopPage />}
-                {currentPage === 'lab-setup' && <LabSetupPage />}
-                {currentPage === 'blogs' && <BlogsPage />}
-                {currentPage === 'tutorials' && <TutorialsPage />}
-                {currentPage === 'account' && <CustomerDashboard />}
-              </>
-            } />
-          </Routes>
+          <AnimatePresence mode="wait">
+            <Routes>
+              <Route path="/tutorial/:id" element={<PageTransition><TutorialDetailPage /></PageTransition>} />
+              <Route path="/product/:slug" element={<PageTransition><ProductDetailPage /></PageTransition>} />
+              <Route path="/blog/:slug" element={<PageTransition><BlogDetailPage /></PageTransition>} />
+              <Route path="*" element={
+                <PageTransition>
+                  {currentPage === 'home' && <HomePage />}
+                  {currentPage === 'shop' && <ShopPage />}
+                  {currentPage === 'lab-setup' && <LabSetupPage />}
+                  {currentPage === 'blogs' && <BlogsPage />}
+                  {currentPage === 'tutorials' && <TutorialsPage />}
+                  {currentPage === 'account' && <CustomerDashboard />}
+                </PageTransition>
+              } />
+            </Routes>
+          </AnimatePresence>
         </Suspense>
       </main>
 

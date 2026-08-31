@@ -34,19 +34,31 @@ export const LearningResourcesSection: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
-          <div>
-            <span className="text-xs font-extrabold text-blue-600  uppercase tracking-widest flex items-center space-x-1">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>OPEN SOURCE KNOWLEDGE HUB</span>
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-8">
+          <div className="max-w-2xl">
+            <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-bold tracking-widest uppercase mb-4">
+              <Sparkles className="w-4 h-4" />
+              <span>Open Source Knowledge Hub</span>
             </span>
-            <h2 className="text-3xl sm:text-5xl font-extrabold font-heading text-slate-900  mt-1 tracking-tight">
-              Free Learning Resources & Tutorials
+            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold font-heading text-slate-900 tracking-tight leading-tight">
+              Free Learning Resources & <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">Tutorials</span>
             </h2>
           </div>
-          <p className="text-sm text-slate-600  mt-2 md:mt-0 max-w-md">
-            Access our free step-by-step video guides, PDF experiment manuals, Scratch block plugins, and C++/Python GitHub repositories.
-          </p>
+          
+          <div className="flex flex-col gap-5 max-w-md md:shrink-0">
+            <p className="text-base text-slate-600 leading-relaxed">
+              Access our free step-by-step video guides, PDF experiment manuals, Scratch block plugins, and C++/Python GitHub repositories.
+            </p>
+            <a 
+              href="https://edu.navoyantra.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="group inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-slate-900 text-white rounded-xl font-bold hover:bg-blue-600 hover:shadow-xl hover:shadow-blue-600/20 transition-all duration-300 w-fit"
+            >
+              <span>Visit edu.navoyantra.com</span>
+              <ExternalLink className="w-4 h-4 group-hover:scale-110 transition-transform" />
+            </a>
+          </div>
         </div>
 
         {/* Resources Grid */}

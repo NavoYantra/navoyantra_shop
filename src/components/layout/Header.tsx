@@ -134,7 +134,7 @@ export const Header: React.FC = () => {
                 className="flex items-center space-x-3 group text-left shrink-0"
               >
                 <img
-                  src="/logo.png"
+                  src="/NavoYAntra%20shop%20logo.png"
                   alt="NavoYantra Technology"
                   className="h-20 sm:h-24 object-contain group-hover:scale-105 transition-transform"
                 />

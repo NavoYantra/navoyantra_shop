@@ -25,7 +25,7 @@ export const Footer: React.FC = () => {
           <div className="lg:col-span-2 space-y-4">
             <a href="#" className="flex items-center space-x-3 group">
               <img 
-                src="/logo.png" 
+                src="/NavoYAntra%20shop%20logo.png" 
                 alt="NavoYantra Technology" 
                 className="h-16 sm:h-20 object-contain group-hover:scale-105 transition-transform brightness-0 invert" 
               />
