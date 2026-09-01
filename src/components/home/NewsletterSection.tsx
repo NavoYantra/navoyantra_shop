@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Mail, Sparkles, CheckCircle2, ArrowRight } from 'lucide-react';
+import { Mail, Sparkles, CheckCircle2, ArrowRight, Loader2 } from 'lucide-react';
+import { subscribeNewsletter } from '../../lib/api';
 
 export const NewsletterSection: React.FC = () => {
   const { showToast } = useApp();
@@ -8,14 +9,30 @@ export const NewsletterSection: React.FC = () => {
   const [role, setRole] = useState<'Parent' | 'Student' | 'Teacher'>('Student');
   const [subscribed, setSubscribed] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !email.includes('@')) {
       showToast('Please enter a valid email address', 'warning');
       return;
     }
-    setSubscribed(true);
-    showToast('Subscribed successfully! Check your inbox for your 10% coupon code: STEM10', 'success');
+    
+    setIsSubmitting(true);
+    try {
+      await subscribeNewsletter(email, role);
+      setSubscribed(true);
+      showToast('Subscribed successfully! Check your inbox for your 10% coupon code: STEM10', 'success');
+    } catch (error: any) {
+      console.error('Newsletter error:', error);
+      if (error.code === '23505') { // Unique violation
+        showToast('This email is already subscribed!', 'warning');
+      } else {
+        showToast('Something went wrong. Please try again.', 'warning');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -75,10 +92,17 @@ export const NewsletterSection: React.FC = () => {
 
                 <button
                   type="submit"
-                  className="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm shadow-xl transition-transform hover:scale-105 flex items-center justify-center space-x-2 shrink-0"
+                  disabled={isSubmitting}
+                  className="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm shadow-xl transition-transform hover:scale-105 flex items-center justify-center space-x-2 shrink-0 disabled:opacity-70 disabled:hover:scale-100"
                 >
-                  <span>Subscribe</span>
-                  <ArrowRight className="w-4 h-4" />
+                  {isSubmitting ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <>
+                      <span>Subscribe</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </>
+                  )}
                 </button>
               </div>
 

@@ -261,9 +261,9 @@ export const LabSetupPage: React.FC = () => {
             <p className="text-lg md:text-xl text-slate-400 max-w-xl mx-auto lg:mx-0 font-light leading-relaxed mb-10">
               We go beyond just dropping off hardware. Our holistic approach ensures that your lab is a living ecosystem of learning, backed by continuous support, training, and curriculum.
             </p>
-            <button className="hidden lg:inline-flex items-center gap-2 bg-white/5 border border-white/10 text-white font-bold py-3 px-8 rounded-full hover:bg-white/10 hover:border-cyan-400/30 hover:shadow-lg hover:shadow-cyan-500/20 hover:-translate-y-1 transition-all duration-300">
+            <a href="https://www.navoyantra.com/contact" target="_blank" rel="noopener noreferrer" className="hidden lg:inline-flex items-center gap-2 bg-white/5 border border-white/10 text-white font-bold py-3 px-8 rounded-full hover:bg-white/10 hover:border-cyan-400/30 hover:shadow-lg hover:shadow-cyan-500/20 hover:-translate-y-1 transition-all duration-300">
               Contact Us <MessageSquare className="w-4 h-4 ml-2" />
-            </button>
+            </a>
           </div>
           
           <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 w-full">

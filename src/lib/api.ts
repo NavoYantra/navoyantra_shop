@@ -385,3 +385,61 @@ export const updateTutorialReviewStatus = async (id: string, status: 'approved' 
   if (error) throw error;
   return data;
 };
+
+// --- Forms & Subscriptions ---
+const WEB3FORMS_ACCESS_KEY = "486d0c7a-5af6-463e-9432-b9e32e15b392";
+
+export const submitB2BInquiry = async (data: any) => {
+  // 1. Save to Supabase
+  const { data: result, error } = await supabase.from('b2b_inquiries').insert(data).select().single();
+  if (error) throw error;
+  
+  // 2. Send Email via Web3Forms
+  try {
+    await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        access_key: WEB3FORMS_ACCESS_KEY,
+        subject: "New B2B Quotation Request - NavoYantra Shop",
+        from_name: "NavoYantra Shop Alerts",
+        ...data
+      })
+    });
+  } catch (err) {
+    console.error("Web3Forms Email failed:", err);
+  }
+
+  return result;
+};
+
+export const subscribeNewsletter = async (email: string, role: string) => {
+  // 1. Save to Supabase
+  const { data, error } = await supabase.from('newsletter_subscribers').insert({ email, role }).select().single();
+  if (error) throw error;
+  
+  // 2. Send Email via Web3Forms
+  try {
+    await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        access_key: WEB3FORMS_ACCESS_KEY,
+        subject: "New Newsletter Subscriber - NavoYantra Shop",
+        from_name: "NavoYantra Shop Alerts",
+        email: email,
+        role: role
+      })
+    });
+  } catch (err) {
+    console.error("Web3Forms Email failed:", err);
+  }
+
+  return data;
+};

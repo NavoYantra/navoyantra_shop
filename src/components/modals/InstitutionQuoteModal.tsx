@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { School, X, Send, CheckCircle2, Building, Phone, Mail, User } from 'lucide-react';
+import { School, X, Send, CheckCircle2, Building, Phone, Mail, User, Loader2 } from 'lucide-react';
+import { submitB2BInquiry } from '../../lib/api';
 
 export const InstitutionQuoteModal: React.FC = () => {
   const { isQuoteModalOpen, setIsQuoteModalOpen, showToast } = useApp();
@@ -20,10 +21,29 @@ export const InstitutionQuoteModal: React.FC = () => {
 
   if (!isQuoteModalOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
-    showToast('Quote request submitted! Our B2B STEM team will contact you within 24 hours.', 'success');
+    setIsSubmitting(true);
+    try {
+      await submitB2BInquiry({
+        institution_name: formData.institutionName,
+        contact_person: formData.contactPerson,
+        email: formData.email,
+        phone: formData.phone,
+        institution_type: formData.institutionType,
+        estimated_budget: formData.labBudgetRange,
+        message: formData.message
+      });
+      setSubmitted(true);
+      showToast('Quote request submitted! Our team will contact you soon.', 'success');
+    } catch (error) {
+      console.error('Error submitting inquiry:', error);
+      showToast('Failed to submit request. Please try again.', 'warning');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleClose = () => {
@@ -182,10 +202,17 @@ export const InstitutionQuoteModal: React.FC = () => {
 
             <button
               type="submit"
-              className="w-full py-4 rounded-2xl bg-orange-600 text-white font-bold text-sm shadow-xl flex items-center justify-center space-x-2 transition-transform hover:scale-105"
+              disabled={isSubmitting}
+              className="w-full py-4 rounded-2xl bg-orange-600 text-white font-bold text-sm shadow-xl flex items-center justify-center space-x-2 transition-transform hover:scale-105 disabled:opacity-70 disabled:hover:scale-100"
             >
-              <Send className="w-4 h-4" />
-              <span>Submit B2B Quotation Request</span>
+              {isSubmitting ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <>
+                  <Send className="w-4 h-4" />
+                  <span>Submit B2B Quotation Request</span>
+                </>
+              )}
             </button>
           </form>
         ) : (
