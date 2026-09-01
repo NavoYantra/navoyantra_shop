@@ -6,7 +6,21 @@ import {
 import { SocialLinks } from '../common/SocialLinks';
 
 export const Footer: React.FC = () => {
-  const { setIsQuoteModalOpen, setFilters } = useApp();
+  const { setIsQuoteModalOpen, setFilters, showToast, setCurrentPage, currentPage } = useApp();
+
+  const handleHashLink = (e: React.MouseEvent<HTMLAnchorElement>, hash: string) => {
+    e.preventDefault();
+    if (currentPage !== 'home') {
+      setCurrentPage('home');
+      setTimeout(() => {
+        const el = document.querySelector(hash);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 150);
+    } else {
+      const el = document.querySelector(hash);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   const handleCategoryFilter = (cat: any) => {
     setFilters(prev => ({ ...prev, selectedCategories: [cat] }));
@@ -100,10 +114,10 @@ export const Footer: React.FC = () => {
               Age Groups & B2B
             </h4>
             <ul className="space-y-2 text-xs text-slate-400">
-              <li><a href="#age-groups" className="hover:text-orange-400 transition-colors">Kids (Ages 8-10 Yrs)</a></li>
-              <li><a href="#age-groups" className="hover:text-orange-400 transition-colors">Pre-Teens (Ages 11-13 Yrs)</a></li>
-              <li><a href="#age-groups" className="hover:text-orange-400 transition-colors">Teens (Ages 14-16 Yrs)</a></li>
-              <li><a href="#age-groups" className="hover:text-orange-400 transition-colors">College & Makers (17+ Yrs)</a></li>
+              <li><a href="#age-groups" onClick={(e) => handleHashLink(e, '#age-groups')} className="hover:text-orange-400 transition-colors">Kids (Ages 8-10 Yrs)</a></li>
+              <li><a href="#age-groups" onClick={(e) => handleHashLink(e, '#age-groups')} className="hover:text-orange-400 transition-colors">Pre-Teens (Ages 11-13 Yrs)</a></li>
+              <li><a href="#age-groups" onClick={(e) => handleHashLink(e, '#age-groups')} className="hover:text-orange-400 transition-colors">Teens (Ages 14-16 Yrs)</a></li>
+              <li><a href="#age-groups" onClick={(e) => handleHashLink(e, '#age-groups')} className="hover:text-orange-400 transition-colors">College & Makers (17+ Yrs)</a></li>
               <li>
                 <button onClick={() => setIsQuoteModalOpen(true)} className="text-orange-400 font-bold hover:underline">
                   Atal Tinkering Lab Setup (ATL)
@@ -123,11 +137,11 @@ export const Footer: React.FC = () => {
               Support & Policies
             </h4>
             <ul className="space-y-2 text-xs text-slate-400">
-              <li><a href="#why-choose" className="hover:text-white transition-colors">1-Week Warranty on Premium Products</a></li>
-              <li><a href="#resources" className="hover:text-white transition-colors">Free Video & Code Downloads</a></li>
-              <li><a href="#" onClick={(e) => { e.preventDefault(); alert("Track Order: Enter Order ID sent on SMS"); }} className="hover:text-white transition-colors">Track Your Shipment</a></li>
-              <li><a href="#" onClick={(e) => { e.preventDefault(); alert("Return & Replacement Policy: 7 Days Easy Returns"); }} className="hover:text-white transition-colors">7-Day Replacement Policy</a></li>
-              <li><a href="#" onClick={(e) => { e.preventDefault(); alert("Privacy Policy: SSL 256-bit encrypted data protection"); }} className="hover:text-white transition-colors">Privacy Policy & Terms</a></li>
+              <li><a href="#why-choose" onClick={(e) => handleHashLink(e, '#why-choose')} className="hover:text-white transition-colors">1-Week Warranty on Premium Products</a></li>
+              <li><a href="#resources" onClick={(e) => handleHashLink(e, '#resources')} className="hover:text-white transition-colors">Free Video & Code Downloads</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); showToast("Track Order feature is coming soon!", "info"); }} className="hover:text-white transition-colors">Track Your Shipment</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); showToast("Return Policy will be updated shortly.", "info"); }} className="hover:text-white transition-colors">7-Day Replacement Policy</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); showToast("Privacy Policy & Terms are currently being drafted.", "info"); }} className="hover:text-white transition-colors">Privacy Policy & Terms</a></li>
             </ul>
 
             <div className="pt-2">

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useApp } from '../../context/AppContext';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
@@ -10,6 +11,7 @@ import { useAdminAuthStore } from '../../store/adminAuthStore';
 import { supabase } from '../../lib/supabase';
 
 export const AdminSettings: React.FC = () => {
+  const { showToast } = useApp();
   const [activeTab, setActiveTab] = React.useState('profile');
   const [newUserName, setNewUserName] = React.useState('');
   const [newUserEmail, setNewUserEmail] = React.useState('');
@@ -33,10 +35,10 @@ export const AdminSettings: React.FC = () => {
       
       // Refresh admin user state
       await initialize();
-      alert('Profile picture updated successfully!');
+      showToast('Profile picture updated successfully!');
       
     } catch (err: any) {
-      alert(`Error updating profile: ${err.message}`);
+      showToast(`Error updating profile: ${err.message}`);
     } finally {
       setUploadingAvatar(false);
     }

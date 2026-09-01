@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useApp } from '../../context/AppContext';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
@@ -11,6 +12,7 @@ import { getCoupons, createCoupon, updateCoupon, deleteCoupon } from '../../lib/
 type DiscountType = 'percentage' | 'fixed' | 'other';
 
 export const AdminCoupons: React.FC = () => {
+  const { showToast } = useApp();
   const queryClient = useQueryClient();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingCoupon, setEditingCoupon] = useState<any>(null);
@@ -40,7 +42,7 @@ export const AdminCoupons: React.FC = () => {
       resetForm();
     },
     onError: (error: any) => {
-      alert(`Failed to create coupon: ${error.message}`);
+      showToast(`Failed to create coupon: ${error.message}`);
     }
   });
 
@@ -51,7 +53,7 @@ export const AdminCoupons: React.FC = () => {
       resetForm();
     },
     onError: (error: any) => {
-      alert(`Failed to update coupon: ${error.message}`);
+      showToast(`Failed to update coupon: ${error.message}`);
     }
   });
 

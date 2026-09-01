@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useApp } from '../../context/AppContext';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
@@ -8,6 +9,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getBrands, createBrand, deleteBrand, updateBrand } from '../../lib/api';
 
 export const AdminBrands: React.FC = () => {
+  const { showToast } = useApp();
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
   
@@ -30,11 +32,11 @@ export const AdminBrands: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['brands'] });
       resetForm();
-      alert('Brand added successfully!');
+      showToast('Brand added successfully!');
     },
     onError: (error: any) => {
       console.error(error);
-      alert('Error adding brand: ' + error.message);
+      showToast('Error adding brand: ' + error.message);
     }
   });
 
@@ -43,11 +45,11 @@ export const AdminBrands: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['brands'] });
       resetForm();
-      alert('Brand updated successfully!');
+      showToast('Brand updated successfully!');
     },
     onError: (error: any) => {
       console.error(error);
-      alert('Error updating brand: ' + error.message);
+      showToast('Error updating brand: ' + error.message);
     }
   });
 

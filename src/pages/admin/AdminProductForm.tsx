@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useApp } from '../../context/AppContext';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -69,6 +70,7 @@ const productSchema = z.object({
 type ProductFormValues = z.infer<typeof productSchema>;
 
 export const AdminProductForm: React.FC = () => {
+  const { showToast } = useApp();
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -294,7 +296,7 @@ export const AdminProductForm: React.FC = () => {
       form.setValue(`images.${index}.url`, url);
     } catch (error) {
       console.error("Failed to upload image", error);
-      alert("Failed to upload image");
+      showToast("Failed to upload image");
     } finally {
       setIsUploading(false);
     }

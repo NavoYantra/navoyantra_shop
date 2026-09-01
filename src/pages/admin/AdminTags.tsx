@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useApp } from '../../context/AppContext';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
@@ -8,6 +9,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getTags, createTag, deleteTag, updateTag } from '../../lib/api';
 
 export const AdminTags: React.FC = () => {
+  const { showToast } = useApp();
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
   
@@ -29,11 +31,11 @@ export const AdminTags: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tags'] });
       resetForm();
-      alert('Tag added successfully!');
+      showToast('Tag added successfully!');
     },
     onError: (error: any) => {
       console.error(error);
-      alert('Error adding tag: ' + error.message);
+      showToast('Error adding tag: ' + error.message);
     }
   });
 
@@ -42,11 +44,11 @@ export const AdminTags: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tags'] });
       resetForm();
-      alert('Tag updated successfully!');
+      showToast('Tag updated successfully!');
     },
     onError: (error: any) => {
       console.error(error);
-      alert('Error updating tag: ' + error.message);
+      showToast('Error updating tag: ' + error.message);
     }
   });
 

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useApp } from '../../context/AppContext';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 import { getOrders, updateOrderStatus, getOrderById, getProducts, deleteOrder } from '../../lib/api';
@@ -13,6 +14,7 @@ import { PRODUCTS } from '../../data/products';
 import { supabase } from '../../lib/supabase';
 
 export const AdminOrders: React.FC = () => {
+  const { showToast } = useApp();
   const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
   const statusFilter = searchParams.get('status');
@@ -67,7 +69,7 @@ export const AdminOrders: React.FC = () => {
       }
     },
     onError: (err: any) => {
-      alert(`Error updating order: ${err.message}`);
+      showToast(`Error updating order: ${err.message}`);
       console.error(err);
     }
   });
@@ -77,10 +79,10 @@ export const AdminOrders: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['orders'] });
       if (selectedOrder) setSelectedOrder(null);
-      alert('Order deleted successfully');
+      showToast('Order deleted successfully');
     },
     onError: (err: any) => {
-      alert(`Error deleting order: ${err.message}`);
+      showToast(`Error deleting order: ${err.message}`);
       console.error(err);
     }
   });
@@ -387,7 +389,7 @@ export const AdminOrders: React.FC = () => {
                               const filename = `${selectedOrder.id}-${file.name}`;
                               const { error } = await supabase.storage.from('invoices').upload(filename, file, { upsert: true });
                               if (error) {
-                                alert("Error uploading invoice: " + error.message);
+                                showToast("Error uploading invoice: " + error.message);
                                 return;
                               }
                               const { data: urlData } = supabase.storage.from('invoices').getPublicUrl(filename);
@@ -398,7 +400,7 @@ export const AdminOrders: React.FC = () => {
                               }, {
                                 onSuccess: () => {
                                   setSelectedOrder({...selectedOrder, invoice_url: urlData.publicUrl});
-                                  alert("Invoice Uploaded Successfully!");
+                                  showToast("Invoice Uploaded Successfully!");
                                 }
                               });
                             }}

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useApp } from '../../context/AppContext';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
@@ -8,6 +9,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getCategories, createCategory, deleteCategory, updateCategory } from '../../lib/api';
 
 export const AdminCategories: React.FC = () => {
+  const { showToast } = useApp();
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
   
@@ -30,11 +32,11 @@ export const AdminCategories: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
       resetForm();
-      alert('Category added successfully!');
+      showToast('Category added successfully!');
     },
     onError: (error: any) => {
       console.error(error);
-      alert('Error adding category: ' + error.message);
+      showToast('Error adding category: ' + error.message);
     }
   });
 
@@ -43,11 +45,11 @@ export const AdminCategories: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
       resetForm();
-      alert('Category updated successfully!');
+      showToast('Category updated successfully!');
     },
     onError: (error: any) => {
       console.error(error);
-      alert('Error updating category: ' + error.message);
+      showToast('Error updating category: ' + error.message);
     }
   });
 
