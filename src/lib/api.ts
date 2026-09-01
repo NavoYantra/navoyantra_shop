@@ -413,6 +413,28 @@ export const submitB2BInquiry = async (data: any) => {
     console.error("Web3Forms Email failed:", err);
   }
 
+  // 3. Send Automatic Welcome Email to B2B Client via EmailJS
+  try {
+    await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        service_id: 'service_c3tymto',
+        template_id: 'template_11llzi7',
+        user_id: 'hGt9aH2fPbx67Doiw',
+        template_params: {
+          contact_person: data.contact_person,
+          institution_name: data.institution_name,
+          email: data.email
+        }
+      })
+    });
+  } catch (err) {
+    console.error("EmailJS B2B Auto-reply failed:", err);
+  }
+
   return result;
 };
 
@@ -439,6 +461,27 @@ export const subscribeNewsletter = async (email: string, role: string) => {
     });
   } catch (err) {
     console.error("Web3Forms Email failed:", err);
+  }
+
+  // 3. Send Automatic Welcome Email to Subscriber via EmailJS
+  try {
+    await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        service_id: 'service_c3tymto',
+        template_id: 'template_fs4xljx',
+        user_id: 'hGt9aH2fPbx67Doiw',
+        template_params: {
+          email: email,
+          role: role
+        }
+      })
+    });
+  } catch (err) {
+    console.error("EmailJS Auto-reply failed:", err);
   }
 
   return data;
