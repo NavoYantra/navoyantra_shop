@@ -29,10 +29,10 @@ import { PageTransition } from './components/animations/PageTransition';
 const HomePage = lazy(() => import('./pages/HomePage').then(module => ({ default: module.HomePage })));
 const ShopPage = lazy(() => import('./pages/ShopPage').then(module => ({ default: module.ShopPage })));
 const LabSetupPage = lazy(() => import('./pages/LabSetupPage').then(module => ({ default: module.LabSetupPage })));
-const BlogsPage = lazy(() => import('./pages/BlogsPage').then(module => ({ default: module.BlogsPage })));
+
 const TutorialsPage = lazy(() => import('./pages/TutorialsPage').then(module => ({ default: module.TutorialsPage })));
 const ProductDetailPage = lazy(() => import('./pages/ProductDetailPage').then(module => ({ default: module.ProductDetailPage })));
-const BlogDetailPage = lazy(() => import('./pages/BlogDetailPage').then(module => ({ default: module.BlogDetailPage })));
+
 const TutorialDetailPage = lazy(() => import('./pages/TutorialDetailPage').then(module => ({ default: module.TutorialDetailPage })));
 const CustomerDashboard = lazy(() => import('./pages/CustomerDashboard').then(module => ({ default: module.CustomerDashboard })));
 const AdminApp = lazy(() => import('./AdminApp').then(module => ({ default: module.AdminApp })));
@@ -74,13 +74,13 @@ export function AppContent() {
             <Routes>
               <Route path="/tutorial/:id" element={<PageTransition><TutorialDetailPage /></PageTransition>} />
               <Route path="/product/:slug" element={<PageTransition><ProductDetailPage /></PageTransition>} />
-              <Route path="/blog/:slug" element={<PageTransition><BlogDetailPage /></PageTransition>} />
+
               <Route path="*" element={
                 <PageTransition>
                   {currentPage === 'home' && <HomePage />}
                   {currentPage === 'shop' && <ShopPage />}
                   {currentPage === 'lab-setup' && <LabSetupPage />}
-                  {currentPage === 'blogs' && <BlogsPage />}
+
                   {currentPage === 'tutorials' && <TutorialsPage />}
                   {currentPage === 'account' && <CustomerDashboard />}
                 </PageTransition>

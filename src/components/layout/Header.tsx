@@ -194,12 +194,10 @@ export const Header: React.FC = () => {
                 </a>
 
                 <a
-                  href="/blogs"
-                  onClick={(e) => handleNavClick('blogs', e)}
-                  className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${currentPage === 'blogs'
-                      ? 'bg-blue-50 text-blue-600 shadow-xs'
-                      : 'text-slate-700 hover:bg-slate-100'
-                    }`}
+                  href="https://www.navoyantra.com/community"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2 rounded-xl text-sm font-semibold transition-all text-slate-700 hover:bg-slate-100"
                 >
                   Blogs
                 </a>
@@ -370,13 +368,14 @@ export const Header: React.FC = () => {
           >
             Lab Setup
           </button>
-          <button
-            onClick={() => handleNavClick('blogs')}
-            className={`w-full text-left font-semibold py-2.5 px-3 rounded-xl ${currentPage === 'blogs' ? 'bg-blue-50 text-blue-600' : 'text-slate-700 hover:bg-slate-50'
-              }`}
+          <a
+            href="https://www.navoyantra.com/community"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block w-full text-left font-semibold py-2.5 px-3 rounded-xl text-slate-700 hover:bg-slate-50"
           >
             Blogs
-          </button>
+          </a>
           <button
             onClick={() => handleNavClick('tutorials')}
             className={`w-full text-left font-semibold py-2.5 px-3 rounded-xl ${currentPage === 'tutorials' ? 'bg-blue-50 text-blue-600' : 'text-slate-700 hover:bg-slate-50'
