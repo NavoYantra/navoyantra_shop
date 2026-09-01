@@ -19,9 +19,9 @@ export const InstitutionQuoteModal: React.FC = () => {
     message: ''
   });
 
-  if (!isQuoteModalOpen) return null;
-
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  if (!isQuoteModalOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
