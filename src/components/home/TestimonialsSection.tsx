@@ -30,7 +30,7 @@ export const TestimonialsSection: React.FC = () => {
             {[...TESTIMONIALS, ...TESTIMONIALS].map((rev, idx) => (
               <div
                 key={`${rev.id}-${idx}`}
-                className="w-[320px] sm:w-[380px] p-6 rounded-3xl bg-slate-800 border border-slate-700 shadow-xl flex flex-col justify-between space-y-4 relative flex-shrink-0"
+                className="w-[320px] sm:w-[380px] p-6 rounded-2xl bg-slate-800 border border-slate-700 shadow-xl flex flex-col justify-between space-y-4 relative flex-shrink-0"
               >
               <div className="space-y-4">
                 <div className="flex items-center justify-between">

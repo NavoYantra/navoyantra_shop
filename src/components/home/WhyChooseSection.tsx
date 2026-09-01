@@ -70,7 +70,7 @@ export const WhyChooseSection: React.FC = () => {
           {pillars.map((pillar, idx) => (
             <div
               key={idx}
-              className="p-8 rounded-[2rem] bg-white border border-slate-200 hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group space-y-4 shadow-sm"
+              className="p-8 rounded-2xl bg-white border border-slate-200 hover:border-blue-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group space-y-4 shadow-sm"
             >
               <div className={`w-16 h-16 rounded-2xl ${pillar.bg} flex items-center justify-center group-hover:scale-110 transition-transform`}>
                 {pillar.icon}
@@ -89,7 +89,7 @@ export const WhyChooseSection: React.FC = () => {
           ))}
 
           {/* Bonus Highlight Box */}
-          <div className="p-8 rounded-[2rem] bg-gradient-to-br from-blue-600 via-blue-700 to-slate-900 text-white shadow-xl shadow-blue-900/20 flex flex-col justify-between space-y-6 relative overflow-hidden">
+          <div className="p-8 rounded-2xl bg-gradient-to-br from-blue-600 via-blue-700 to-slate-900 text-white shadow-xl shadow-blue-900/20 flex flex-col justify-between space-y-6 relative overflow-hidden">
             {/* Background shape */}
             <div className="absolute -right-10 -bottom-10 opacity-10 text-white pointer-events-none">
               <Circle size={250} strokeWidth={0} fill="currentColor" />

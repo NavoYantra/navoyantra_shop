@@ -59,7 +59,7 @@ export const ShopPage: React.FC = () => {
           
           {/* Desktop Left Sidebar Filters (3 Cols) */}
           <div className="hidden lg:block lg:col-span-3 space-y-6">
-            <div className="p-6 rounded-3xl bg-white border border-slate-200/80 shadow-md space-y-6 sticky top-28">
+            <div className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-md space-y-6 sticky top-28">
               <div className="flex items-center justify-between border-b border-slate-100 pb-4">
                 <div className="flex items-center space-x-2">
                   <Filter className="w-4 h-4 text-blue-600" />
@@ -268,7 +268,7 @@ export const ShopPage: React.FC = () => {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-20 bg-white rounded-3xl border border-slate-200 p-8 space-y-4">
+              <div className="text-center py-20 bg-white rounded-2xl border border-slate-200 p-8 space-y-4">
                 <ShoppingBag className="w-12 h-12 text-slate-300 mx-auto" />
                 <h3 className="text-xl font-bold text-slate-900 font-heading">No STEM kits match your filter criteria</h3>
                 <p className="text-xs text-slate-500">Try clearing selected age brackets or price limits.</p>

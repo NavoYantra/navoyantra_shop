@@ -87,7 +87,7 @@ export const NewsletterSection: React.FC = () => {
               </p>
             </form>
           ) : (
-            <div className="p-6 rounded-3xl bg-white/10 backdrop-blur-md border border-white/20 text-center space-y-2 max-w-md mx-auto">
+            <div className="p-6 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-center space-y-2 max-w-md mx-auto">
               <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto" />
               <h4 className="text-xl font-bold font-heading">You are subscribed!</h4>
               <p className="text-xs text-blue-100">

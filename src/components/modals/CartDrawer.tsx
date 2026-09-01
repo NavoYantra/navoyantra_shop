@@ -208,7 +208,7 @@ export const CartDrawer: React.FC = () => {
                   showToast('Please log in to proceed to checkout', 'info');
                 }
               }}
-              className="w-full py-4 rounded-2xl bg-gradient-orange hover:opacity-95 text-white font-bold text-sm shadow-xl shadow-orange-500/25 flex items-center justify-center space-x-2 transition-transform hover:scale-[1.02]"
+              className="w-full py-4 rounded-2xl bg-orange-600 hover:opacity-95 text-white font-bold text-sm shadow-xl shadow-orange-500/25 flex items-center justify-center space-x-2 transition-transform hover:scale-[1.02]"
             >
               <span>Proceed to Checkout</span>
               <ArrowRight className="w-4 h-4" />

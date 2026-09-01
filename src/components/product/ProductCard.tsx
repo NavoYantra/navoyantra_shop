@@ -27,7 +27,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const isCompared = isInCompare(product.id);
 
   return (
-    <div className="group rounded-3xl bg-white  border border-slate-200/80  shadow-lg hover:shadow-2xl hover:border-blue-500/40 transition-all duration-300 flex flex-col justify-between overflow-hidden relative">
+    <div className="group rounded-2xl bg-white  border border-slate-200/80  shadow-lg hover:shadow-2xl hover:border-blue-500/40 transition-all duration-300 flex flex-col justify-between overflow-hidden relative">
 
       {/* Top Image Container */}
       <div className="relative aspect-4/3 overflow-hidden bg-slate-100 group">

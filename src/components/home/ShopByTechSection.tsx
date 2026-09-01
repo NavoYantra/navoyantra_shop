@@ -90,7 +90,7 @@ export const ShopByTechSection: React.FC = () => {
             <div
               key={t.id}
               onClick={() => handleTechClick(t.id)}
-              className="relative p-6 rounded-3xl bg-slate-900 border border-slate-200/20 hover:border-blue-500 hover:shadow-xl transition-all cursor-pointer group flex flex-col justify-between overflow-hidden min-h-[220px]"
+              className="relative p-6 rounded-2xl bg-slate-900 border border-slate-200/20 hover:border-blue-500 hover:shadow-xl transition-all cursor-pointer group flex flex-col justify-between overflow-hidden min-h-[220px]"
             >
               {/* Background Image Setup */}
               <div className="absolute inset-0 z-0">

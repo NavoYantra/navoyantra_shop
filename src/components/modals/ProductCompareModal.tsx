@@ -15,7 +15,7 @@ export const ProductCompareModal: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="w-full max-w-5xl bg-white  rounded-3xl shadow-2xl border border-slate-200  overflow-hidden animate-in zoom-in-95 duration-200 my-8">
+      <div className="w-full max-w-5xl bg-white  rounded-2xl shadow-2xl border border-slate-200  overflow-hidden animate-in zoom-in-95 duration-200 my-8">
         
         {/* Header */}
         <div className="p-6 border-b border-slate-100  flex items-center justify-between">

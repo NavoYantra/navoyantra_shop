@@ -17,9 +17,7 @@ export const LabSetupPage: React.FC = () => {
         keywords="School Robotics Lab, STEM Lab Setup, AI Lab for Schools, Institution Tech Infrastructure, NavoYantra Lab Solutions"
       />
 
-      {/* Background Blurs */}
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-600/5 rounded-full blur-[150px] pointer-events-none"></div>
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-orange-500/5 rounded-full blur-[120px] pointer-events-none"></div>
+      {/* Clean Background */}
 
       <div className="relative z-10 max-w-7xl mx-auto px-5 md:px-10 lg:px-16">
         
@@ -58,7 +56,7 @@ export const LabSetupPage: React.FC = () => {
             <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 md:gap-8 relative z-10">
               
               <StaggerItem className="flex flex-col items-center text-center group">
-                <div className="w-20 h-20 rounded-3xl bg-white shadow-xl shadow-slate-200/50 flex items-center justify-center text-slate-400 group-hover:text-white group-hover:bg-blue-600 group-hover:shadow-blue-500/30 group-hover:ring-8 group-hover:ring-blue-50 group-hover:-translate-y-2 transition-all duration-300 mb-6 border border-slate-100 relative">
+                <div className="w-20 h-20 rounded-2xl bg-white shadow-xl shadow-slate-200/50 flex items-center justify-center text-slate-400 group-hover:text-white group-hover:bg-blue-600 group-hover:shadow-blue-500/30 group-hover:ring-8 group-hover:ring-blue-50 group-hover:-translate-y-1 transition-all duration-300 mb-6 border border-slate-100 relative">
                   <MessageSquare className="w-8 h-8" />
                   <div className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-slate-900 text-white text-xs font-bold flex items-center justify-center border-4 border-slate-50 shadow-sm">1</div>
                 </div>
@@ -67,7 +65,7 @@ export const LabSetupPage: React.FC = () => {
               </StaggerItem>
 
               <StaggerItem className="flex flex-col items-center text-center group">
-                <div className="w-20 h-20 rounded-3xl bg-white shadow-xl shadow-slate-200/50 flex items-center justify-center text-slate-400 group-hover:text-white group-hover:bg-blue-600 group-hover:shadow-blue-500/30 group-hover:ring-8 group-hover:ring-blue-50 group-hover:-translate-y-2 transition-all duration-300 mb-6 border border-slate-100 relative">
+                <div className="w-20 h-20 rounded-2xl bg-white shadow-xl shadow-slate-200/50 flex items-center justify-center text-slate-400 group-hover:text-white group-hover:bg-blue-600 group-hover:shadow-blue-500/30 group-hover:ring-8 group-hover:ring-blue-50 group-hover:-translate-y-1 transition-all duration-300 mb-6 border border-slate-100 relative">
                   <PenTool className="w-8 h-8" />
                   <div className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-slate-900 text-white text-xs font-bold flex items-center justify-center border-4 border-slate-50 shadow-sm">2</div>
                 </div>
@@ -76,7 +74,7 @@ export const LabSetupPage: React.FC = () => {
               </StaggerItem>
 
               <StaggerItem className="flex flex-col items-center text-center group">
-                <div className="w-20 h-20 rounded-3xl bg-white shadow-xl shadow-slate-200/50 flex items-center justify-center text-slate-400 group-hover:text-white group-hover:bg-blue-600 group-hover:shadow-blue-500/30 group-hover:ring-8 group-hover:ring-blue-50 group-hover:-translate-y-2 transition-all duration-300 mb-6 border border-slate-100 relative">
+                <div className="w-20 h-20 rounded-2xl bg-white shadow-xl shadow-slate-200/50 flex items-center justify-center text-slate-400 group-hover:text-white group-hover:bg-blue-600 group-hover:shadow-blue-500/30 group-hover:ring-8 group-hover:ring-blue-50 group-hover:-translate-y-1 transition-all duration-300 mb-6 border border-slate-100 relative">
                   <Wrench className="w-8 h-8" />
                   <div className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-slate-900 text-white text-xs font-bold flex items-center justify-center border-4 border-slate-50 shadow-sm">3</div>
                 </div>
@@ -85,7 +83,7 @@ export const LabSetupPage: React.FC = () => {
               </StaggerItem>
 
               <StaggerItem className="flex flex-col items-center text-center group">
-                <div className="w-20 h-20 rounded-3xl bg-white shadow-xl shadow-slate-200/50 flex items-center justify-center text-slate-400 group-hover:text-white group-hover:bg-blue-600 group-hover:shadow-blue-500/30 group-hover:ring-8 group-hover:ring-blue-50 group-hover:-translate-y-2 transition-all duration-300 mb-6 border border-slate-100 relative">
+                <div className="w-20 h-20 rounded-2xl bg-white shadow-xl shadow-slate-200/50 flex items-center justify-center text-slate-400 group-hover:text-white group-hover:bg-blue-600 group-hover:shadow-blue-500/30 group-hover:ring-8 group-hover:ring-blue-50 group-hover:-translate-y-1 transition-all duration-300 mb-6 border border-slate-100 relative">
                   <HardDrive className="w-8 h-8" />
                   <div className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-slate-900 text-white text-xs font-bold flex items-center justify-center border-4 border-slate-50 shadow-sm">4</div>
                 </div>
@@ -94,7 +92,7 @@ export const LabSetupPage: React.FC = () => {
               </StaggerItem>
 
               <StaggerItem className="flex flex-col items-center text-center group">
-                <div className="w-20 h-20 rounded-3xl bg-white shadow-xl shadow-slate-200/50 flex items-center justify-center text-slate-400 group-hover:text-white group-hover:bg-blue-600 group-hover:shadow-blue-500/30 group-hover:ring-8 group-hover:ring-blue-50 group-hover:-translate-y-2 transition-all duration-300 mb-6 border border-slate-100 relative">
+                <div className="w-20 h-20 rounded-2xl bg-white shadow-xl shadow-slate-200/50 flex items-center justify-center text-slate-400 group-hover:text-white group-hover:bg-blue-600 group-hover:shadow-blue-500/30 group-hover:ring-8 group-hover:ring-blue-50 group-hover:-translate-y-1 transition-all duration-300 mb-6 border border-slate-100 relative">
                   <GraduationCap className="w-8 h-8" />
                   <div className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-slate-900 text-white text-xs font-bold flex items-center justify-center border-4 border-slate-50 shadow-sm">5</div>
                 </div>
@@ -117,7 +115,7 @@ export const LabSetupPage: React.FC = () => {
           <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 xl:gap-10">
             
             {/* Lab 1 */}
-            <StaggerItem className="bg-white rounded-[2rem] p-8 md:p-10 shadow-xl shadow-slate-200/50 border border-slate-100 hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-2 transition-all duration-300 flex flex-col h-full relative overflow-hidden group">
+            <StaggerItem className="bg-white rounded-2xl p-8 md:p-10 shadow-xl shadow-slate-200/50 border border-slate-100 hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-1 transition-all duration-300 flex flex-col h-full relative overflow-hidden group">
               <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-600 to-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 mb-6 group-hover:scale-110 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
                 <Move3d className="w-7 h-7" />
@@ -139,7 +137,7 @@ export const LabSetupPage: React.FC = () => {
             </StaggerItem>
 
             {/* Lab 2 */}
-            <StaggerItem className="bg-white rounded-[2rem] p-8 md:p-10 shadow-xl shadow-slate-200/50 border border-slate-100 hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-2 transition-all duration-300 flex flex-col h-full relative overflow-hidden group">
+            <StaggerItem className="bg-white rounded-2xl p-8 md:p-10 shadow-xl shadow-slate-200/50 border border-slate-100 hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-1 transition-all duration-300 flex flex-col h-full relative overflow-hidden group">
               <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-600 to-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 mb-6 group-hover:scale-110 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
                 <Cpu className="w-7 h-7" />
@@ -161,7 +159,7 @@ export const LabSetupPage: React.FC = () => {
             </StaggerItem>
 
             {/* Lab 3 */}
-            <StaggerItem className="bg-white rounded-[2rem] p-8 md:p-10 shadow-xl shadow-slate-200/50 border border-slate-100 hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-2 transition-all duration-300 flex flex-col h-full relative overflow-hidden group">
+            <StaggerItem className="bg-white rounded-2xl p-8 md:p-10 shadow-xl shadow-slate-200/50 border border-slate-100 hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-1 transition-all duration-300 flex flex-col h-full relative overflow-hidden group">
               <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-600 to-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 mb-6 group-hover:scale-110 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
                 <BrainCircuit className="w-7 h-7" />
@@ -183,7 +181,7 @@ export const LabSetupPage: React.FC = () => {
             </StaggerItem>
 
             {/* Lab 4 */}
-            <StaggerItem className="bg-white rounded-[2rem] p-8 md:p-10 shadow-xl shadow-slate-200/50 border border-slate-100 hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-2 transition-all duration-300 flex flex-col h-full relative overflow-hidden group">
+            <StaggerItem className="bg-white rounded-2xl p-8 md:p-10 shadow-xl shadow-slate-200/50 border border-slate-100 hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-1 transition-all duration-300 flex flex-col h-full relative overflow-hidden group">
               <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-600 to-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 mb-6 group-hover:scale-110 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
                 <Wifi className="w-7 h-7" />
@@ -205,7 +203,7 @@ export const LabSetupPage: React.FC = () => {
             </StaggerItem>
 
             {/* Lab 5 */}
-            <StaggerItem className="bg-white rounded-[2rem] p-8 md:p-10 shadow-xl shadow-slate-200/50 border border-slate-100 hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-2 transition-all duration-300 flex flex-col h-full relative overflow-hidden group">
+            <StaggerItem className="bg-white rounded-2xl p-8 md:p-10 shadow-xl shadow-slate-200/50 border border-slate-100 hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-1 transition-all duration-300 flex flex-col h-full relative overflow-hidden group">
               <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-600 to-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 mb-6 group-hover:scale-110 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
                 <Plane className="w-7 h-7" />
@@ -227,7 +225,7 @@ export const LabSetupPage: React.FC = () => {
             </StaggerItem>
 
             {/* Lab 6 */}
-            <StaggerItem className="bg-white rounded-[2rem] p-8 md:p-10 shadow-xl shadow-slate-200/50 border border-slate-100 hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-2 transition-all duration-300 flex flex-col h-full relative overflow-hidden group">
+            <StaggerItem className="bg-white rounded-2xl p-8 md:p-10 shadow-xl shadow-slate-200/50 border border-slate-100 hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-1 transition-all duration-300 flex flex-col h-full relative overflow-hidden group">
               <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-600 to-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 mb-6 group-hover:scale-110 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
                 <Building2 className="w-7 h-7" />

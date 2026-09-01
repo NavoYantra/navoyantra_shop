@@ -742,7 +742,7 @@ export const AdminProductForm: React.FC = () => {
             )}
             
             {activePreviewTab === 'quickview' && (
-              <div className="w-full bg-white rounded-3xl shadow-xl overflow-hidden transform scale-[0.85] origin-top">
+              <div className="w-full bg-white rounded-2xl shadow-xl overflow-hidden transform scale-[0.85] origin-top">
                 <QuickViewContent product={mockProduct} isPreview={true} />
               </div>
             )}

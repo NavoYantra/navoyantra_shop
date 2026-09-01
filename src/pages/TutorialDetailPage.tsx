@@ -232,7 +232,7 @@ export const TutorialDetailPage: React.FC<{ previewTutorial?: Tutorial }> = ({ p
       </div>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8">
-        <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-200">
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200">
           
           {/* Navigation Tabs */}
           <div className="flex border-b border-slate-200 bg-slate-50 overflow-x-auto">

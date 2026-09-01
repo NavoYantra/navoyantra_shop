@@ -33,7 +33,7 @@ export const InstitutionQuoteModal: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="w-full max-w-2xl bg-white  rounded-3xl shadow-2xl border border-slate-200  overflow-hidden animate-in zoom-in-95 duration-200 my-8">
+      <div className="w-full max-w-2xl bg-white  rounded-2xl shadow-2xl border border-slate-200  overflow-hidden animate-in zoom-in-95 duration-200 my-8">
         
         {/* Modal Header */}
         <div className="p-6 bg-slate-900 text-white flex items-center justify-between">
@@ -182,7 +182,7 @@ export const InstitutionQuoteModal: React.FC = () => {
 
             <button
               type="submit"
-              className="w-full py-4 rounded-2xl bg-gradient-orange text-white font-bold text-sm shadow-xl flex items-center justify-center space-x-2 transition-transform hover:scale-105"
+              className="w-full py-4 rounded-2xl bg-orange-600 text-white font-bold text-sm shadow-xl flex items-center justify-center space-x-2 transition-transform hover:scale-105"
             >
               <Send className="w-4 h-4" />
               <span>Submit B2B Quotation Request</span>

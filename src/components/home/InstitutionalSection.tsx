@@ -118,7 +118,7 @@ export const InstitutionalSection: React.FC = () => {
             <div className="flex flex-col sm:flex-row items-center gap-4 pt-4">
               <button
                 onClick={() => setIsQuoteModalOpen(true)}
-                className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-orange hover:opacity-95 text-white font-bold text-sm shadow-xl shadow-orange-500/20 flex items-center justify-center space-x-2 transition-transform hover:-translate-y-1"
+                className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-orange-600 hover:opacity-95 text-white font-bold text-sm shadow-xl shadow-orange-500/20 flex items-center justify-center space-x-2 transition-transform hover:-translate-y-1"
               >
                 <span>Request Custom Lab Quote</span>
                 <ChevronRight className="w-4 h-4" />

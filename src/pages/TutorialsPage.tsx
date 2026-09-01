@@ -108,7 +108,7 @@ export const TutorialsPage: React.FC = () => {
                 <Link
                   key={tutorial.id}
                   to={`/tutorial/${tutorial.id}`}
-                  className="rounded-3xl bg-white border border-slate-200/80 p-5 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col justify-between group"
+                  className="rounded-2xl bg-white border border-slate-200/80 p-5 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col justify-between group"
                 >
                   <div>
                     <div className="relative aspect-16/10 rounded-2xl overflow-hidden mb-4 bg-slate-100">
@@ -159,7 +159,7 @@ export const TutorialsPage: React.FC = () => {
               ))}
             </div>
           ) : (
-            <div className="text-center py-20 bg-white rounded-3xl border border-slate-200">
+            <div className="text-center py-20 bg-white rounded-2xl border border-slate-200">
               <BookOpen className="w-12 h-12 text-slate-300 mx-auto mb-4" />
               <h3 className="text-xl font-bold text-slate-900 mb-2">No tutorials found</h3>
               <p className="text-slate-500">We couldn't find any tutorials matching your criteria.</p>

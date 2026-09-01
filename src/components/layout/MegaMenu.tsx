@@ -86,7 +86,7 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ onClose }) => {
 
   return (
     <div 
-      className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[800px] bg-white rounded-3xl border border-slate-200 shadow-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-4"
+      className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[800px] bg-white rounded-2xl border border-slate-200 shadow-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-4"
       onMouseLeave={onClose}
     >
       <div className="flex h-[400px]">

@@ -67,7 +67,7 @@ export const LearningResourcesSection: React.FC = () => {
             <Link
               to={`/tutorial/${tutorial.id}`}
               key={tutorial.id}
-              className="rounded-3xl bg-white  border border-slate-200/80  p-5 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col justify-between group"
+              className="rounded-2xl bg-white  border border-slate-200/80  p-5 shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col justify-between group"
             >
               <div>
                 <div className="relative aspect-16/10 rounded-2xl overflow-hidden mb-4 bg-slate-100 ">

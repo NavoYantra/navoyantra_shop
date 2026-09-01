@@ -168,7 +168,7 @@ export const QuickViewContent: React.FC<{ product: any; isPreview?: boolean }> =
                 addToCart(product);
                 setQuickViewProduct(null);
               }}
-              className="flex-1 py-4 rounded-2xl bg-gradient-orange hover:opacity-95 text-white font-bold text-sm shadow-xl shadow-orange-500/25 flex items-center justify-center space-x-2 transition-transform hover:scale-105"
+              className="flex-1 py-4 rounded-2xl bg-orange-600 hover:opacity-95 text-white font-bold text-sm shadow-xl shadow-orange-500/25 flex items-center justify-center space-x-2 transition-transform hover:scale-105"
             >
               <ShoppingBag className="w-4 h-4" />
               <span>Add to Shopping Bag</span>
@@ -218,7 +218,7 @@ export const ProductQuickViewModal: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="w-full max-w-4xl bg-white  rounded-3xl shadow-2xl border border-slate-200  overflow-hidden animate-in zoom-in-95 duration-200 my-8">
+      <div className="w-full max-w-4xl bg-white  rounded-2xl shadow-2xl border border-slate-200  overflow-hidden animate-in zoom-in-95 duration-200 my-8">
         
         {/* Top Header */}
         <div className="p-4 sm:p-6 border-b border-slate-100  flex items-center justify-between">

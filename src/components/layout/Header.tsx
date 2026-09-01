@@ -66,10 +66,9 @@ export const Header: React.FC = () => {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full transition-all duration-300">
-
+    <>
       {/* Top Announcement Bar */}
-      <div className="bg-slate-900 text-white py-2 px-4 sm:px-6 lg:px-8 text-xs font-medium border-b border-slate-800">
+      <div className="bg-slate-900 text-white py-2 px-4 sm:px-6 lg:px-8 text-xs font-medium border-b border-slate-800 relative z-40">
         <div className="w-full flex flex-col lg:flex-row items-center justify-between gap-4">
           
           {/* Social Media Links (Extreme Left) */}
@@ -110,13 +109,13 @@ export const Header: React.FC = () => {
       </div>
 
       {/* Main Navigation Bar */}
-      <nav
-        className={`w-full transition-all duration-300 ${isScrolled
+      <header
+        className={`sticky top-0 z-50 w-full transition-all duration-300 ${isScrolled
             ? 'glass-nav shadow-lg border-b border-slate-200/60'
             : 'bg-white/95 backdrop-blur-md border-b border-slate-100'
           }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-12">
           <div className="flex items-center justify-between h-20 gap-4">
 
             {/* Complete Left: Brand Logo */}
@@ -342,11 +341,10 @@ export const Header: React.FC = () => {
             </div>
           </div>
         </div>
-      </nav>
 
       {/* Mobile Drawer Menu */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden fixed inset-x-0 top-[115px] bg-white border-b border-slate-200 shadow-2xl p-6 space-y-3 z-40 animate-in slide-in-from-top-4">
+        <div className="lg:hidden absolute top-full inset-x-0 bg-white border-b border-slate-200 shadow-2xl p-6 space-y-3 z-40 animate-in slide-in-from-top-4">
           <button
             onClick={() => handleNavClick('home')}
             className={`w-full text-left font-semibold py-2.5 px-3 rounded-xl ${currentPage === 'home' ? 'bg-blue-50 text-blue-600' : 'text-slate-700 hover:bg-slate-50'
@@ -413,5 +411,6 @@ export const Header: React.FC = () => {
         </div>
       )}
     </header>
+    </>
   );
 };

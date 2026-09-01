@@ -18,7 +18,7 @@ function ErrorFallback({ error }: { error: any }) {
 // Layout Components
 import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
-import { BackgroundShapes } from './components/layout/BackgroundShapes';
+
 
 import { Suspense, lazy } from 'react';
 import { LoadingSpinner } from './components/common/LoadingSpinner';
@@ -64,8 +64,7 @@ export function AppContent() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F6F7F9] text-slate-900 transition-colors duration-200 relative overflow-hidden">
-      <BackgroundShapes />
+    <div className="min-h-screen flex flex-col bg-white text-slate-900 transition-colors duration-200 relative">
       <Header />
 
       <main className="flex-1">

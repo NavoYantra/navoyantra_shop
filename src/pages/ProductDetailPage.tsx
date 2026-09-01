@@ -22,7 +22,7 @@ export const ProductDetailHero: React.FC<{ product: any; isPreview?: boolean }> 
   const isWishlisted = isInWishlist(product.id);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 bg-white p-6 sm:p-10 rounded-3xl shadow-sm border border-slate-200">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 bg-white p-6 sm:p-10 rounded-2xl shadow-sm border border-slate-200">
       {/* Gallery (Left) */}
       <div className="lg:col-span-5 space-y-4">
         <div className="aspect-square rounded-2xl overflow-hidden bg-slate-50 border border-slate-100 relative group">
@@ -159,7 +159,7 @@ export const ProductDetailHero: React.FC<{ product: any; isPreview?: boolean }> 
                 if (isPreview) return;
                 addToCart(product);
               }}
-              className="w-full sm:flex-1 py-4 rounded-xl bg-gradient-orange hover:opacity-95 text-white font-bold text-base shadow-xl shadow-orange-500/25 flex items-center justify-center space-x-2 transition-transform hover:-translate-y-0.5"
+              className="w-full sm:flex-1 py-4 rounded-xl bg-orange-600 hover:opacity-95 text-white font-bold text-base shadow-xl shadow-orange-500/25 flex items-center justify-center space-x-2 transition-transform hover:-translate-y-0.5"
             >
               <ShoppingBag className="w-5 h-5" />
               <span>Add to Shopping Bag</span>
@@ -396,7 +396,7 @@ export const ProductDetailPage: React.FC = () => {
           
           {/* Main Description Column */}
           <div className="lg:col-span-2 space-y-8">
-            <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 space-y-6">
+            <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 space-y-6">
               <h3 className="text-2xl font-extrabold font-heading text-slate-900">Product Overview</h3>
               <div className="prose prose-slate max-w-none">
                 <p className="text-slate-600 leading-relaxed text-base">
@@ -429,7 +429,7 @@ export const ProductDetailPage: React.FC = () => {
             </div>
 
             {/* Reviews Section */}
-            <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 space-y-8">
+            <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 space-y-8">
               <div className="flex items-center justify-between border-b border-slate-100 pb-4">
                 <h3 className="text-2xl font-extrabold font-heading text-slate-900">Customer Reviews</h3>
                 <div className="flex items-center space-x-2">
@@ -563,7 +563,7 @@ export const ProductDetailPage: React.FC = () => {
           {/* Sidebar Column (Specs & In The Box) */}
           <div className="space-y-8">
             {product.whatsInside && product.whatsInside.some(item => item.trim() !== '') && (
-              <div className="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-slate-200">
+              <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200">
                 <h3 className="text-lg font-extrabold font-heading text-slate-900 mb-6 flex items-center space-x-2">
                   <Box className="w-5 h-5 text-blue-600" />
                   <span>What's In The Box</span>
@@ -580,7 +580,7 @@ export const ProductDetailPage: React.FC = () => {
             )}
 
             {product.specs && Object.values(product.specs).some(v => v !== null && v !== undefined && v !== '' && (!Array.isArray(v) || v.length > 0)) && (
-              <div className="bg-slate-900 p-6 sm:p-8 rounded-3xl shadow-lg border border-slate-800 text-white relative overflow-hidden">
+              <div className="bg-slate-900 p-6 sm:p-8 rounded-2xl shadow-lg border border-slate-800 text-white relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none">
                   <Cpu className="w-32 h-32" />
                 </div>

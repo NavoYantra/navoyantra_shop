@@ -84,7 +84,7 @@ export const ShopByAgeSection: React.FC = () => {
             <div
               key={bracket.id}
               onClick={() => handleAgeClick(bracket.id)}
-              className={`rounded-3xl p-8 border-2 ${bracket.color} bg-white  shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer flex flex-col justify-between group relative overflow-hidden`}
+              className={`rounded-2xl p-8 border-2 ${bracket.color} bg-white  shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer flex flex-col justify-between group relative overflow-hidden`}
             >
               <div className="space-y-4">
                 <div className="flex items-center justify-between">

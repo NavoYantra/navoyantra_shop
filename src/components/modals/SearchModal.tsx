@@ -20,7 +20,7 @@ export const SearchModal: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-xs flex items-start justify-center p-4 pt-16">
-      <div className="w-full max-w-2xl bg-white  rounded-3xl shadow-2xl border border-slate-200  overflow-hidden animate-in slide-in-from-top-4 duration-200">
+      <div className="w-full max-w-2xl bg-white  rounded-2xl shadow-2xl border border-slate-200  overflow-hidden animate-in slide-in-from-top-4 duration-200">
         
         {/* Top Search Input Bar */}
         <div className="p-4 border-b border-slate-100  flex items-center space-x-3">
