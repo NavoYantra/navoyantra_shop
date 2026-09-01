@@ -6,19 +6,26 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// 1. Read .env file manually
-const envPath = path.resolve(__dirname, '.env');
-const envContent = fs.readFileSync(envPath, 'utf-8');
-const env = {};
-envContent.split('\n').forEach(line => {
-  const match = line.match(/^\s*([\w.-]+)\s*=\s*(.*)?\s*$/);
-  if (match) {
-    env[match[1]] = match[2];
-  }
-});
+// 1. Try to read from process.env first (for Vercel/CI environments)
+let supabaseUrl = process.env.VITE_SUPABASE_URL;
+let supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
 
-const supabaseUrl = env['VITE_SUPABASE_URL'];
-const supabaseKey = env['VITE_SUPABASE_ANON_KEY'];
+// 2. If not found, try to read from .env file (for local development)
+if (!supabaseUrl || !supabaseKey) {
+  try {
+    const envPath = path.resolve(__dirname, '.env');
+    const envContent = fs.readFileSync(envPath, 'utf-8');
+    envContent.split('\n').forEach(line => {
+      const match = line.match(/^\s*([\w.-]+)\s*=\s*(.*)?\s*$/);
+      if (match) {
+        if (match[1] === 'VITE_SUPABASE_URL') supabaseUrl = match[2];
+        if (match[1] === 'VITE_SUPABASE_ANON_KEY') supabaseKey = match[2];
+      }
+    });
+  } catch (err) {
+    console.warn("No .env file found, relying on system environment variables.");
+  }
+}
 
 if (!supabaseUrl || !supabaseKey) {
   console.error("Supabase credentials not found in .env");
